@@ -57,19 +57,20 @@ def input_file(atmosphere = 'midlatitude_summer'):
         6: str(nmol).rjust(5) # NMOL: what's the maximum number associated with the molecules you're using? (see MOLECULES list below)
     })
     
+
     # for each layer, make a collection of rows
     for i in range(nlayers):
         # for each layer, make a row designating pressure and temperature
         row = {
-            1: '%15.7G' % paves[i], # PAVE, see above:
-            16: '%10.4G' % taves[i], # TAVE, see above
+            1: '%15.7F' % paves[i], # PAVE, see above:
+            16: '%10.4F' % taves[i], # TAVE, see above
             71: '%8.3F' % PZ_Ls[i], # PZ(L), see above
             79: '%7.2F' % TZ_Ls[i], # TZ(L), see above
         }
         
         if i == 0:
-            row[49] = '%8.3G' % PZ_L_1
-            row[57] = '%7.2G' % TZ_L_1
+            row[49] = '%8.3F' % PZ_L_1
+            row[57] = '%7.2F' % TZ_L_1
         rows.append(row)
         
         # for every seven radiatively active constituents, make a row of concentrations
