@@ -69,24 +69,24 @@ def make_input_file(atmosphere = 'midlatitude_summer'):
         row = {
             1: '%15.7F' % paves[i], # PAVE, see above:
             16: '%10.4F' % taves[i], # TAVE, see above
-            71: '%8.3F' % PZ_Ls[i], # PZ(L), see above
+            71: '%8.5F' % PZ_Ls[i], # PZ(L), see above
             79: '%7.2F' % TZ_Ls[i], # TZ(L), see above
         }
         
         if i == 0:
-            row[49] = '%8.3F' % PZ_L_1
+            row[49] = '%8.5F' % PZ_L_1
             row[57] = '%7.2F' % TZ_L_1
         rows.append(row)
         
         # for every seven radiatively active constituents, make a row of concentrations
         # concentrations are in molcules per cm3
         list_of_values = []
-        values = [None] * 7 + ['%15.7G' % atmosphere['concentrations']['broadening gases'][i]]
+        values = [None] * 7 + ['%15.7E' % atmosphere['concentrations']['broadening gases'][i]]
         counter = 0
         for molecule_number in range(len(MOLECULES)):
             if 0 < molecule_number <= nmol:
                 concentration = atmosphere['concentrations'][MOLECULES[molecule_number]][i]
-                values[counter] =  '%15.7G' % concentration
+                values[counter] =  '%15.7E' % concentration
                 counter += 1
                 if molecule_number in [nmol, 7, 15, 23, 31]: # the 8th place in the first row is occupied by broadening gases
                     list_of_values.append(values)

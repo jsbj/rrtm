@@ -1,4 +1,6 @@
 # This file pulls out an atmosphere JSON from the example input files given
+# takes two arguments: the first is the file to pull from,
+# the second is the name of the json to create
 
 require 'rubygems'
 require 'json'
@@ -20,7 +22,7 @@ atmosphere = {
 
 counter = nil
 
-File.open('input_rrtm_MLW', 'r').each do |line|
+File.open(ARGV[0], 'r').each do |line|
   if counter
     if line =~ /%/
       break
@@ -57,6 +59,6 @@ File.open('input_rrtm_MLW', 'r').each do |line|
   end
 end
 
-File.open('midlatitude_winter.json', 'w') do |f|
+File.open('atmospheres/' + ARGV[1] + '.json', 'w') do |f|
   f.write(JSON.generate(atmosphere))
 end
