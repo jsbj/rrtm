@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>RRTM</title>
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+    <!-- Google Web Fonts: http://www.google.com/webfonts/v2#AboutPlace:about-->
+    <link href='http://fonts.googleapis.com/css?family=Kameron|Lora|Quattrocento&v2' rel='stylesheet' type='text/css'>
+
+	<style type="text/css" media="screen">
+		body {
+		   font-family: 'Quattrocento', Georgia, "Times New Roman", Times, serif;
+		   margin-left: 10%;
+		   margin-right: 10%;
+		   min-width: 1100px;
+		}
+		svg {
+	      shape-rendering: crispEdges;
+	    }
+	    .rule line {
+	      stroke: #eee;
+	    }
+	</style>
+</head>
+<body>
+	<p>
+		<select name='atmosphere' onchange='updatechart();'>
+			<option value='midlatitude_summer' selected='selected'>mid-latitude summer</option>
+			<option value='midlatitude_winter'>mid-latitude winter</option>
+			<option value='tropic'>tropics</option>
+		</select>
+	<center>
+	<div id="paired-line-chart">
+
+	</div>
+	</center>
+</body>
+
+<script type="text/javascript">
+updatechart = function() {
+	var atmosphere = d3.select('select')[0][0].options[d3.select('select')[0][0].selectedIndex].value;
+	d3.json('../cgi-bin/rrtm.py?atmosphere=' + atmosphere, function(error, json) {
+		if (error) return console.warn(error);
+		data = json;
+	
+		var maxval = 0, nlayers = 0;
+		var labels = new Array(), values = new Array();
+		
+		nlayers = data.longwave.downward.length;
+		
+		for (var i=0; i < nlayers; i++) {
+			labels[i] = i;
+			values[i] = {layer: i, downward: data.longwave.downward[i], upward: data.longwave.upward[i], net: data.longwave.net[i]};
+			maxval = Math.max(maxval, data.longwave.downward[i], data.longwave.upward[i], data.longwave.net[i]);
+		}
+		
+        maxval = (1 + Math.floor(maxval / 10)) * 10;   
+
+	    var  w = 615,
+	         h = 300,
+	         p = 50,
+	         x = d3.scale.linear().domain([ labels[0], labels[nlayers-1] ]).range([0, w]),
+	         y = d3.scale.linear().domain([0, maxval]).range([h, 0]);
+
+			 d3.select('svg').remove()
+
+	     var vis = d3.select("#paired-line-chart")
+	         .data([values])
+	       .append("svg:svg")
+	         .attr("width", w + p * 2)
+	         .attr("height", h + p * 2)
+	       .append("svg:g")
+	         .attr("transform", "translate(" + p + "," + p + ")");
+
+	     var rules = vis.selectAll("g.rule")
+	        .data(x.ticks(15))
+	       .enter().append("svg:g")
+	         .attr("class", "rule");
+
+	     // Draw grid lines
+	     rules.append("svg:line")
+	      .attr("x1", x)
+	      .attr("x2", x)
+	      .attr("y1", 0)
+	      .attr("y2", h - 1);
+
+	      rules.append("svg:line")
+	       .attr("class", function(d) { return d ? null : "axis"; })
+	       .data(y.ticks(10))
+	       .attr("y1", y)
+	       .attr("y2", y)
+	       .attr("x1", 0)
+	       .attr("x2", w - 10);
+
+	      // Place axis tick labels
+	      rules.append("svg:text")
+	       .attr("x", x)
+	       .attr("y", h + 15)
+	       .attr("dy", ".71em")
+	       .attr("text-anchor", "middle")
+	       .text(x.tickFormat(10))
+	       .text(String);
+
+	      rules.append("svg:text")
+	       .data(y.ticks(12))
+	       .attr("y", y)
+	       .attr("x", -10)
+	       .attr("dy", ".35em")
+	       .attr("text-anchor", "end")
+	       .text(y.tickFormat(5));
+
+		   // Series I
+		   vis.append("svg:path")
+		       .attr("class", "line")
+		       .attr("fill", "none")
+		       .attr("stroke", "maroon")
+		       .attr("stroke-width", 2)
+		       .attr("d", d3.svg.line()
+		         .x(function(d) { return x(d.layer); })
+		         .y(function(d) { return y(d.upward); }));
+
+		   vis.selectAll("circle.line")
+		       .data(values)
+		     .enter().append("svg:circle")
+		       .attr("class", "line")
+		       .attr("fill", "maroon" )
+		       .attr("cx", function(d) { return x(d.layer); })
+		       .attr("cy", function(d) { return y(d.upward); })
+		       .attr("r", 1);
+
+		   // Series II
+		   vis.append("svg:path")
+		       .attr("class", "line")
+		       .attr("fill", "none")
+		       .attr("stroke", "darkblue")
+		       .attr("stroke-width", 2)
+		       .attr("d", d3.svg.line()
+		         .x(function(d) { return x(d.layer); })
+		         .y(function(d) { return y(d.downward); }));
+
+		   vis.select("circle.line")
+		       .data(values)
+		     .enter().append("svg:circle")
+		       .attr("class", "line")
+		       .attr("fill", "darkblue" )
+		       .attr("cx", function(d) { return x(d.layer); })
+		       .attr("cy", function(d) { return y(d.downward); })
+		       .attr("r", 1);
+			   
+			   // Series III
+			   vis.append("svg:path")
+			       .attr("class", "line")
+			       .attr("fill", "none")
+			       .attr("stroke", "green")
+			       .attr("stroke-width", 2)
+			       .attr("d", d3.svg.line()
+			         .x(function(d) { return x(d.layer); })
+			         .y(function(d) { return y(d.net); }));
+
+			   vis.select("circle.line")
+			       .data(values)
+			     .enter().append("svg:circle")
+			       .attr("class", "line")
+			       .attr("fill", "green" )
+			       .attr("cx", function(d) { return x(d.layer); })
+			       .attr("cy", function(d) { return y(d.net); })
+			       .attr("r", 1);
+		   
+		   // -----------------------------
+		   // Add Title then Legend
+		   // -----------------------------
+		   vis.append("svg:text")
+		       .attr("x", w/4)
+		       .attr("y", 20)
+		       .text("Longwave Radiative Flux, W/m^2");
+
+		   vis.append("svg:rect")
+		       .attr("x", w/2 - 20)
+		       .attr("y", 50)
+		       .attr("stroke", "darkblue")
+		       .attr("height", 2)
+		       .attr("width", 40);
+
+		   vis.append("svg:text")
+		       .attr("x", 30 + w/2)
+		       .attr("y", 55)
+		       .text("Downward");
+
+		   vis.append("svg:rect")
+		       .attr("x", w/2 - 20)
+		       .attr("y", 80)
+		       .attr("stroke", "maroon")
+		       .attr("height", 2)
+		       .attr("width", 40);
+
+		   vis.append("svg:text")
+		       .attr("x", 30 + w/2)
+		       .attr("y", 85)
+		       .text("Upward");
+
+		   vis.append("svg:rect")
+		       .attr("x", w/2 - 20)
+		       .attr("y", 110)
+		       .attr("stroke", "green")
+		       .attr("height", 2)
+		       .attr("width", 40);
+
+		   vis.append("svg:text")
+		       .attr("x", 30 + w/2)
+		       .attr("y", 115)
+		       .text("Net");
+
+	});
+	//.header("Content-Type","application/x-www-form-urlencoded")
+ 	// .send("POST","a=b");
+};
+</script>

@@ -1,11 +1,17 @@
-import json
+#!/usr/bin/python
+print "Content-type: application/json\n\n";
+
+import json, sys, re, os
 from numpy import e, linspace, log
 from subprocess import call
-import sys
 
 def make_input_file(atmosphere = 'midlatitude_summer'):
-    if type(atmosphere) == str:
-        atmosphere = load_atmosphere(atmosphere) # see method below
+    # if the passed file is one of the profiles specified 
+    if atmosphere + '.json' in os.listdir('atmospheres'):
+        atmosphere = load_atmosphere(atmosphere) # see method below        
+    else:
+        atmosphere = json.loads(atmosphere)
+
         
     # create temporary file
     f = open('INPUT_RRTM', 'w')
@@ -129,9 +135,54 @@ def make_indexed_line(entries):
     
     return ''.join(line).rstrip() + '\n'
 
+def convert_output_file_to_json():
+    response = {
+        'longwave': {
+            'downward': [],
+            'upward': [],
+            'net': []
+        },
+        'shortwave': {
+            'downward': [],
+            'upward': [],
+            'net': []
+        },
+        'total': {
+            'downward': [],
+            'upward': [],
+            'net': []
+        }
+    }
+    
+    with open('OUTPUT_RRTM', 'r') as f:
+        for line in f:
+            if re.search(r'^\s*?\d', line):
+                split_line = line.split()
+                response['longwave']['upward'].append(float(split_line[2]))
+                response['longwave']['downward'].append(float(split_line[3]))
+                response['longwave']['net'].append(float(split_line[4]))
+    
+    for outer_key in response:
+        for inner_key in response[outer_key]:
+            response[outer_key][inner_key].reverse()
+    
+    return json.dumps(response)
+
+# In case it's needed:
+# def sigdig(x, digits=1):
+#       return copysign(round(x, -int(floor(log10(abs(x)))) + (digits - 1)), x)
+      
+# Now, the actual execution:
+
 if len(sys.argv) > 1:
     make_input_file(sys.argv[1])
 else:
-    make_input_file()
+    if os.environ['QUERY_STRING']:
+        make_input_file(os.environ['QUERY_STRING'].split('=')[1])
+    else:
+        make_input_file()
 
 call(['./rrtm'])
+
+print convert_output_file_to_json()
+
