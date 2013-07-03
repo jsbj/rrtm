@@ -1,12 +1,14 @@
 import json
 from numpy import e, linspace, log
+from subprocess import call
+import sys
 
-def input_file(atmosphere = 'midlatitude_summer'):
+def make_input_file(atmosphere = 'midlatitude_summer'):
     if type(atmosphere) == str:
         atmosphere = load_atmosphere(atmosphere) # see method below
         
     # create temporary file
-    f = open('input_rrtm_tmp', 'w')
+    f = open('INPUT_RRTM', 'w')
     
     # RECORD 1.1
     f.write('$\n') # marks the beginning of the file
@@ -26,7 +28,7 @@ def input_file(atmosphere = 'midlatitude_summer'):
         
     # RECORD 1.4
     rows.append({
-        1: 294.2, # TBOUND: what's the surface temperature in K?
+        1: atmosphere['surface temperature'], # TBOUND: what's the surface temperature in K?
         12: int(False), # IEMS: do you want to specify the surface emissivity in different bands?
         15: int(False) # IREFLECT: do you want specular reflection at the surface (like a mirror), as opposed to isotropic?
         # 1.0: 17 # SEMISS: what surface missivity do you want for each band?
@@ -57,7 +59,10 @@ def input_file(atmosphere = 'midlatitude_summer'):
         6: str(nmol).rjust(5) # NMOL: what's the maximum number associated with the molecules you're using? (see MOLECULES list below)
     })
     
-
+    # screwy things: Python formatting with '%10.3G' or any with 'G' will turn
+    # floats with no decimal part into integers, messing up the calculation...
+    # but using 'F' can lead to problems if the number needs to be scienfically
+    # notated. possible hack: add '0.00000001' to everything?
     # for each layer, make a collection of rows
     for i in range(nlayers):
         # for each layer, make a row designating pressure and temperature
@@ -104,11 +109,8 @@ def input_file(atmosphere = 'midlatitude_summer'):
 
 def load_atmosphere(atmosphere):
     # loads a dictionary from a data file stored in /atmospheres
-    
     f = open('atmospheres/' + atmosphere + '.json', 'r')
-    
     atmosphere = json.load(f)
-    
     f.close()
     
     return atmosphere
@@ -126,5 +128,10 @@ def make_indexed_line(entries):
         line[index:index + len(str(entry))] = list(str(entry))
     
     return ''.join(line).rstrip() + '\n'
-    
-input_file()
+
+if len(sys.argv) > 1:
+    make_input_file(sys.argv[1])
+else:
+    make_input_file()
+
+call(['./rrtm'])
