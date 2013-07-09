@@ -41,10 +41,30 @@
 	    var atmosphere = d3.select('select')[0][0].options[d3.select('select')[0][0].selectedIndex].value;
         d3.json('../cgi-bin/rrtm.py?atmosphere=' + atmosphere, function(error, json) {
 		    if (error) return console.warn(error);
-
-            var lwDownLayer = json.longwave.downward.map(function(d, i) {return {x: i, y: d}});
-            var lwUpLayer = json.longwave.upward.map(function(d, i) {return {x: i, y: d}});
             
+            setupStreams(json, ['shortwave', 'longwave', 'total']);
+        })
+    }
+    
+    setupStreams = function(json, list) {
+        
+         d3.select('svg').remove()
+         
+
+         var width = 900,
+             height = 500;
+
+         var svg = d3.select("#paired-line-chart").append("svg")
+             .attr("width", width)
+             .attr("height", height);
+    
+             var unadjustedWidths = list.map(function(lightType){
+                 return d3.max(json[lightType].downward) + d3.max(json[lightType].upward);
+             });
+             var widths = unadjustedWidths.map(function(d,i) {return d * width / d3.sum(unadjustedWidths)});
+        list.map(function(lightType,i) {
+            var downLayer = json[lightType].downward.map(function(d, i) {return {x: i, y: d}});
+            var upLayer = json[lightType].upward.map(function(d, i) {return {x: i, y: d}});            
             offset = function(data) {
                 var j = -1,
                 m = data[0].length,
@@ -52,45 +72,37 @@
                 y0 = [];
                 return data[0].map(function(d,i) { return ymax - d[1] });
             }
-            
-            layers = d3.layout.stack().offset(offset)([lwDownLayer, lwUpLayer]);
-            
+
+            var layers = d3.layout.stack().offset(offset)([downLayer, upLayer]);
+
             var xmax = d3.max(layers, function(layer) {return d3.max(layer, function(d) { return d.y0 + d.y; }); });
-            
-            var  width = 200,
-                 height = 500;
-            
             var x = d3.scale.linear()
-                .domain([0, xmax]).range([0, width]);
-            
-            var y = d3.scale.linear()
-                .domain([0, lwDownLayer.length - 1])
-                .range([height, 0]);
-            
-            var color = d3.scale.linear()
-                .range(["#aad", "#556"]);
+                 .domain([0, xmax]).range([ 
+                     d3.sum(widths.slice(0,i)),
+                     d3.sum(widths.slice(0,i)) + widths[i] - 20 // the minus 20 creates a margin
+                ]);
 
-			 d3.select('svg').remove()
-
-             var area = d3.svg.area()
-                 .x0(function(d) { return x(d.y0); })
-                 .x1(function(d) { return x(d.y0 + d.y); })
-                 .y(function(d) { return y(d.x); });
-
-             var svg = d3.select("#paired-line-chart").append("svg")
-                 .attr("width", width)
-                 .attr("height", height);
-
-             svg.selectAll("path")
-                 .data(layers)
-               .enter().append("path")
-                 .attr("d", area)
-                 .style("fill", function(d, i) { return ['rgb(249,152,0)', 'rgb(228,105,0)'][i]; });
+             var y = d3.scale.linear()
+                 .domain([0, downLayer.length - 1])
+                 .range([height, 0]);
+        
+                 var color = d3.scale.linear()
+                 .range(["#aad", "#556"]);
 
 
+              var area = d3.svg.area()
+                  .x0(function(d) { return x(d.y0); })
+                  .x1(function(d) { return x(d.y0 + d.y); })
+                  .y(function(d) { return y(d.x); });
 
-	});
+              svg.selectAll("path." + lightType)
+                  .data(layers)
+                .enter().append("path")
+                  .attr("d", area)
+                  .attr('class', lightType)
+                  .style("fill", function(d, i) { return ['rgb(249,152,0)', 'rgb(228,105,0)'][i]; });
+        })
+    }
 	//.header("Content-Type","application/x-www-form-urlencoded")
  	// .send("POST","a=b");
-};
 </script>
