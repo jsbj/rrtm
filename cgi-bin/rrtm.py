@@ -4,52 +4,95 @@ print "Content-type: application/json\n\n";
 import json, sys, re, os
 from numpy import e, linspace, log
 from subprocess import call
+from os import rename, chdir
 
-def make_input_file(atmosphere = 'midlatitude_summer'):
+# RRTM Reference:
+# Mlawer, E.J., S.J. Taubman, P.D. Brown,  M.J. Iacono and 
+# S.A. Clough: RRTM, a validated correlated-k model for the 
+# longwave. J. Geophys. Res., 102, 16,663-16,682, 1997         
+
+
+MOLECULES = [None,
+    'H2O', 'CO2', 'O3', 'N2O', 'CO', 'CH4', 'O2', 'NO', 'SO2', 'NO2', # 1 - 10
+    'NH3', 'HNO3', 'OH', 'HF', 'HCL', 'HBR', 'HI', 'CLO', 'OCS', # 11 - 20
+    'H2CO', 'HOCL', 'N2', 'HCN', 'CH3CL', 'H2O2', 'C2H2', 'C2H6', 'PH3', 'COF2', 'SF6', # 21 - 30
+    'H2S', 'HCOOH' # 31 - 32
+]
+
+def make_input_files(atmosphere_name = 'midlatitude_summer'):
     # if the passed file is one of the profiles specified 
-    if atmosphere + '.json' in os.listdir('atmospheres'):
-        atmosphere = load_atmosphere(atmosphere) # see method below        
+    if atmosphere_name + '.json' in os.listdir('atmospheres'):
+        atmosphere = load_atmosphere(atmosphere_name) # see method below        
     else:
-        atmosphere = json.loads(atmosphere)
-
-        
+        atmosphere = json.loads(atmosphere_name)
+    
     # create temporary file
-    f = open('INPUT_RRTM', 'w')
+    f_sw = open('sw/INPUT_RRTM', 'w')
+    f_lw = open('lw/INPUT_RRTM', 'w')
     
     # RECORD 1.1
-    f.write('$\n') # marks the beginning of the file
     
-    rows = []
+    # marks the beginning of the file
+    f_sw.write('$\n')
+    f_lw.write('$\n')
     
     # RECORD 1.2
-    # for all "records", values are values, keys are what column they belong in
-    rows.append({
-        50: int(False), # IATM: do you want to use RRTATM, and atmospheric ray trace program?
-        70: int(False), # IXSECT: do you want to use cross-sections?
-        83: int(False), # ISCAT: which radiative transfer solver would you like to use? 0 == RRTM
-        85: 3, # NUMANGS: using Gaussian quadrature, how many angles do you want to compute over?
-        90: int(False), # IOUT: what sort of output do you want (do you want it separated into bins?)
-        95: int(False) # ICLD: you want clouds with that?
-    })
-        
+    # sw
+    
+    aerosol = False # want aerosols with that?
+    iatm = False # will you be using ray tracing?
+    istrm = '0' # how many streams would you like, 4 (put 0), 8 (put 1), or 16 (put 2)?
+    iout = False # would you like the results for each band individually, and if so which ones?
+    icloud = False # want clouds with that?
+    idelm = False # compute direct and diffuse downwelling fluxes using delta-M approximation?
+    icos = False # account for instrumental cosine response?
+    
+    aerosol_flag = '10' if aerosol else ' 0'
+    
+    f_sw.write(' ' * 18 + aerosol_flag + ' ' * 29 + str(int(iatm)) + \
+        ' ' * 32 + '0 ' + istrm + '  ' + str(int(iout)).rjust(3) + \
+        ' ' * 4 + str(int(icloud)) + ' ' * 3 + str(int(idelm)) + str(int(icos)) + '\n')
+    
+    # lw
+    
+    ixsect = False # do you want to use cross-sections?
+    iscat = 0 # which radiative transfer solver would you like to use? 0 == RRTM
+    numangs = 3 # NUMANGS: using Gaussian quadrature, how many angles do you want to compute over?
+    
+    f_lw.write(' ' * 50 + str(int(iatm)) + ' ' * 19 + str(int(ixsect)) + ' ' * 12 + \
+        str(iscat) + str(numangs).rjust(2) + '  ' + str(int(iout)).rjust(3) + ' ' * 4 + str(int(icloud)) + '\n')
+    
+    # RECORD 1.2.1
+    julday = False # do want to specify a julian day of the calendar to estimate distance from sun? (if yes, just put the number)
+    
+    sza = 65.0 # solar zenith angle; 0 = overhead
+    
+    isolvar = False # do you want to use special solar variability functions for different bands? 1 signifies to use the first value of isolvars for all bands, 2 signifies mapping isolvars onto respective bands
+    
+    isolvars = [] # if isolvar is not false, put 1 or 14 values (e.g. 0.945) by which to weight the direct beam in different wavenumber bands
+    
+    f_sw.write(' ' * 12 + str(int(julday)).rjust(3) + ' ' * 3 + '%7.4F' % sza + ' ' * 4 + \
+        str(int(isolvar)) + ''.join(['%5.3F' % i for i in isolvars]) + '\n')
+    
     # RECORD 1.4
-    rows.append({
-        1: atmosphere['surface temperature'], # TBOUND: what's the surface temperature in K?
-        12: int(False), # IEMS: do you want to specify the surface emissivity in different bands?
-        15: int(False) # IREFLECT: do you want specular reflection at the surface (like a mirror), as opposed to isotropic?
-        # 1.0: 17 # SEMISS: what surface missivity do you want for each band?
-    })
-        
+    
+    iemis = False # do you want different amounts of surface emissivity (which are used to compute reflectance, e.g. albedo) for each band? 1 signifies to use the first value of semiss for all bands, 2 signifies mapping semiss onto respective bands
+    
+    ireflect = False # do you want specular reflectance (as opposed to isotropic reflectance?)
+    
+    semiss_sw = [] # if iemis is not false, put 1 or 14 values (e.g. 0.945) by which to weight the emissivity (1 - reflectance) in different wavenumber bands
+    
+    f_sw.write(' ' * 11 + str(int(iemis)) + '  ' + str(int(ireflect)) + \
+        ''.join(['%5.3F' % i for i in semiss_sw]) + '\n')
+    
+    semiss_lw = [] # if iemis is not false, put 1 or 16 values (e.g. 0.945) by which to weight the emissivity (1 - reflectance) in different wavenumber bands
+    
+    f_lw.write('%10.3E' % atmosphere['surface temperature'] + ' ' + str(int(iemis)) + '  ' + \
+        str(int(ireflect)) + ''.join(['%5.3F' % i for i in semiss_lw]) + '\n')
+    
     # RECORD 2.1
     # assuming no ray tracing, e.g IATM == 0,
-
-    MOLECULES = [None,
-        'H2O', 'CO2', 'O3', 'N2O', 'CO', 'CH4', 'O2', 'NO', 'SO2', 'NO2', # 1 - 10
-        'NH3', 'HNO3', 'OH', 'HF', 'HCL', 'HBR', 'HI', 'CLO', 'OCS', # 11 - 20
-        'H2CO', 'HOCL', 'N2', 'HCN', 'CH3CL', 'H2O2', 'C2H2', 'C2H6', 'PH3', 'COF2', 'SF6', # 21 - 30
-        'H2S', 'HCOOH' # 31 - 32
-    ]
-    
+    rows = []
     paves = atmosphere['average pressures'] # average pressure for each layer in millibars
     taves = atmosphere['average temperatures'] # average temperature for each layer in K (here, a dry adiabat)
     PZ_Ls = atmosphere['top pressures'] # pressure at bottom of each layer in millibars
@@ -107,11 +150,15 @@ def make_input_file(atmosphere = 'midlatitude_summer'):
     
     # write the rows to file
     for row in rows:
-        f.write(make_indexed_line(row)) # see method definition below
+        line = make_indexed_line(row) # see method definition below
+        f_lw.write(line) 
+        f_sw.write(line)
     
-    f.write('%') # marks the end of the file
-    
-    f.close()
+    f_lw.write('%') # marks the end of the file
+    f_sw.write('%') # marks the end of the file
+
+    f_lw.close()
+    f_sw.close()
 
 def load_atmosphere(atmosphere):
     # loads a dictionary from a data file stored in /atmospheres
@@ -120,8 +167,6 @@ def load_atmosphere(atmosphere):
     f.close()
     
     return atmosphere
-    
-    
 
 def make_indexed_line(entries):
     # makes a fixed-width columned line; entires has keys that are strings and
@@ -135,14 +180,16 @@ def make_indexed_line(entries):
     
     return ''.join(line).rstrip() + '\n'
 
-def convert_output_file_to_json():
+def convert_output_files_to_json():
+    # TODO: add the distinction between diffusive and direct downward flux to sw
+    
     response = {
-        'longwave': {
+        'shortwave': {
             'downward': [],
             'upward': [],
             'net': []
         },
-        'shortwave': {
+        'longwave': {
             'downward': [],
             'upward': [],
             'net': []
@@ -153,15 +200,33 @@ def convert_output_file_to_json():
             'net': []
         }
     }
-    
-    with open('OUTPUT_RRTM', 'r') as f:
+
+    with open('sw/OUTPUT_RRTM', 'r') as f:
         for line in f:
             if re.search(r'^\s*?\d', line):
                 split_line = line.split()
-                response['longwave']['upward'].append(float(split_line[2]))
-                response['longwave']['downward'].append(float(split_line[3]))
-                response['longwave']['net'].append(float(split_line[4]))
+                response['shortwave']['upward'].append(float(split_line[2]))
+                response['shortwave']['downward'].append(float(split_line[5]))
+                response['shortwave']['net'].append(float(split_line[6]))
     
+    i = 0
+    with open('lw/OUTPUT_RRTM', 'r') as f:
+        for line in f:
+            if re.search(r'^\s*?\d', line):
+                split_line = line.split()
+                lw = response['longwave']
+                sw = response['shortwave']
+                total = response['total']
+                
+                lw['upward'].append(float(split_line[2]))
+                lw['downward'].append(float(split_line[3]))
+                lw['net'].append(float(split_line[4]))
+                
+                for direction in ['upward', 'downward', 'net']:
+                    total[direction].append(lw[direction][i] + sw[direction][i])
+                
+                i += 1
+                    
     for outer_key in response:
         for inner_key in response[outer_key]:
             response[outer_key][inner_key].reverse()
@@ -175,14 +240,19 @@ def convert_output_file_to_json():
 # Now, the actual execution:
 
 if len(sys.argv) > 1:
-    make_input_file(sys.argv[1])
+    make_input_files(sys.argv[1])
 else:
-    if os.environ['QUERY_STRING']:
-        make_input_file(os.environ['QUERY_STRING'].split('=')[1])
+    if 'QUERY_STRING' in os.environ and len(os.environ['QUERY_STRING'].split('=')) > 1:
+        make_input_files(os.environ['QUERY_STRING'].split('=')[1])
     else:
-        make_input_file()
+        make_input_files()
 
-call(['./rrtm'])
+chdir('sw')
+call(['./rrtm_sw'])
+chdir('..')
+chdir('lw')
+call(['./rrtm_lw'])
+chdir('..')
 
-print convert_output_file_to_json()
 
+print convert_output_files_to_json()
