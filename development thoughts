@@ -1,0 +1,55 @@
+surface albedo panel (dirty snow, etc.)
+
+aerosols => can only put low or the "geoengineering option"
+clouds go all the way across
+
+clouds' properties as a function of altitude and temperature?
+
+splines
+
+greenhouse gases
+
+an arrow representing vertical flow, allowing or disallowing clouds
+
+boundary layer? for humidity? sulfur?
+
+how should help be done?
+
+area down below? tooltip?
+
+
+
+control panels:
+sunlight
+(where you choose the setting)
+(constrain your angle based on latitude?)
+albedo
+aerosols
+clouds
+GHGs
+pressure
+temperature
+upwelling
+
+
+yellow is down, 
+blue is down, green is up?
+
+top of atmosphere flux
+
+sunlight intensity at the ground (so you can see the change )
+
+ideas for the image
+
+three point temperature profile
+surface, tropopause, top of atmosphere. (isothermal stratosphere?)
+
+how do you explain TOA? scales to show
+
+ink
+
+Notes on CliMT:
+
+Code could be DRYer; specifically:
+    - why get_nlev in Driver.f90?
+    
