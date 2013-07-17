@@ -1,154 +1,100 @@
 <!DOCTYPE html>
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
-	<title>RRTM</title>
-	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-
-    <!-- Google Web Fonts: http://www.google.com/webfonts/v2#AboutPlace:about-->
-    <link href='http://fonts.googleapis.com/css?family=Kameron|Lora|Quattrocento&v2' rel='stylesheet' type='text/css'>
-
-	<style type="text/css" media="screen">
-		body {
-		   font-family: 'Quattrocento', Georgia, "Times New Roman", Times, serif;
-		   margin-left: 10%;
-		   margin-right: 10%;
-		   min-width: 1100px;
-		}
-		svg {
-	      shape-rendering: crispEdges;
-	    }
-	    .rule line {
-	      stroke: #eee;
-	    }
-	</style>
+	<title>Earth's Energy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <link href="css/slider.css" rel="stylesheet" media="screen">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .tab-pane {
+          padding-top: 30px;
+      }
+    </style>
 </head>
 <body>
-	<p>
-		<select name='atmosphere' onchange='updatechart();'>
-			<option value='midlatitude_summer' selected='selected'>mid-latitude summer</option>
-			<option value='midlatitude_winter'>mid-latitude winter</option>
-			<option value='tropic'>tropics</option>
-		</select>
-	<center>
-	<div id="paired-line-chart">
+    <div class='navbar navbar-inverse navbar-fixed-top'>
+        <div class="navbar-inner">
+            <div class="container">
+              <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="brand" href="#">Earth's Energy</a>
+             </div>
+          </div>
+    </div>
+    <div class='container'>
+        <div class='row'>
+            <div class='span5'>
+                <ul class='nav nav-tabs'>
+                    <li><a href="#sun" data-toggle="tab">Sun</a></li>
+                   <li><a href="#surface" data-toggle="tab">Surface</a></li>
+                   <li><a href="#temperature" data-toggle="tab">Temperature</a></li>                   
+                   <li><a href="#gases" data-toggle="tab">Gases</a></li>
+                   <li><a href="#aerosols" data-toggle="tab">Aerosols</a></li>
+                   <li><a href="#clouds" data-toggle="tab">Clouds</a></li>
+                   <li><a href="#wind" data-toggle="tab">Wind</a></li>
+                   <li><a href="#presets" data-toggle="tab">Presets</a></li>
+                <li><a href="#units" data-toggle="tab">Units</a></li>
+                </ul>
+                <div class='tab-content'>
+                    <div class='tab-pane' id='sun'>
+                        <ul>
+                            <li>Sunlight: <input type="text" name="scon" class="span2 slider" value="" data-slider-max="2000" data-slider-value="1367"> W/m^2</li>
+                        </ul>
+                        <ul>
+                            <li>Angle (0&deg; is overhead): <input type="text" name="zen" class="span2 slider" value="" data-slider-max="90" data-slider-value="65"> &deg;</li>
+                        </ul>
+                    </div>
+                    <div class='tab-pane' id='surface'>
+                        <ul>
+                            <li>albedo fraction: <input type="text" class="span2 slider" name="asdir" value="" data-slider-step="0.01" data-slider-max="1" data-slider-value="0.3"></li>
+                        </ul>
+                    </div>
+                    <div class='tab-pane' id='temperature'>
+                        <ul>
+                            <li>surface temperature: <input type="text" class="span2 slider" name="Ts" value="" data-slider-step="0.1" data-slider-min="100" data-slider-max="400" data-slider-value="283.1"> K</li>
+                        </ul>
+                    </div>
+                    <div class='tab-pane active' id='gases'>
+                        <ul>
+                            <li>CO2: <input type="text" class="span2 slider" name="co2" value="" data-slider-max="1000" data-slider-value="400"> ppm</li>
+                        </ul>
+                        <ul>
+                            <li>CH4: <input type="text" class="span2 slider" name="ch4" value="" data-slider-max="1000" data-slider-value="0"> ppb</li>
+                        </ul>
+                        <ul>
+                            <li>N2O: <input type="text" class="span2 slider" name="n2o" value="" data-slider-max="1000" data-slider-value="0"> ppb</li>
+                        </ul>
+                    </div>
+                    <div class='tab-pane' id='presets'>
+                        <select name='atmosphere' onchange='updatechart();'>
+                            <option value='midlatitude_summer' selected='selected'>mid-latitude summer</option>
+                            <option value='midlatitude_winter'>mid-latitude winter</option>
+                            <option value='tropic'>tropics</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class='span7'>
+                <div class="hero-unit">
+                    The Earth is <span id='toa_sign'>gaining</span> energy at a rate of <h1><span id='toa'>30</span> W/m<sup>2</sup>.</h1>
+                </div>
+                <!-- <div id="paired-line-chart">
+                </div> -->
+            </div>
+        </div>
+    </div>
 
-	</div>
-	</center>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-slider.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="js/visualization.js"></script>
+    
 </body>
-    
-<script type="text/javascript"> 
-    updatechart = function() {
-	    var atmosphere = d3.select('select')[0][0].options[d3.select('select')[0][0].selectedIndex].value;
-        d3.json('../cgi-bin/rrtm.py?atmosphere=' + atmosphere, function(error, json) {
-		    if (error) return console.warn(error);
-            
-            setupStreams(json, ['shortwave', 'longwave', 'total']);
-        })
-    }
-    
-    setupStreams = function(json, list) {
-        
-         d3.select('svg').remove()
-         
-
-         var width = 900,
-             height = 500,
-             arrowHeight = 50,
-             arrowHeadHeight = 30,
-             arrowHeadExtraWidth = 20;
-
-         var svg = d3.select("#paired-line-chart").append("svg")
-             .attr("width", width)
-             .attr("height", height);
-    
-             var unadjustedWidths = list.map(function(lightType){
-                 return d3.max(json[lightType].downward) + d3.max(json[lightType].upward);
-             });
-             var widths = unadjustedWidths.map(function(d,i) {return d * width / d3.sum(unadjustedWidths)});
-        list.map(function(lightType,i) {
-            var downLayer = json[lightType].downward.map(function(d, i) {return {x: i, y: d}});
-            var upLayer = json[lightType].upward.map(function(d, i) {return {x: i, y: d}});            
-            offset = function(data) {
-                var j = -1,
-                m = data[0].length,
-                ymax = d3.max(data[0], function(d) { return d[1]}),
-                y0 = [];
-                return data[0].map(function(d,i) { return ymax - d[1] });
-            }
-
-            var layers = d3.layout.stack().offset(offset)([downLayer, upLayer]);
-
-            var xmax = d3.max(layers, function(layer) {return d3.max(layer, function(d) { return d.y0 + d.y; }); });
-            var x = d3.scale.linear()
-                 .domain([0, xmax]).range([ 
-                     d3.sum(widths.slice(0,i)),
-                     d3.sum(widths.slice(0,i)) + widths[i] - 100 // the minus 20 creates a margin
-                ]);
-
-             var y = d3.scale.linear()
-                 .domain([0, downLayer.length - 1])
-                 .range([height - arrowHeight, arrowHeight]);
-
-              var area = d3.svg.area()
-                  .x0(function(d) { return x(d.y0); })
-                  .x1(function(d) { return x(d.y0 + d.y); })
-                  .y(function(d) { return y(d.x); });
-
-              svg.selectAll("path." + lightType)
-                  .data(layers)
-                .enter().append("path")
-                  .attr("d", area)
-                  .attr('class', lightType)
-                  .style("fill", function(d, i) { return ['rgb(249,152,0)', 'rgb(228,105,0)'][i]; });
-
-                  // Arrows
-                  var leftExtent = x(layers[0][0].y0)
-                  var rightExtent = x(layers[0][0].y0 + layers[0][0].y)
-                  var downArrowPoints = [
-                      {'x': leftExtent, 'y': height-arrowHeight},
-                      {'x': leftExtent, 'y': height-arrowHeadHeight},
-                      {'x': leftExtent - arrowHeadExtraWidth, 'y': height-arrowHeadHeight},
-                      {'x': leftExtent + (rightExtent - leftExtent) / 2, 'y': height},
-                      {'x': rightExtent + arrowHeadExtraWidth, 'y': height-arrowHeadHeight},
-                      {'x': rightExtent, 'y': height-arrowHeadHeight},
-                      {'x': rightExtent, 'y': height-arrowHeight}
-                  ]
-                  
-                  svg.selectAll("polygon." + lightType + 'DownArrow')
-                      .data([downArrowPoints])
-                    .enter().append("polygon")
-                      .attr("points",function(d) { 
-                          return d.map(function(d) {
-                              return [d.x,d.y].join(",");
-                          }).join(" ");
-                      })
-                      .style("fill", 'rgb(249,152,0)')
-                      .attr('class', lightType + 'DownArrow');
-            
-                      var leftExtent = x(layers[1][layers[1].length-1].y0)
-                      var rightExtent = x(layers[1][layers[1].length-1].y0 + layers[1][layers[1].length-1].y)
-                      var upArrowPoints = [
-                          {'x': leftExtent, 'y': arrowHeight},
-                          {'x': leftExtent, 'y': arrowHeadHeight},
-                          {'x': leftExtent - arrowHeadExtraWidth, 'y': arrowHeadHeight},
-                          {'x': leftExtent + (rightExtent - leftExtent) / 2, 'y': 0},
-                          {'x': rightExtent + arrowHeadExtraWidth, 'y': arrowHeadHeight},
-                          {'x': rightExtent, 'y': arrowHeadHeight},
-                          {'x': rightExtent, 'y': arrowHeight}
-                      ]
-                  
-                      svg.selectAll("polygon." + lightType + 'UpArrow')
-                          .data([upArrowPoints])
-                        .enter().append("polygon")
-                          .attr("points",function(d) { 
-                              return d.map(function(d) {
-                                  return [d.x,d.y].join(",");
-                              }).join(" ");
-                          })
-                          .style("fill", 'rgb(228,105,0)')
-                          .attr('class', lightType + 'UpArrow');
-        })
-    }
-	//.header("Content-Type","application/x-www-form-urlencoded")
- 	// .send("POST","a=b");
-</script>
