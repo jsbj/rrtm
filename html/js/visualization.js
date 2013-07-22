@@ -52,7 +52,7 @@ setupStreams = function(json, list) {
          arrowHeadHeight = 30,
          arrowHeadExtraWidth = 20;
 
-     var svg = d3.select("#paired-line-chart").append("svg")
+     var svg = d3.select("#flows").append("svg")
          .attr("width", width)
          .attr("height", height);
 

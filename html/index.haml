@@ -1,0 +1,73 @@
+- # helpers:
+- tab = lambda {|name| capture_haml { haml_tag(:li) { haml_tag(:a, href: "##{name.downcase}", 'data-toggle' => 'tab') { haml_concat(name) }}}}
+- slider = lambda {|name, extra={}| capture_haml { haml_tag(:input, {type: 'text', name: name, class: ['span2, slider'], value: ''}.merge(extra)) }}
+
+!!! 5
+%head
+    %meta{ 'http-equiv' => "Content-type", content: "text/html; charset=utf-8"}
+    %title Earth's Energy
+    %meta{ name: "viewport", content: "width=device-width, initial-scale=1.0"}
+    %link{ href: "css/bootstrap.min.css", rel: "stylesheet", media: "screen"}
+    %link{ href: "css/slider.css", rel: "stylesheet", media: "screen" }
+    %link{ href: "css/application.css", rel: "stylesheet", media: "screen" }
+%body
+    %div.navbar.navbar-inverse.navbar-fixed-top
+        %div.navbar-inner
+            %div.container
+                %a.brand{href:"#"} Earth's Energy
+    %div.container
+        %div.row
+            %div.span5
+                %ul.nav.nav-tabs
+                    = tab.call('Sun')
+                    = tab.call('Surface')
+                    = tab.call('Atmosphere')
+                    = tab.call('Presets')
+                    = tab.call('Units')
+                %div.tab-content
+                    %div.tab-pane.active#sun
+                        %ul
+                            %li Sunlight: #{slider.call('scon', {'data-slider-max' => 2000, 'data-slider-value' => 1367})} W/m^2
+                            %li Angle (0&deg; is overhead): #{slider.call('zen', {'data-slider-max' => 90, 'data-slider-value' => 65})} &deg;
+                    %div.tab-pane#surface
+                        %ul
+                            %li albedo fraction: #{slider.call('asdir', {"data-slider-step"=>0.01, "data-slider-max"=>1, "data-slider-value"=>0.3})}
+                    %div.tab-pane#atmosphere
+                        %ul.nav.nav-tabs
+                            = tab.call('Layers')
+                            = tab.call('Temperature')
+                            = tab.call('Constituents')
+                            -# tab.call('Wind')
+                        %div.tab-content
+                            %ul.nav.nav-tabs
+                                = tab.call('Gases')
+                                = tab.call('Aerosols')
+                                = tab.call('Clouds')
+                        %ul
+                            %li surface temperature: #{slider.call('Ts', {"data-slider-step"=>0.1, "data-slider-min"=>100, "data-slider-max"=>400, "data-slider-value"=>283.1})}
+                    %div.tab-pane.active#gases
+                        %ul
+                            %li CO2: #{slider.call('co2', "data-slider-max"=>1000, "data-slider-value"=>400)} ppm
+                            %li CH4: #{slider.call('ch4', "data-slider-max"=>1000, "data-slider-value"=>0)} ppb
+                            %li N2O: #{slider.call('n2o', "data-slider-max"=>1000, "data-slider-value"=>0)} ppb
+                    %div.tab-pane#presets
+                        %select{name: 'atmosphere', onchange: 'updatechart();'}
+                            %option {value: 'midlatitude_summer', selected: 'selected'} mid-latitude summer
+                            %option {value: 'midlatitude_winter'} mid-latitude winter
+                            %option {value: 'tropic'} tropics
+            %div.span7
+                %div.hero-unit
+                    The Earth is
+                    %span#toa_sign gaining
+                    energy at a rate of
+                    %h1
+                        %span#toa 30
+                        W/m
+                        %sup 2
+                %div#flows
+
+    %script{ src: "http://code.jquery.com/jquery.js" }
+    %script{ src: "js/bootstrap.min.js" }
+    %script{ src: "js/bootstrap-slider.js" }
+    %script{ src: "http://d3js.org/d3.v3.min.js", charset: "utf-8" }
+    %script{ src: "js/visualization.js" }

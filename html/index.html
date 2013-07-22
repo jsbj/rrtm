@@ -1,100 +1,152 @@
 <!DOCTYPE html>
 <head>
-	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
-	<title>Earth's Energy</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-        <link href="css/slider.css" rel="stylesheet" media="screen">
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-      .tab-pane {
-          padding-top: 30px;
-      }
-    </style>
+  <meta content='text/html; charset=utf-8' http-equiv='Content-type'>
+  <title>Earth's Energy</title>
+  <meta content='width=device-width, initial-scale=1.0' name='viewport'>
+  <link href='css/bootstrap.min.css' media='screen' rel='stylesheet'>
+  <link href='css/slider.css' media='screen' rel='stylesheet'>
+  <link href='css/application.css' media='screen' rel='stylesheet'>
 </head>
 <body>
-    <div class='navbar navbar-inverse navbar-fixed-top'>
-        <div class="navbar-inner">
-            <div class="container">
-              <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
-              <a class="brand" href="#">Earth's Energy</a>
-             </div>
+  <div class='navbar navbar-inverse navbar-fixed-top'>
+    <div class='navbar-inner'>
+      <div class='container'>
+        <a class='brand' href='#'>Earth's Energy</a>
+      </div>
+    </div>
+  </div>
+  <div class='container'>
+    <div class='row'>
+      <div class='span5'>
+        <ul class='nav nav-tabs'>
+          <li>
+            <a data-toggle='tab' href='#sun'>
+              Sun
+            </a>
+          </li>
+          <li>
+            <a data-toggle='tab' href='#surface'>
+              Surface
+            </a>
+          </li>
+          <li>
+            <a data-toggle='tab' href='#atmosphere'>
+              Atmosphere
+            </a>
+          </li>
+          <li>
+            <a data-toggle='tab' href='#presets'>
+              Presets
+            </a>
+          </li>
+          <li>
+            <a data-toggle='tab' href='#units'>
+              Units
+            </a>
+          </li>
+        </ul>
+        <div class='tab-content'>
+          <div class='tab-pane active' id='sun'>
+            <ul>
+              <li>
+                Sunlight: <input class='span2, slider' data-slider-max='2000' data-slider-value='1367' name='scon' type='text' value='' />
+                 W/m^2
+              </li>
+              <li>
+                Angle (0&deg; is overhead): <input class='span2, slider' data-slider-max='90' data-slider-value='65' name='zen' type='text' value='' />
+                 &deg;
+              </li>
+            </ul>
           </div>
-    </div>
-    <div class='container'>
-        <div class='row'>
-            <div class='span5'>
-                <ul class='nav nav-tabs'>
-                    <li><a href="#sun" data-toggle="tab">Sun</a></li>
-                   <li><a href="#surface" data-toggle="tab">Surface</a></li>
-                   <li><a href="#temperature" data-toggle="tab">Temperature</a></li>                   
-                   <li><a href="#gases" data-toggle="tab">Gases</a></li>
-                   <li><a href="#aerosols" data-toggle="tab">Aerosols</a></li>
-                   <li><a href="#clouds" data-toggle="tab">Clouds</a></li>
-                   <li><a href="#wind" data-toggle="tab">Wind</a></li>
-                   <li><a href="#presets" data-toggle="tab">Presets</a></li>
-                <li><a href="#units" data-toggle="tab">Units</a></li>
-                </ul>
-                <div class='tab-content'>
-                    <div class='tab-pane' id='sun'>
-                        <ul>
-                            <li>Sunlight: <input type="text" name="scon" class="span2 slider" value="" data-slider-max="2000" data-slider-value="1367"> W/m^2</li>
-                        </ul>
-                        <ul>
-                            <li>Angle (0&deg; is overhead): <input type="text" name="zen" class="span2 slider" value="" data-slider-max="90" data-slider-value="65"> &deg;</li>
-                        </ul>
-                    </div>
-                    <div class='tab-pane' id='surface'>
-                        <ul>
-                            <li>albedo fraction: <input type="text" class="span2 slider" name="asdir" value="" data-slider-step="0.01" data-slider-max="1" data-slider-value="0.3"></li>
-                        </ul>
-                    </div>
-                    <div class='tab-pane' id='temperature'>
-                        <ul>
-                            <li>surface temperature: <input type="text" class="span2 slider" name="Ts" value="" data-slider-step="0.1" data-slider-min="100" data-slider-max="400" data-slider-value="283.1"> K</li>
-                        </ul>
-                    </div>
-                    <div class='tab-pane active' id='gases'>
-                        <ul>
-                            <li>CO2: <input type="text" class="span2 slider" name="co2" value="" data-slider-max="1000" data-slider-value="400"> ppm</li>
-                        </ul>
-                        <ul>
-                            <li>CH4: <input type="text" class="span2 slider" name="ch4" value="" data-slider-max="1000" data-slider-value="0"> ppb</li>
-                        </ul>
-                        <ul>
-                            <li>N2O: <input type="text" class="span2 slider" name="n2o" value="" data-slider-max="1000" data-slider-value="0"> ppb</li>
-                        </ul>
-                    </div>
-                    <div class='tab-pane' id='presets'>
-                        <select name='atmosphere' onchange='updatechart();'>
-                            <option value='midlatitude_summer' selected='selected'>mid-latitude summer</option>
-                            <option value='midlatitude_winter'>mid-latitude winter</option>
-                            <option value='tropic'>tropics</option>
-                        </select>
-                    </div>
-                </div>
+          <div class='tab-pane' id='surface'>
+            <ul>
+              <li>albedo fraction: <input class='span2, slider' data-slider-max='1' data-slider-step='0.01' data-slider-value='0.3' name='asdir' type='text' value='' /></li>
+            </ul>
+          </div>
+          <div class='tab-pane' id='atmosphere'>
+            <ul class='nav nav-tabs'>
+              <li>
+                <a data-toggle='tab' href='#layers'>
+                  Layers
+                </a>
+              </li>
+              <li>
+                <a data-toggle='tab' href='#temperature'>
+                  Temperature
+                </a>
+              </li>
+              <li>
+                <a data-toggle='tab' href='#constituents'>
+                  Constituents
+                </a>
+              </li>
+            </ul>
+            <div class='tab-content'>
+              <ul class='nav nav-tabs'>
+                <li>
+                  <a data-toggle='tab' href='#gases'>
+                    Gases
+                  </a>
+                </li>
+                <li>
+                  <a data-toggle='tab' href='#aerosols'>
+                    Aerosols
+                  </a>
+                </li>
+                <li>
+                  <a data-toggle='tab' href='#clouds'>
+                    Clouds
+                  </a>
+                </li>
+              </ul>
             </div>
-            <div class='span7'>
-                <div class="hero-unit">
-                    The Earth is <span id='toa_sign'>gaining</span> energy at a rate of <h1><span id='toa'>30</span> W/m<sup>2</sup>.</h1>
-                </div>
-                <!-- <div id="paired-line-chart">
-                </div> -->
-            </div>
+            <ul>
+              <li>surface temperature: <input class='span2, slider' data-slider-max='400' data-slider-min='100' data-slider-step='0.1' data-slider-value='283.1' name='Ts' type='text' value='' /></li>
+            </ul>
+          </div>
+          <div class='tab-pane active' id='gases'>
+            <ul>
+              <li>
+                CO2: <input class='span2, slider' data-slider-max='1000' data-slider-value='400' name='co2' type='text' value='' />
+                 ppm
+              </li>
+              <li>
+                CH4: <input class='span2, slider' data-slider-max='1000' data-slider-value='0' name='ch4' type='text' value='' />
+                 ppb
+              </li>
+              <li>
+                N2O: <input class='span2, slider' data-slider-max='1000' data-slider-value='0' name='n2o' type='text' value='' />
+                 ppb
+              </li>
+            </ul>
+          </div>
+          <div class='tab-pane' id='presets'>
+            <select name='atmosphere' onchange='updatechart();'>
+              <option>{value: 'midlatitude_summer', selected: 'selected'} mid-latitude summer</option>
+              <option>{value: 'midlatitude_winter'} mid-latitude winter</option>
+              <option>{value: 'tropic'} tropics</option>
+            </select>
+          </div>
         </div>
+      </div>
+      <div class='span7'>
+        <div class='hero-unit'>
+          The Earth is
+          <span id='toa_sign'>gaining</span>
+          energy at a rate of
+          <h1>
+            <span id='toa'>30</span>
+            W/m
+            <sup>2</sup>
+          </h1>
+        </div>
+        <div id='flows'></div>
+      </div>
     </div>
-
-    <script src="http://code.jquery.com/jquery.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/bootstrap-slider.js"></script>
-    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-    <script src="js/visualization.js"></script>
-    
+  </div>
+  <script src='http://code.jquery.com/jquery.js'></script>
+  <script src='js/bootstrap.min.js'></script>
+  <script src='js/bootstrap-slider.js'></script>
+  <script charset='utf-8' src='http://d3js.org/d3.v3.min.js'></script>
+  <script src='js/visualization.js'></script>
 </body>

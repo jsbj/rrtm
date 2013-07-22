@@ -13,10 +13,11 @@ from numpy import e, linspace, log
 from subprocess import call
 from os import rename, chdir
 from math import copysign, floor, log10
+import numpy
 
 json_input = json.load(sys.stdin)
 sys.stderr.write(str(json_input))
-r = climt.radiation(scheme='ccm3')
+r = climt.radiation(scheme='rrtm')
 r(**json_input)
 
 # In case it's needed:
