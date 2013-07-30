@@ -11,7 +11,7 @@
   <div class='navbar navbar-inverse navbar-fixed-top'>
     <div class='navbar-inner'>
       <div class='container'>
-        <a class='brand' href='#'>Earth's Energy</a>
+        <a class='brand' href='#'>What determines the flow of energy in and out of the Earth?</a>
       </div>
     </div>
   </div>
@@ -49,18 +49,18 @@
           <div class='tab-pane active' id='sun'>
             <ul>
               <li>
-                Sunlight: <input class='span2, slider' data-slider-max='2000' data-slider-value='1367' name='scon' type='text' value='' />
+                Sunlight: <input class='span2, addSlider' data-slider-max='2000' data-slider-value='1367' name='scon' type='text' value='' />
                  W/m^2
               </li>
               <li>
-                Angle (0&deg; is overhead): <input class='span2, slider' data-slider-max='90' data-slider-value='65' name='zen' type='text' value='' />
+                Angle (0&deg; is overhead): <input class='span2, addSlider' data-slider-max='90' data-slider-value='65' name='zen' type='text' value='' />
                  &deg;
               </li>
             </ul>
           </div>
           <div class='tab-pane' id='surface'>
             <ul>
-              <li>albedo fraction: <input class='span2, slider' data-slider-max='1' data-slider-step='0.01' data-slider-value='0.3' name='asdir' type='text' value='' /></li>
+              <li>albedo fraction: <input class='span2, addSlider' data-slider-max='1' data-slider-step='0.01' data-slider-value='0.3' name='asdir' type='text' value='' /></li>
             </ul>
           </div>
           <div class='tab-pane' id='atmosphere'>
@@ -82,50 +82,66 @@
               </li>
             </ul>
             <div class='tab-content'>
-              <ul class='nav nav-tabs'>
-                <li>
-                  <a data-toggle='tab' href='#gases'>
-                    Gases
-                  </a>
-                </li>
-                <li>
-                  <a data-toggle='tab' href='#aerosols'>
-                    Aerosols
-                  </a>
-                </li>
-                <li>
-                  <a data-toggle='tab' href='#clouds'>
-                    Clouds
-                  </a>
-                </li>
-              </ul>
+              <div class='tab-pane' id='layers'></div>
+              <div class='tab-pane' id='temperature'>
+                <ul>
+                  <li>surface temperature: <input class='span2, addSlider' data-slider-max='400' data-slider-min='100' data-slider-step='0.1' data-slider-value='283.1' name='Ts' type='text' value='' /></li>
+                </ul>
+              </div>
+              <div class='tab-pane' id='constituents'>
+                <ul class='nav nav-tabs'>
+                  <li>
+                    <a data-toggle='tab' href='#gases'>
+                      Gases
+                    </a>
+                  </li>
+                  <li>
+                    <a data-toggle='tab' href='#aerosols'>
+                      Aerosols
+                    </a>
+                  </li>
+                  <li>
+                    <a data-toggle='tab' href='#clouds'>
+                      Clouds
+                    </a>
+                  </li>
+                </ul>
+                <div class='tab-content'>
+                  <div class='tab-pane' id='gases'>
+                    <ul>
+                      <li>
+                        CO2: <input class='span2, addSlider' data-slider-max='1000' data-slider-value='400' name='co2' type='text' value='' />
+                         ppm
+                      </li>
+                      <li>
+                        CH4: <input class='span2, addSlider' data-slider-max='1000' data-slider-value='0' name='ch4' type='text' value='' />
+                         ppb
+                      </li>
+                      <li>
+                        N2O: <input class='span2, addSlider' data-slider-max='1000' data-slider-value='0' name='n2o' type='text' value='' />
+                         ppb
+                      </li>
+                    </ul>
+                  </div>
+                  <div class='tab-pane' id='aerosols'>
+                    put aerosols stuff here
+                  </div>
+                  <div class='tab-pane' id='clouds'>
+                    put clouds stuff here
+                  </div>
+                </div>
+              </div>
             </div>
-            <ul>
-              <li>surface temperature: <input class='span2, slider' data-slider-max='400' data-slider-min='100' data-slider-step='0.1' data-slider-value='283.1' name='Ts' type='text' value='' /></li>
-            </ul>
-          </div>
-          <div class='tab-pane active' id='gases'>
-            <ul>
-              <li>
-                CO2: <input class='span2, slider' data-slider-max='1000' data-slider-value='400' name='co2' type='text' value='' />
-                 ppm
-              </li>
-              <li>
-                CH4: <input class='span2, slider' data-slider-max='1000' data-slider-value='0' name='ch4' type='text' value='' />
-                 ppb
-              </li>
-              <li>
-                N2O: <input class='span2, slider' data-slider-max='1000' data-slider-value='0' name='n2o' type='text' value='' />
-                 ppb
-              </li>
-            </ul>
           </div>
           <div class='tab-pane' id='presets'>
             <select name='atmosphere' onchange='updatechart();'>
-              <option>{value: 'midlatitude_summer', selected: 'selected'} mid-latitude summer</option>
-              <option>{value: 'midlatitude_winter'} mid-latitude winter</option>
-              <option>{value: 'tropic'} tropics</option>
+              <option selected='selected' value='midlatitude_summer'>mid-latitude summer</option>
+              <option value='midlatitude_winter'>mid-latitude winter</option>
+              <option value='tropic'>tropics</option>
             </select>
+          </div>
+          <div class='tab-pane' id='units'>
+            put units stuff here
           </div>
         </div>
       </div>
@@ -140,8 +156,10 @@
             <sup>2</sup>
           </h1>
         </div>
-        <div id='flows'></div>
       </div>
+    </div>
+    <div class='container'>
+      <svg height='500px' id='flow' width='900px'></svg>
     </div>
   </div>
   <script src='http://code.jquery.com/jquery.js'></script>

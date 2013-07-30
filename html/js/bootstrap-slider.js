@@ -123,6 +123,16 @@
 
 		this.formater = options.formater;
 
+        this.showTooltip()
+		if (tooltip === 'show') {
+			this.picker.on({
+                mouseenter: $.proxy(this.showTooltip, this),
+                mouseleave: $.proxy(this.hideTooltip, this)
+			});
+		} else {
+            // this.tooltip.addClass('hide');
+		}
+
 		this.layout();
 
 		if (this.touchCapable) {
@@ -136,14 +146,7 @@
 			});
 		}
 
-		if (tooltip === 'show') {
-			this.picker.on({
-				mouseenter: $.proxy(this.showTooltip, this),
-				mouseleave: $.proxy(this.hideTooltip, this)
-			});
-		} else {
-			this.tooltip.addClass('hide');
-		}
+
 	};
 
 	Slider.prototype = {
@@ -161,7 +164,7 @@
 		
 		hideTooltip: function(){
 			if (this.inDrag === false) {
-				this.tooltip.removeClass('in');
+                // this.tooltip.removeClass('in');
 			}
 			this.over = false;
 		},

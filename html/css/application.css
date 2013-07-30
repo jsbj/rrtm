@@ -5,3 +5,26 @@ body {
 .tab-pane {
     padding-top: 30px;
 }
+
+.input path {
+    stroke: steelblue;
+    stroke-width: 2;
+    fill: none;
+}
+ 
+.input line {
+    stroke: black;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}

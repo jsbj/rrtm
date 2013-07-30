@@ -1,6 +1,6 @@
 - # helpers:
 - tab = lambda {|name| capture_haml { haml_tag(:li) { haml_tag(:a, href: "##{name.downcase}", 'data-toggle' => 'tab') { haml_concat(name) }}}}
-- slider = lambda {|name, extra={}| capture_haml { haml_tag(:input, {type: 'text', name: name, class: ['span2, slider'], value: ''}.merge(extra)) }}
+- slider = lambda {|name, extra={}| capture_haml { haml_tag(:input, {type: 'text', name: name, class: ['span2, addSlider'], value: ''}.merge(extra)) }}
 
 !!! 5
 %head
@@ -14,7 +14,7 @@
     %div.navbar.navbar-inverse.navbar-fixed-top
         %div.navbar-inner
             %div.container
-                %a.brand{href:"#"} Earth's Energy
+                %a.brand{href:"#"} What determines the flow of energy in and out of the Earth?
     %div.container
         %div.row
             %div.span5
@@ -39,22 +39,32 @@
                             = tab.call('Constituents')
                             -# tab.call('Wind')
                         %div.tab-content
-                            %ul.nav.nav-tabs
-                                = tab.call('Gases')
-                                = tab.call('Aerosols')
-                                = tab.call('Clouds')
-                        %ul
-                            %li surface temperature: #{slider.call('Ts', {"data-slider-step"=>0.1, "data-slider-min"=>100, "data-slider-max"=>400, "data-slider-value"=>283.1})}
-                    %div.tab-pane.active#gases
-                        %ul
-                            %li CO2: #{slider.call('co2', "data-slider-max"=>1000, "data-slider-value"=>400)} ppm
-                            %li CH4: #{slider.call('ch4', "data-slider-max"=>1000, "data-slider-value"=>0)} ppb
-                            %li N2O: #{slider.call('n2o', "data-slider-max"=>1000, "data-slider-value"=>0)} ppb
+                            %div.tab-pane#layers
+                            %div.tab-pane#temperature
+                                %ul
+                                    %li surface temperature: #{slider.call('Ts', {"data-slider-step"=>0.1, "data-slider-min"=>100, "data-slider-max"=>400, "data-slider-value"=>283.1})}
+                            %div.tab-pane#constituents
+                                %ul.nav.nav-tabs
+                                    = tab.call('Gases')
+                                    = tab.call('Aerosols')
+                                    = tab.call('Clouds')
+                                %div.tab-content
+                                    %div.tab-pane#gases
+                                        %ul
+                                            %li CO2: #{slider.call('co2', "data-slider-max"=>1000, "data-slider-value"=>400)} ppm
+                                            %li CH4: #{slider.call('ch4', "data-slider-max"=>1000, "data-slider-value"=>0)} ppb
+                                            %li N2O: #{slider.call('n2o', "data-slider-max"=>1000, "data-slider-value"=>0)} ppb
+                                    %div.tab-pane#aerosols
+                                        put aerosols stuff here
+                                    %div.tab-pane#clouds
+                                        put clouds stuff here
                     %div.tab-pane#presets
                         %select{name: 'atmosphere', onchange: 'updatechart();'}
-                            %option {value: 'midlatitude_summer', selected: 'selected'} mid-latitude summer
-                            %option {value: 'midlatitude_winter'} mid-latitude winter
-                            %option {value: 'tropic'} tropics
+                            %option{value: 'midlatitude_summer', selected: 'selected'} mid-latitude summer
+                            %option{value: 'midlatitude_winter'} mid-latitude winter
+                            %option{value: 'tropic'} tropics
+                    %div.tab-pane#units
+                        put units stuff here
             %div.span7
                 %div.hero-unit
                     The Earth is
@@ -64,7 +74,9 @@
                         %span#toa 30
                         W/m
                         %sup 2
-                %div#flows
+        %div.container
+            %svg#flow{width: '900px', height: '500px'}
+                
 
     %script{ src: "http://code.jquery.com/jquery.js" }
     %script{ src: "js/bootstrap.min.js" }
