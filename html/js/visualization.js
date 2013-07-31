@@ -51,7 +51,7 @@ updateOutputs = function() {
 makeVisibleSliders = function() {
     $('.addSlider:visible').slider().removeClass('addSlider').addClass('slider').on('slideStop', function(e) {
         console.log($(this).val())
-        model_data[$(this).attr('name')] = parseInt($(this).val())
+        model_data[$(this).attr('name')] = parseFloat($(this).val())
        updateResults()
     });
 }
@@ -61,8 +61,9 @@ makeVisibleSliders()
 var svgHeight = 500
 var chartHeight = 400
 var inputWidth = 150
-var verticalMargin = 50
-var inputOutputMargin = 100
+var verticalMargin = 60
+var inputOutputMargin = 130
+$('svg#flow').css('height', svgHeight + 2 * verticalMargin)
 updateInputFlows = function(name, values) {
     var vis = d3.select('#flow')
     
@@ -91,7 +92,8 @@ updateInputFlows = function(name, values) {
         var xAxis = d3.svg.axis()
             .scale(x)
             .orient('bottom')
-            .ticks(5);
+            .ticks(5)
+            .tickFormat(function(d) {return Math.abs(d)});
         
         var yAxis = d3.svg.axis()
             .scale(y)
@@ -149,11 +151,11 @@ updateOutputFlows = function() {
     // Set sizes of things
     var width = 700,
         height = chartHeight,
-        arrowHeight = 50,
-        arrowHeadHeight = 30,
+        arrowHeight = 40, // 60,
+        arrowHeadHeight = 15,
         arrowHeadExtraWidthDefault = 20,
-        subsectionWidth = 200,
-        subsectionMargin = 20,
+        subsectionWidth = 150,
+        subsectionMargin = 50,
         maxFlux = 1500;
 
     var list = ['shortwave', 'longwave', 'total']
@@ -177,13 +179,13 @@ updateOutputFlows = function() {
         var upLayer = json[lightType].upward.map(function(d, i) {return {x: i, y: d}});            
         offset = function(data) {
             var ymax = maxFlux // d3.max(data[0], function(d) { return d[1]})
-            return data[0].map(function(d,i) { return ymax - d[1] });
+            return data[0].map(function(d,i) { return - d[1] });
         }
 
         var layers = d3.layout.stack().offset(offset)([downLayer, upLayer]);
 
         var x = d3.scale.linear()
-             .domain([0, 2 * maxFlux]).range([ 
+             .domain([-maxFlux, maxFlux]).range([ 
                  i * (subsectionWidth + subsectionMargin),
                  i * (subsectionWidth + subsectionMargin) + subsectionWidth
             ]);
@@ -209,13 +211,13 @@ updateOutputFlows = function() {
               var rightExtent = x(layers[0][0].y0 + layers[0][0].y)
             var arrowHeadExtraWidth = d3.min([rightExtent - leftExtent, arrowHeadExtraWidthDefault]) // arrowHeadExtraWidthDefault
               var downArrowPoints = [
-                  {'x': leftExtent, 'y': height-arrowHeight+verticalMargin},
-                  {'x': leftExtent, 'y': height-arrowHeadHeight+verticalMargin},
-                  {'x': leftExtent - arrowHeadExtraWidth, 'y': height-arrowHeadHeight+verticalMargin},
-                  {'x': leftExtent + (rightExtent - leftExtent) / 2, 'y': height+verticalMargin},
-                  {'x': rightExtent + arrowHeadExtraWidth, 'y': height-arrowHeadHeight+verticalMargin},
-                  {'x': rightExtent, 'y': height-arrowHeadHeight+verticalMargin},
-                  {'x': rightExtent, 'y': height-arrowHeight+verticalMargin}
+                  {'x': leftExtent, 'y': height}, //+verticalMargin-arrowHeight},
+                  {'x': leftExtent, 'y': height-arrowHeadHeight+arrowHeight},
+                  {'x': leftExtent - arrowHeadExtraWidth, 'y': height-arrowHeadHeight+arrowHeight},
+                  {'x': leftExtent + (rightExtent - leftExtent) / 2, 'y': height+arrowHeight},
+                  {'x': rightExtent + arrowHeadExtraWidth, 'y': height-arrowHeadHeight+arrowHeight},
+                  {'x': rightExtent, 'y': height-arrowHeadHeight+arrowHeight},
+                  {'x': rightExtent, 'y': height} //-arrowHeight+verticalMargin}
               ]
               
               g.selectAll("polygon." + lightType + 'DownArrow')
@@ -233,13 +235,13 @@ updateOutputFlows = function() {
                   var rightExtent = x(layers[1][layers[1].length-1].y0 + layers[1][layers[1].length-1].y)
                   var arrowHeadExtraWidth = d3.min([rightExtent - leftExtent, arrowHeadExtraWidthDefault]) // arrowHeadExtraWidthDefault 
                   var upArrowPoints = [
-                      {'x': leftExtent, 'y': arrowHeight-verticalMargin},
-                      {'x': leftExtent, 'y': arrowHeadHeight-verticalMargin},
-                      {'x': leftExtent - arrowHeadExtraWidth, 'y': arrowHeadHeight-verticalMargin},
-                      {'x': leftExtent + (rightExtent - leftExtent) / 2, 'y': 0-verticalMargin},
-                      {'x': rightExtent + arrowHeadExtraWidth, 'y': arrowHeadHeight-verticalMargin},
-                      {'x': rightExtent, 'y': arrowHeadHeight-verticalMargin},
-                      {'x': rightExtent, 'y': arrowHeight-verticalMargin}
+                      {'x': leftExtent, 'y': 0},
+                      {'x': leftExtent, 'y': arrowHeadHeight-arrowHeight},
+                      {'x': leftExtent - arrowHeadExtraWidth, 'y': arrowHeadHeight-arrowHeight},
+                      {'x': leftExtent + (rightExtent - leftExtent) / 2, 'y': -arrowHeight},
+                      {'x': rightExtent + arrowHeadExtraWidth, 'y': arrowHeadHeight-arrowHeight},
+                      {'x': rightExtent, 'y': arrowHeadHeight-arrowHeight},
+                      {'x': rightExtent, 'y': 0}
                   ]
               
                   g.selectAll("polygon." + lightType + 'UpArrow')
@@ -257,7 +259,8 @@ updateOutputFlows = function() {
                           var xAxis = d3.svg.axis()
                               .scale(x)
                               .orient('bottom')
-                              .ticks(5);
+                              .ticks(5)
+                              .tickFormat(function(d) {return Math.abs(d)});
         
                           g.append('g')
                               .attr('class', 'axis')
@@ -267,22 +270,42 @@ updateOutputFlows = function() {
                       var xTopAxis = d3.svg.axis()
                           .scale(x)
                           .orient('top')
-                          .ticks(5);
+                          .ticks(5)
+                        .tickFormat(function(d) {return Math.abs(d)});
 
                       g.append('g')
                           .attr('class', 'axis')
                           .attr('transform', 'translate(0,0)')
-                          .call(xAxis)
+                          .call(xTopAxis)
         
     
                               // add labels
-            
                           // g.append('text')
                           // .attr('class', 'x label')
                           // .attr('text-anchor', 'middle')
-                          // .attr('x', inputWidth / 2)
+                          // .attr('x', leftExtent - 30)
                           // .attr('y', height + 30)
-                          // .text('pressure (mb)')
+                          // .text('down');
+                          // 
+                          // g.append('text')
+                          // .attr('class', 'x label')
+                          // .attr('text-anchor', 'middle')
+                          // .attr('x', leftExtent + 30)
+                          // .attr('y', height + 30)
+                          // .text('up');
+                          g.append('text')
+                          .attr('class', 'x label')
+                          .attr('text-anchor', 'middle')
+                          .attr('x', leftExtent)
+                          .attr('y', -47) //23)
+                          .text(lightType + ' energy (W/m^2)');
+
+                          g.append('text')
+                          .attr('class', 'x label')
+                          .attr('text-anchor', 'middle')
+                          .attr('x', leftExtent)
+                          .attr('y', height + 50) // 30)
+                          .text(lightType + ' energy (W/m^2)');
     })
 }
 //.header("Content-Type","application/x-www-form-urlencoded")
