@@ -10,7 +10,7 @@
 <body>
   <div class='navbar navbar-fixed-top'>
     <div class='container'>
-      <span class='navbar-brand' href='#'>What determines the flow of energy in and out of the Earth?</span>
+      <span class='navbar-brand'>What determines the flow of energy in and out of the Earth?</span>
       <div class='nav-collapse collapse'>
         <ul class='nav navbar-nav'>
           <li class='dropdown'>
@@ -25,7 +25,7 @@
                 <sup>2</sup>
               </li>
               <li>
-                Angle (0&deg; is overhead): <input class='span2, addSlider' data-slider-max='90' data-slider-value='65' name='zen' type='text' value='' />
+                Angle (0&deg; is overhead): <input class='span2, addSlider' data-slider-max='180' data-slider-value='65' name='zen' type='text' value='' />
                  &deg;
               </li>
             </ul>
@@ -48,15 +48,13 @@
               <div class='col-lg-5'>
                 <ul>
                   <li>
-                    <a class='inputFlow' href='#pressure'>Pressure</a>
+                    <a class='inputFlow' href='#lev'>Pressure</a>
                   </li>
                   <li>
-                    <a class='inputFlow' href='#temperature'>Temperature</a>
+                    <a class='inputFlow' href='#Tbound'>Temperature</a>
                   </li>
                   <li class='divider'></li>
-                  <li>
-                    Gases
-                  </li>
+                  <li>Gases</li>
                   <li>
                     <a class='inputFlow' href='#h2o'>
                       H
@@ -114,9 +112,7 @@
               </div>
               <div class='col-lg-7'>
                 <ul>
-                  <li>
-                    Clouds
-                  </li>
+                  <li>Clouds</li>
                   <li>
                     <a class='inputFlow' href='#cldf'>Cloud fraction</a>
                   </li>
@@ -133,9 +129,7 @@
                     <a class='inputFlow' href='#r_ice'>Cloud ice particle radius</a>
                   </li>
                   <li class='divider'></li>
-                  <li>
-                    Aerosols
-                  </li>
+                  <li>Aerosols</li>
                   <li>
                     <a class='inputFlow' href='#tauaer_sw'>Shortwave optical depth</a>
                     <a class='inputFlow' href='#ssaaer_sw'>Shortwave single-scattering albedo</a>
@@ -151,40 +145,40 @@
     </div>
   </div>
   <div class='container'>
-    <!-- %div.tab-pane#atmosphere -->
+    <!-- .tab-pane#atmosphere -->
     <!-- %ul.nav.nav-tabs -->
     <!-- = tab.call('Layers') -->
     <!-- = tab.call('Temperature') -->
     <!-- = tab.call('Constituents') -->
     <!-- -# tab.call('Wind') -->
-    <!-- %div.tab-content -->
-    <!-- %div.tab-pane#layers -->
-    <!-- %div.tab-pane#temperature -->
+    <!-- .tab-content -->
+    <!-- .tab-pane#layers -->
+    <!-- .tab-pane#temperature -->
     <!-- %ul -->
     <!-- %li surface temperature: #{slider.call('Ts', {"data-slider-step"=>0.1, "data-slider-min"=>100, "data-slider-max"=>400, "data-slider-value"=>283.1})} -->
-    <!-- %div.tab-pane#constituents -->
+    <!-- .tab-pane#constituents -->
     <!-- %ul.nav.nav-tabs -->
     <!-- = tab.call('Gases') -->
     <!-- = tab.call('Aerosols') -->
     <!-- = tab.call('Clouds') -->
-    <!-- %div.tab-content -->
-    <!-- %div.tab-pane#gases -->
+    <!-- .tab-content -->
+    <!-- .tab-pane#gases -->
     <!-- %ul -->
     <!-- %li CO2: #{slider.call('co2', "data-slider-max"=>1000, "data-slider-value"=>400)} ppm -->
     <!-- %li CH4: #{slider.call('ch4', "data-slider-max"=>1000, "data-slider-value"=>0)} ppb -->
     <!-- %li N2O: #{slider.call('n2o', "data-slider-max"=>1000, "data-slider-value"=>0)} ppb -->
-    <!-- %div.tab-pane#aerosols -->
+    <!-- .tab-pane#aerosols -->
     <!-- put aerosols stuff here -->
-    <!-- %div.tab-pane#clouds -->
+    <!-- .tab-pane#clouds -->
     <!-- put clouds stuff here -->
-    <!-- %div.tab-pane#presets -->
+    <!-- .tab-pane#presets -->
     <!-- %select{name: 'atmosphere', onchange: 'updatechart();'} -->
     <!-- %option{value: 'midlatitude_summer', selected: 'selected'} mid-latitude summer -->
     <!-- %option{value: 'midlatitude_winter'} mid-latitude winter -->
     <!-- %option{value: 'tropic'} tropics -->
-    <!-- %div.tab-pane#units -->
+    <!-- .tab-pane#units -->
     <!-- put units stuff here -->
-    <!-- %div.col-lg-7 -->
+    <!-- .col-lg-7 -->
     <div class='container'>
       <svg height='500px' id='flow' width='1200px'>
         <foreignObject class='node' height='500' width='300' x='900' y='22'>
@@ -204,7 +198,7 @@
       </svg>
     </div>
   </div>
-  <script src='http://code.jquery.com/jquery.js'></script>
+  <script src='js/jquery.js'></script>
   <script src='js/bootstrap.min.js'></script>
   <script src='js/bootstrap-slider.js'></script>
   <script src='js/respond.js'></script>

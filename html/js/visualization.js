@@ -1,26 +1,19 @@
-// Grab the initial JSON
+// ==============
+// = Model Data =
+// ==============
 
-var model_data = {}
+var modelData = {}
 
-$('a').on('click', function(e) {
-    setTimeout(function(){
-        makeVisibleSliders()
-    }, 2);
-});
-
-$('a.inputFlow').on('click', function(e) {
-    updateInputFlows($(this).attr('href'));
-});
-
+// AJAX call to update modelData object,
+// inputs, and visualization
 updateModel = function() {
     $.ajax({
         url: '../cgi-bin/rrtm.py',
         type: 'post',
-        data: JSON.stringify(model_data),
-        // data: JSON.stringify(rrtm_data['input']),
+        data: JSON.stringify(modelData),
         dataType: 'json',
         success: function(response) {
-            model_data = response
+            modelData = response
             updateInputs()
             updateOutputs()
         },
@@ -32,8 +25,33 @@ updateModel = function() {
 
 updateModel()
 
+// ===========
+// = Sliders =
+// ===========
+
+$('a').on('click', function(e) {
+    // Delay seems to be necessary
+    setTimeout(function(){
+        makeVisibleSliders()
+    }, 2);
+});
+
+makeVisibleSliders = function() {
+    $('.addSlider:visible').slider().removeClass('addSlider').addClass('slider').on('slideStop', function(e) {
+        modelData[$(this).attr('name')] = parseFloat($(this).val())
+        updateModel()
+    });
+}
+
+makeVisibleSliders()
+
+
+$('a.inputFlow').on('click', function(e) {
+    updateInputFlows($(this).attr('href'));
+});
+
 updateInputs = function() {
-    $.each(model_data, function(key, value) {
+    $.each(modelData, function(key, value) {
         switch(typeof(value)){
             case 'number':
                 $('input[name="' + key + '"]').attr('value', value)
@@ -44,25 +62,16 @@ updateInputs = function() {
         }
     })
     
-    updateInputFlows(model_data['active_input'])
+    updateInputFlows(modelData['active_input'])
 }
 
 updateOutputs = function() {
-    total_net = model_data['net_toa']
+    total_net = modelData['net_toa']
     $('#toa').text(Math.abs(total_net))
     $('#toa_sign').text(total_net < 0 ? 'losing' : 'gaining')
     updateOutputFlows()
 }
 
-makeVisibleSliders = function() {
-    var blah = $('.addSlider:visible').slider().removeClass('addSlider')
-    blah.addClass('slider').on('slideStop', function(e) {
-        model_data[$(this).attr('name')] = parseFloat($(this).val())
-        updateModel()
-    });
-}
-
-makeVisibleSliders()
 
 var svgHeight = 500
 var svgWidth = 800
@@ -73,156 +82,100 @@ var inputOutputMargin = 130
 var leftMargin = 50
 $('svg#flow').css('height', svgHeight + 2 * verticalMargin)
 updateInputFlows = function(key) {
-    model_data['active_input'] = typeof key !== 'undefined' ? key : '#pressure'
+    modelData['active_input'] = typeof key !== 'undefined' ? key : '#lev'
     
     args = {
-        '#pressure': {
+        '#lev': {
             max: 1500,
-            values: [model_data['ps']].concat(model_data['lev']),
             label: 'pressure (mb)',
-            surfaceKey: 'ps',
-            nonSurfaceKey: 'lev'
+            surfaceKey: 'ps'
         },
-        '#temperature': {
+        '#Tbound': {
             max: 400,
-            values: [model_data['Ts']].concat(model_data['Tbound']),
             label: 'temperature (K)',
-            surfaceKey: 'Ts',
-            nonSurfaceKey: 'Tbound'
+            surfaceKey: 'Ts'
         },
         '#co2': {
             max: 1000,
-            values: [model_data['co2'][0]].concat(model_data['co2']),
-            label: 'CO2 (ppm)',
-            surfaceKey: false,
-            nonSurfaceKey: 'co2'
+            label: 'CO2 (ppm)'
         },
         '#ch4': {
             max: 10000,
-            values: [model_data['ch4'][0]].concat(model_data['ch4']),
-            label: 'CH4 (ppb)',
-            surfaceKey: false,
-            nonSurfaceKey: 'ch4'
+            label: 'CH4 (ppb)'
         },
         '#n2o': {
             max: 1000,
-            values: [model_data['n2o'][0]].concat(model_data['n2o']),
-            label: 'N2O (ppb)',
-            surfaceKey: false,
-            nonSurfaceKey: 'n2o'
+            label: 'N2O (ppb)'
         },
         '#h2o': {
             max: 0.05,
-            values: [model_data['h2o'][0]].concat(model_data['h2o']),
-            label: 'H2O',
-            surfaceKey: false,
-            nonSurfaceKey: 'h2o'
+            label: 'H2O'
         },
         '#cfc11': {
             max: 1000,
-            values: [model_data['cfc11'][0]].concat(model_data['cfc11']),
-            label: 'CFC-11 (ppt)',
-            surfaceKey: false,
-            nonSurfaceKey: 'cfc11'
+            label: 'CFC-11 (ppt)'
         },
         '#cfc12': {
             max: 1000,
-            values: [model_data['cfc12'][0]].concat(model_data['cfc12']),
-            label: 'CFC-12 (ppt)',
-            surfaceKey: false,
-            nonSurfaceKey: 'cfc12'
+            label: 'CFC-12 (ppt)'
         },
         '#cfc22': {
             max: 1000,
-            values: [model_data['cfc22'][0]].concat(model_data['cfc22']),
-            label: 'CFC-22 (ppt)',
-            surfaceKey: false,
-            nonSurfaceKey: 'cfc22'
+            label: 'CFC-22 (ppt)'
         },
         '#o3': {
             max: 50,
-            values: [model_data['o3'][0]].concat(model_data['o3']),
-            label: 'O3 (ppm)',
-            surfaceKey: false,
-            nonSurfaceKey: 'o3'
+            label: 'O3 (ppm)'
         },
         '#ccl4': {
             max: 50,
-            values: [model_data['ccl4'][0]].concat(model_data['ccl4']),
-            label: 'CCl4 (ppt)',
-            surfaceKey: false,
-            nonSurfaceKey: 'ccl4'
+            label: 'CCl4 (ppt)'
         },
         '#cldf': {
             max: 1,
             hardMax: true,
-            values: [model_data['cldf'][0]].concat(model_data['cldf']),
-            label: 'Cloud fraction',
-            surfaceKey: false,
-            nonSurfaceKey: 'cldf'
+            label: 'Cloud fraction'
         },
         '#clwp': {
             max: 30,
-            values: [model_data['clwp'][0]].concat(model_data['clwp']),
-            label: 'In-cloud liquid water path (g/m^2)',
-            surfaceKey: false,
-            nonSurfaceKey: 'clwp'
+            label: 'In-cloud liquid water path (g/m^2)'
         },
         '#ciwp': {
             max: 30,
-            values: [model_data['ciwp'][0]].concat(model_data['ciwp']),
-            label: 'In-cloud ice water path (g/m^2)',
-            surfaceKey: false,
-            nonSurfaceKey: 'ciwp'
+            label: 'In-cloud ice water path (g/m^2)'
         },
         '#r_liq': {
             max: 100,
-            values: [model_data['r_liq'][0]].concat(model_data['r_liq']),
-            label: 'Cloud water drop radius (10^-6 m)',
-            surfaceKey: false,
-            nonSurfaceKey: 'clwp'
+            label: 'Cloud water drop radius (10^-6 m)'
         },
         '#r_ice': {
             min: 13,
             max: 130,
             hardMax: true,
-            values: [model_data['r_ice'][0]].concat(model_data['r_ice']),
-            label: 'Cloud ice particle radius (10^-6 m)',
-            surfaceKey: false,
-            nonSurfaceKey: 'r_ice'
+            label: 'Cloud ice particle radius (10^-6 m)'
         },
         '#tauaer_sw': {
             max: 3,
-            values: [model_data['tauaer_sw'][0]].concat(model_data['tauaer_sw']),
-            label: 'Aerosol shortwave optical depth',
-            surfaceKey: false,
-            nonSurfaceKey: 'tauaer_sw'
+            label: 'Aerosol shortwave optical depth'
         },
         '#ssaaer_sw': {
             max: 1,
             hardMax: true,
-            values: [model_data['ssaaer_sw'][0]].concat(model_data['ssaaer_sw']),
-            label: 'Aerosol shortwave single-scattering albedo',
-            surfaceKey: false,
-            nonSurfaceKey: 'ssaaer_sw'
+            label: 'Aerosol shortwave single-scattering albedo'
         },
         '#asmaer_sw': {
             min: -1,
             max: 1,
             hardMax: true,
-            values: [model_data['asmaer_sw'][0]].concat(model_data['asmaer_sw']),
-            label: 'Aerosol shortwave asymmetric scattering',
-            surfaceKey: false,
-            nonSurfaceKey: 'asmaer_sw'
+            label: 'Aerosol shortwave asymmetric scattering'
         },
         '#tauaer_lw': {
             max: 3,
-            values: [model_data['tauaer_lw'][0]].concat(model_data['tauaer_lw']),
-            label: 'Aerosol longwave optical depth (absorption only)',
-            surfaceKey: false,
-            nonSurfaceKey: 'tauaer_lw'
+            label: 'Aerosol longwave optical depth (absorption only)'
         }
-    }[model_data['active_input']];
+    }[modelData['active_input']];
+    args['nonSurfaceKey'] = modelData['active_input'].slice(1)
+    args['values'] = ([args.surfaceKey ? modelData[args.surfaceKey] : modelData[args.nonSurfaceKey][0]]).concat(modelData[args.nonSurfaceKey])
     var vis = d3.select('#flow')
     
     d3.select('g.input').remove()
@@ -231,8 +184,8 @@ updateInputFlows = function(key) {
     var height = chartHeight
     
     var x = d3.scale.linear().domain([args.min || 0, args.max]).range([0, inputWidth])
-    var y = d3.scale.linear().domain([0, d3.max(model_data['altitude'])]).range([height, 0])
-    var line = d3.svg.line().x(function(d) { return x(d); }).y(function(d,i) { return y(i && model_data['altitude'][i - 1]); })
+    var y = d3.scale.linear().domain([0, d3.max(modelData['altitude'])]).range([height, 0])
+    var line = d3.svg.line().x(function(d) { return x(d); }).y(function(d,i) { return y(i && modelData['altitude'][i - 1]); })
     
     var profile = g.append('svg:path').attr('d', line(args.values))
     
@@ -309,19 +262,19 @@ updateInputFlows = function(key) {
             profile.remove()
             profile = g.append('svg:path').attr('d', line(args.values))
             if ((args.surfaceKey) && (ci == 0)) {
-                model_data[args.surfaceKey] = newValue
+                modelData[args.surfaceKey] = newValue
             } else {
-                if ((key == '#cldf') && (model_data[args.nonSurfaceKey][ci - 1] == 0)) {
+                if ((key == '#cldf') && (modelData[args.nonSurfaceKey][ci - 1] == 0)) {
                     $.each([['clwp', 5.0], ['ciwp', 5.0], ['r_liq', 10.0], ['r_ice', 30.0]], function(i,d) {
                         var new_key = d[0]
                         var new_default = d[1]
                         
-                        if (model_data[new_key][ci - 1] == 0) {
-                            model_data[new_key][ci - 1] = new_default
+                        if (modelData[new_key][ci - 1] == 0) {
+                            modelData[new_key][ci - 1] = new_default
                         }
                     })
                 }
-                model_data[args.nonSurfaceKey][ci - 1] = newValue
+                modelData[args.nonSurfaceKey][ci - 1] = newValue
             }
             changed = true
         }
@@ -331,7 +284,7 @@ updateInputFlows = function(key) {
 closestLayerIndex = function(altitude) {
     var closest = 0
     var previous = 0
-    $.each(model_data['altitude'], function(i,d) {
+    $.each(modelData['altitude'], function(i,d) {
         if (altitude < (previous + (d - previous) / 2)) {
             return false
         } else {
@@ -376,16 +329,16 @@ updateOutputFlows = function() {
     var list = ['shortwave', 'longwave', 'total']
     var json = {
         'shortwave': {
-            'downward': model_data['swdflx'],
-            'upward': model_data['swuflx']
+            'downward': modelData['swdflx'],
+            'upward': modelData['swuflx']
         },
         'longwave': {
-            'downward': model_data['lwdflx'],
-            'upward': model_data['lwuflx']
+            'downward': modelData['lwdflx'],
+            'upward': modelData['lwuflx']
         },
         'total': {
-            'downward': model_data['dflx'],
-            'upward': model_data['uflx']
+            'downward': modelData['dflx'],
+            'upward': modelData['uflx']
         }
     }
     
@@ -406,7 +359,7 @@ updateOutputFlows = function() {
             ]);
 
 
-        var y = d3.scale.linear().domain([0, d3.max(model_data['altitude'])]).range([height, 0])
+        var y = d3.scale.linear().domain([0, d3.max(modelData['altitude'])]).range([height, 0])
          // 
          // var y = d3.scale.linear()
          //     .domain([0, downLayer.length - 1])
@@ -415,7 +368,7 @@ updateOutputFlows = function() {
           var area = d3.svg.area()
               .x0(function(d) { return x(d.y0); })
               .x1(function(d) { return x(d.y0 + d.y); })
-              .y(function(d,i) { return y(i && model_data['altitude'][i - 1]); });
+              .y(function(d,i) { return y(i && modelData['altitude'][i - 1]); });
 
           g.selectAll("path." + lightType)
               .data(layers)
@@ -495,22 +448,7 @@ updateOutputFlows = function() {
                           .attr('class', 'axis')
                           .attr('transform', 'translate(0,0)')
                           .call(xTopAxis)
-        
-    
-                              // add labels
-                          // g.append('text')
-                          // .attr('class', 'x label')
-                          // .attr('text-anchor', 'middle')
-                          // .attr('x', leftExtent - 30)
-                          // .attr('y', height + 30)
-                          // .text('down');
-                          // 
-                          // g.append('text')
-                          // .attr('class', 'x label')
-                          // .attr('text-anchor', 'middle')
-                          // .attr('x', leftExtent + 30)
-                          // .attr('y', height + 30)
-                          // .text('up');
+
                           g.append('text')
                           .attr('class', 'x label')
                           .attr('text-anchor', 'middle')
@@ -526,5 +464,3 @@ updateOutputFlows = function() {
                           .text(lightType + ' energy (W/m^2)');
     })
 }
-//.header("Content-Type","application/x-www-form-urlencoded")
-// .send("POST","a=b");
