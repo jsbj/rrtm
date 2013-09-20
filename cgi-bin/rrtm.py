@@ -6,17 +6,13 @@ print "Content-type: application/json\n\n";
 import json, sys, re, os, climt, numpy
 from math import copysign, floor, log10, cos, pi
 
-def sigdig(x, digits=1):
-    if x: x = copysign(round(x, -int(floor(log10(abs(x)))) + (digits - 1)), x)
-    return x
-
+# parse JSON data request by client
 model_data = json.load(sys.stdin)
 
-
+# this could be looked up from model_data eventually
 number_of_layers = 51
 
-# RRTM defaults
-# (ultimately, these should be in CLIMT)
+# set defaults (different than CliMT's)
 defaults = {
     "ps": 1013,
     "Ts": 294.2,
@@ -47,7 +43,8 @@ defaults = {
     "co": [1.4735235e-07, 1.4203219e-07, 1.3746356e-07, 1.338817e-07, 1.3135738e-07, 1.3046302e-07, 1.293139e-07, 1.2701938e-07, 1.2377659e-07, 1.1940332e-07, 1.1352941e-07, 1.0700342e-07, 1.0015444e-07, 9.3152551e-08, 8.5588468e-08, 7.7191764e-08, 6.3881643e-08, 4.8797485e-08, 3.7298612e-08, 2.8723687e-08, 2.2545748e-08, 1.7379815e-08, 1.4111547e-08, 1.2622904e-08, 1.2397807e-08, 1.3167179e-08, 1.4350868e-08, 1.5625453e-08, 1.6708778e-08, 1.8091109e-08, 1.9843396e-08, 2.1874927e-08, 2.384691e-08, 2.5646894e-08, 2.7513584e-08, 2.9431952e-08, 3.0938047e-08, 3.230932e-08, 3.3800561e-08, 3.6464382e-08, 3.9601694e-08, 4.2654523e-08, 4.5695458e-08, 4.9774858e-08, 5.4377978e-08, 5.9385144e-08, 6.5223382e-08, 7.4618846e-08, 8.5339593e-08, 9.7556516e-08, 1.1081534e-07], 
     "o3": [0.031872162, 0.035456235, 0.039477314, 0.043921091, 0.048850309999999994, 0.054422609999999996, 0.061250461, 0.069855773, 0.079463597, 0.08915115, 0.10168034, 0.1155858, 0.13068458, 0.16048106, 0.19350828, 0.22751290999999998, 0.304286, 0.43981947, 0.52382995, 0.63216254, 0.82302279, 1.2512421999999999, 1.8039109, 2.2908109, 2.8324889, 3.4517834, 4.2219771999999995, 5.032683899999999, 5.6775239, 6.3139009, 6.9619100000000005, 7.772886399999999, 8.524654700000001, 8.8305105, 8.490472299999999, 7.5621829, 6.2966351, 5.1043844, 4.0821087, 2.8155102000000003, 1.803627, 1.545081, 1.3594723, 1.1832445999999999, 1.0330702, 0.90162695, 0.78788491, 0.67509507, 0.57978644, 0.49771251, 0.42984522000000003], 
     "o2": [0.20897518, 0.20897572, 0.2089678, 0.2089866, 0.20899189, 0.20899543, 0.20899996, 0.20900373, 0.20900458, 0.20900519, 0.20900649, 0.20900634, 0.20900698, 0.20900562, 0.20900711, 0.20900925, 0.20900522, 0.20899965, 0.20899954, 0.20899963, 0.20899959, 0.20899966, 0.20899986, 0.20899987, 0.20900002, 0.20899989, 0.20899986, 0.2090022, 0.20900251, 0.2090067, 0.2090057, 0.20900536, 0.20900574, 0.20900482, 0.20900646, 0.20900702, 0.20900613, 0.20900463, 0.2090015, 0.20900197, 0.20901358, 0.2090466, 0.20902328, 0.20906644, 0.20911193, 0.20908101, 0.20904104, 0.20916539, 0.20922786, 0.20919746, 0.20908001], 
-    "lev": [891.46, 792.287, 718.704, 651.552, 589.841, 532.986, 480.526, 437.556, 398.085, 361.862, 328.507, 297.469, 269.015, 243, 218.668, 196.44, 162.913, 136.511, 114.564, 96.4903, 81.2, 68.4286, 57.6936, 48.6904, 40.5354, 33.733, 28.1201, 23.1557, 18.7914, 15.0693, 11.8006, 8.78628, 6.61328, 5.03469, 3.85333, 2.96408, 2.2918, 1.78227, 1.339, 0.589399, 0.430705, 0.333645, 0.261262, 0.216491, 0.179393, 0.148652, 0.1255, 0.106885, 0.091031, 0.077529, 0.067]
+    "lev": [891.46, 792.287, 718.704, 651.552, 589.841, 532.986, 480.526, 437.556, 398.085, 361.862, 328.507, 297.469, 269.015, 243, 218.668, 196.44, 162.913, 136.511, 114.564, 96.4903, 81.2, 68.4286, 57.6936, 48.6904, 40.5354, 33.733, 28.1201, 23.1557, 18.7914, 15.0693, 11.8006, 8.78628, 6.61328, 5.03469, 3.85333, 2.96408, 2.2918, 1.78227, 1.339, 0.589399, 0.430705, 0.333645, 0.261262, 0.216491, 0.179393, 0.148652, 0.1255, 0.106885, 0.091031, 0.077529, 0.067],
+    'active_input': 'co2'
 }
 
 # apply defaults
@@ -71,60 +68,82 @@ for factor in unit_change:
     for key in unit_change[factor]:
         model_data[key] = [value * factor for value in model_data[key]]
 
-# first, do the no sunlight case
-model_data['zen'] = 100.
-
+# CliMT uses opposite order for layers
 for key in model_data:
     if hasattr(model_data[key], '__iter__'):
         model_data[key].reverse()
 
+# set whether this is a global average or not
+global_average = False
+
+# if it's a global average, make the first run a night-time case
+if global_average:
+    # first, do the no sunlight case
+    model_data['zen'] = 100.
+
 model = climt.radiation(scheme='rrtm', **model_data)
 
+# a useful function
+def sigdig(x, digits=1):
+    if x: x = copysign(round(x, -int(floor(log10(abs(x)))) + (digits - 1)), x)
+    return x
+
 fluxes = {
-    'swuflx': numpy.array([sigdig(float(f), 3) for f in model['swuflx']]) * .5,
-    'swdflx': numpy.array([sigdig(float(f), 3) for f in model['swdflx']]) * .5,
-    'lwuflx': numpy.array([sigdig(float(f), 3) for f in model['lwuflx']]) * .5,
-    'lwdflx': numpy.array([sigdig(float(f), 3) for f in model['lwdflx']]) * .5,
-    'uflx': numpy.array([sigdig(float(model['swuflx'][i] + model['lwuflx'][i]), 3) for i in range(len(model['swuflx']))]) * .5,
-    'dflx': numpy.array([sigdig(float(model['swdflx'][i] + model['lwdflx'][i]), 3) for i in range(len(model['swdflx']))]) * .5,
-    'LwToa': sigdig(float(model['LwToa']), 3) * .5,
-    'SwToa': sigdig(float(model['SwToa']), 3) * .5,
-    'net_toa': round(sigdig(float(model['LwToa']) + float(model['SwToa']), 3))
+    'swuflx': numpy.array([sigdig(float(f), 3) for f in model['swuflx']]),
+    'swdflx': numpy.array([sigdig(float(f), 3) for f in model['swdflx']]),
+    'lwuflx': numpy.array([sigdig(float(f), 3) for f in model['lwuflx']]),
+    'lwdflx': numpy.array([sigdig(float(f), 3) for f in model['lwdflx']]),
+    'uflx': numpy.array([sigdig(float(model['swuflx'][i] + model['lwuflx'][i]), 3) for i in range(len(model['swuflx']))]),
+    'dflx': numpy.array([sigdig(float(model['swdflx'][i] + model['lwdflx'][i]), 3) for i in range(len(model['swdflx']))]),
+    'LwToa': sigdig(float(model['LwToa']), 3),
+    'SwToa': sigdig(float(model['SwToa']), 3)
 }
 
-
-angles_edges, angles_step = numpy.linspace(0.,90.,200, False, True)
-angles_midpoints = [i + angles_step * .5 for i in angles_edges]
-
-for zenith_angle in angles_midpoints:
-    model_data['zen'] = zenith_angle
-    factor = .5 * (cos((zenith_angle - angles_step * .5) * pi / 180.) - cos((zenith_angle + angles_step * .5) * pi / 180.)) # to weight the average
-
-    # CLIMT!
-    model = climt.radiation(scheme='rrtm', **model_data)
-
-    for key in ['swuflx', 'swdflx', 'lwuflx', 'lwdflx']:
-        fluxes[key] = fluxes[key] + numpy.array([sigdig(float(f), 3) for f in model[key]]) * factor
-
-    fluxes['uflx'] = fluxes['uflx'] + numpy.array([sigdig(float(model['swuflx'][i] + model['lwuflx'][i]), 3) for i in range(len(model['swuflx']))]) * factor
-    fluxes['dflx'] = fluxes['dflx'] + numpy.array([sigdig(float(model['swdflx'][i] + model['lwdflx'][i]), 3) for i in range(len(model['swdflx']))]) * factor
-    fluxes['LwToa'] = fluxes['LwToa'] + sigdig(float(model['LwToa']), 3) * factor
-    fluxes['SwToa'] = fluxes['SwToa'] + sigdig(float(model['SwToa']), 3) * factor
+if global_average:
+    # make the fluxes we've taken so far half of the Earth's average
+    for key in fluxes:
+        fluxes[key] = fluxes[key] * .5
     
+    angles_edges, angles_step = numpy.linspace(0.,90.,200, False, True)
+    angles_midpoints = [i + angles_step * .5 for i in angles_edges]
+
+    for zenith_angle in angles_midpoints:
+        model_data['zen'] = zenith_angle
+        factor = .5 * (cos((zenith_angle - angles_step * .5) * pi / 180.) - cos((zenith_angle + angles_step * .5) * pi / 180.)) # to weight the average
+
+        # CLIMT!
+        model = climt.radiation(scheme='rrtm', **model_data)
+
+        for key in ['swuflx', 'swdflx', 'lwuflx', 'lwdflx']:
+            fluxes[key] = fluxes[key] + numpy.array([sigdig(float(f), 3) for f in model[key]]) * factor
+
+        fluxes['uflx'] = fluxes['uflx'] + numpy.array([sigdig(float(model['swuflx'][i] + model['lwuflx'][i]), 3) for i in range(len(model['swuflx']))]) * factor
+        fluxes['dflx'] = fluxes['dflx'] + numpy.array([sigdig(float(model['swdflx'][i] + model['lwdflx'][i]), 3) for i in range(len(model['swdflx']))]) * factor
+        fluxes['LwToa'] = fluxes['LwToa'] + sigdig(float(model['LwToa']), 3) * factor
+        fluxes['SwToa'] = fluxes['SwToa'] + sigdig(float(model['SwToa']), 3) * factor
+    
+# calculate fluxes
 fluxes['net_toa'] = round(sigdig(float(model['LwToa']) + float(model['SwToa']), 3))
+# json doesn't get NUMPY arrays:
 for key in fluxes:
     if key not in ['LwToa', 'SwToa', 'net_toa']:
         fluxes[key] = list(fluxes[key])
 
+# put the fluxes into the master model_data dict
 for key in fluxes:
     model_data[key] = fluxes[key]
+    
+# undo the unit conversion
 for factor in unit_change:
     for key in unit_change[factor]:
         model_data[key] = [value / factor for value in model_data[key]]
 
+# put the layers back in the order we're working with
 for key in model_data:
     if hasattr(model_data[key], '__iter__'):
         model_data[key].reverse()
+        
+import sys; sys.stderr.write(model_data['active_input'])
 
 # send the JSON to the client
 print json.dumps(model_data)

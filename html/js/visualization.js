@@ -47,7 +47,7 @@ makeVisibleSliders()
 
 
 $('a.inputFlow').on('click', function(e) {
-    updateInputFlows($(this).attr('href'));
+    updateInputFlows($(this));
 });
 
 updateInputs = function() {
@@ -62,7 +62,7 @@ updateInputs = function() {
         }
     })
     
-    updateInputFlows(modelData['active_input'])
+    updateInputFlows($('a[href="' + modelData['active_input'] + '"]'))
 }
 
 updateOutputs = function() {
@@ -72,112 +72,37 @@ updateOutputs = function() {
     updateOutputFlows()
 }
 
-
+var svg = $('svg#flow')
 var svgHeight = 500
-var svgWidth = 800
+var svgWidth = 1200
 var chartHeight = 400
 var inputWidth = 150
 var verticalMargin = 60
 var inputOutputMargin = 130
 var leftMargin = 50
-$('svg#flow').css('height', svgHeight + 2 * verticalMargin)
-updateInputFlows = function(key) {
-    modelData['active_input'] = typeof key !== 'undefined' ? key : '#lev'
+svg.css('height', svgHeight + 2 * verticalMargin)
+svg.css('width', svgWidth + 2 * verticalMargin)
+updateInputFlows = function(link) {
+    // Look up which parameter we're messing with
+    // alert('wait')
+    var key = link.attr('href')
     
-    args = {
-        '#lev': {
-            max: 1500,
-            label: 'pressure (mb)',
-            surfaceKey: 'ps'
-        },
-        '#Tbound': {
-            max: 400,
-            label: 'temperature (K)',
-            surfaceKey: 'Ts'
-        },
-        '#co2': {
-            max: 1000,
-            label: 'CO2 (ppm)'
-        },
-        '#ch4': {
-            max: 10000,
-            label: 'CH4 (ppb)'
-        },
-        '#n2o': {
-            max: 1000,
-            label: 'N2O (ppb)'
-        },
-        '#h2o': {
-            max: 0.05,
-            label: 'H2O'
-        },
-        '#cfc11': {
-            max: 1000,
-            label: 'CFC-11 (ppt)'
-        },
-        '#cfc12': {
-            max: 1000,
-            label: 'CFC-12 (ppt)'
-        },
-        '#cfc22': {
-            max: 1000,
-            label: 'CFC-22 (ppt)'
-        },
-        '#o3': {
-            max: 50,
-            label: 'O3 (ppm)'
-        },
-        '#ccl4': {
-            max: 50,
-            label: 'CCl4 (ppt)'
-        },
-        '#cldf': {
-            max: 1,
-            hardMax: true,
-            label: 'Cloud fraction'
-        },
-        '#clwp': {
-            max: 30,
-            label: 'In-cloud liquid water path (g/m^2)'
-        },
-        '#ciwp': {
-            max: 30,
-            label: 'In-cloud ice water path (g/m^2)'
-        },
-        '#r_liq': {
-            max: 100,
-            label: 'Cloud water drop radius (10^-6 m)'
-        },
-        '#r_ice': {
-            min: 13,
-            max: 130,
-            hardMax: true,
-            label: 'Cloud ice particle radius (10^-6 m)'
-        },
-        '#tauaer_sw': {
-            max: 3,
-            label: 'Aerosol shortwave optical depth'
-        },
-        '#ssaaer_sw': {
-            max: 1,
-            hardMax: true,
-            label: 'Aerosol shortwave single-scattering albedo'
-        },
-        '#asmaer_sw': {
-            min: -1,
-            max: 1,
-            hardMax: true,
-            label: 'Aerosol shortwave asymmetric scattering'
-        },
-        '#tauaer_lw': {
-            max: 3,
-            label: 'Aerosol longwave optical depth (absorption only)'
-        }
-    }[modelData['active_input']];
-    args['nonSurfaceKey'] = modelData['active_input'].slice(1)
-    args['values'] = ([args.surfaceKey ? modelData[args.surfaceKey] : modelData[args.nonSurfaceKey][0]]).concat(modelData[args.nonSurfaceKey])
-    var vis = d3.select('#flow')
+    // set the current active input so that it isn't overwritten when
+    // we get the returned value; this can be done less hacky
+    modelData['active_input'] = key
+
+    // grab te data for the link
+    var args = {
+        nonSurfaceKey: key.slice(1),
+        values: ([typeof link.attr('data-surfaceKey') !== 'undefined' ? modelData[link.attr('data-surfaceKey')] : modelData[key.slice(1)][0]]).concat(modelData[args.nonSurfaceKey]),
+        max: link.attr('data-max'),
+        min: link.attr('data-min'),
+        hardMax: link.attr('data-hardMax') == 'true',
+        label: link.attr('data-label')
+    }
     
+    
+    var vis = d3.select('svg#flow')
     d3.select('g.input').remove()
     var g = vis.append("svg:g")
         .attr('class', 'input').attr('transform', 'translate(' + leftMargin + ', ' + verticalMargin + ')');
@@ -220,15 +145,6 @@ updateInputFlows = function(key) {
         .attr('class', 'axis')
         .attr('transform', 'translate(' + 800 + ',0)')
         .call(yRightAxis)
-
-    g.append("svg:line")
-        .attr("x1", 0)
-        .attr("y1", height)
-        .attr("x2", 800)
-        .attr("y2", height)
-    
-    g.append("svg:line").attr("x1", 0).attr("y1", 0).attr("x2", 800).attr("y2", 0)
-
         // add labels
         
     g.append('text')

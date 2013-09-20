@@ -1,0 +1,159 @@
+- # helpers:
+- tab = lambda {|name| capture_haml { haml_tag(:li) { haml_tag(:a, href: "##{name.downcase}", 'data-toggle' => 'tab') { haml_concat(name) }}}}
+- slider = lambda {|name, extra={}| capture_haml { haml_tag(:input, {type: 'text', name: name, class: ['span2, addSlider'], value: ''}.merge(extra)) }}
+
+!!! 5
+%head
+    %meta{ 'http-equiv' => "Content-type", content: "text/html; charset=utf-8"}
+    %title Earth's Energy
+    %meta{ name: "viewport", content: "width=device-width, initial-scale=1.0"}
+    %link{ href: "css/bootstrap.min.css", rel: "stylesheet", media: "screen"}
+    %link{ href: "css/slider.css", rel: "stylesheet", media: "screen" }
+    %link{ href: "css/application.css", rel: "stylesheet", media: "screen" }
+%body
+    .navbar.navbar-fixed-top
+        .container
+            %span.navbar-brand What determines the flow of energy in and out of the Earth?
+            .nav-collapse.collapse
+                %ul.nav.navbar-nav
+                    %li.dropdown
+                        %a#sun.dropdown-toggle{href: '#', 'data-toggle' => 'dropdown'}
+                            SUN
+                            %b.caret
+                        %ul.dropdown-menu{role:'menu', 'aria-labelledby' => 'sun'}
+                            %li
+                                Sunlight: #{slider.call('scon', {'data-slider-max' => 2000, 'data-slider-value' => 1367})} W/m
+                                %sup 2
+                            %li Angle (0&deg; is overhead): #{slider.call('zen', {'data-slider-max' => 180, 'data-slider-value' => 65})} &deg;
+                    %li.dropdown
+                        %a#surface.dropdown-toggle{href:'#', 'data-toggle' => 'dropdown'}
+                            SURFACE
+                            %b.caret
+                        %ul.dropdown-menu{role:'menu', 'aria-labelledby' => 'surface'}
+                            %li albedo fraction: #{slider.call('asdir', {"data-slider-step"=>0.01, "data-slider-max"=>1, "data-slider-value"=>0.3})}
+                    %li.dropdown
+                        %a#atmosphere.dropdown-toggle{href:'#', 'data-toggle' => 'dropdown'}
+                            ATMOSPHERE
+                            %b.caret
+                        .dropdown-menu.row{role:'menu', 'aria-labelledby' => 'atmosphere'}
+                            .col-lg-5
+                                %ul
+                                    %li
+                                        %a.inputFlow{href:'#lev', 'data-max' => 1500, 'data-label' => 'pressure (mb)', 'data-surfaceKey' => 'ps'} Pressure
+                                    %li
+                                        %a.inputFlow{href:'#Tbound', 'data-max' => 400, 'data-label' => 'temperature (K)', 'data-surfaceKey' => 'Ts'} Temperature
+                                    %li.divider
+                                    %li Gases
+                                    %li
+                                        %a.inputFlow{href:'#h2o', 'data-max' => 0.05, 'data-label' => 'H2O'}
+                                            H
+                                            %sub 2
+                                            O (water)
+                                    %li
+                                        %a.inputFlow{href:'#co2', 'data-max' => 1000, 'data-label' => 'CO2 (ppm)'} 
+                                            CO
+                                            %sub 2
+                                            (carbon dioxide)
+                                    %li
+                                        %a.inputFlow{href:'#ch4', 'data-max' => 10000, 'data-label' => 'CH4 (ppb)'} 
+                                            CH
+                                            %sub 4
+                                            (methane)
+                                    %li
+                                        %a.inputFlow{href:'#n2o', 'data-max' => 1000, 'data-label' => 'N2O (ppb)'}
+                                            N
+                                            %sub 2
+                                            O (nitrous oxide)
+                                    %li
+                                        %a.inputFlow{href:'#o3', 'data-max' => 50, 'data-label' => 'O3 (ppm)'}
+                                            O
+                                            %sub 3
+                                            (ozone)
+                                    %li
+                                        %a.inputFlow{href:'#cfc11', 'data-max' => 1000, 'data-label' => 'CFC-11 (ppt)'} CFC-11
+                                        / %a{href: "http://en.wikipedia.org/wiki/Trichlorofluoromethane", target:'_blank'} (about) 
+                                    %li
+                                        %a.inputFlow{href:'#cfc12', 'data-max' => 1000, 'data-label' => 'CFC-12 (ppt)'} CFC-12
+                                        / %a{href: "http://en.wikipedia.org/wiki/Dichlorodifluoromethane", target:'_blank'} (about) 
+                                    %li
+                                        %a.inputFlow{href:'#cfc22', 'data-max' => 1000, 'data-label' => 'CFC-22 (ppt)'} CFC-22
+                                        / %a{href: "http://en.wikipedia.org/wiki/Chlorodifluoromethane", target:'_blank'} (about) 
+                                    %li
+                                        %a.inputFlow{href:'#ccl4', 'data-max' => 50, 'data-label' => 'CCl4 (ppt)'}
+                                            CCl
+                                            %sub 4
+                            .col-lg-7
+                                %ul
+                                    %li Clouds
+                                    %li
+                                        %a.inputFlow{href:'#cldf', 'data-max' => 1, 'data-label' => 'cloud fraction', 'data-hardMax' => 'true'} Cloud fraction
+                                    %li
+                                        %a.inputFlow{href:'#clwp', 'data-max' => 30, 'data-label' => 'In-cloud liquid water path (g/m^2)'} In-cloud liquid water path
+                                    %li
+                                        %a.inputFlow{href:'#r_liq', 'data-max' => 100, 'data-label' => 'Cloud water drop radius (10^-6 m)'} Cloud water drop radius
+                                    %li
+                                        %a.inputFlow{href:'#ciwp', 'data-max' => 30, 'data-label' => 'In-cloud ice water path (g/m^2)'} In-cloud ice water path
+                                    %li
+                                        %a.inputFlow{href:'#r_ice', 'data-min' => 13, 'data-max' => 130, 'data-label' => 'Cloud ice particle radius (10^-6 m)',  'data-hardMax' => 'true'} Cloud ice particle radius
+                                    %li.divider
+                                    %li Aerosols
+                                    %li
+                                        %a.inputFlow{href:'#tauaer_sw', 'data-max' => 3, 'data-label' => 'Aerosol shortwave optical depth'} Shortwave optical depth
+                                        %a.inputFlow{href:'#ssaaer_sw', 'data-max' => 1, 'data-label' => 'Aerosol shortwave single-scattering albedo'} Shortwave single-scattering albedo
+                                        %a.inputFlow{href:'#asmaer_sw', 'data-min' => -1, 'data-max' => 1, 'data-hardMax' => 'true', 'data-label' => 'Aerosol shortwave asymmetric scattering'} Shortwave asymmetric parameter
+                                        %a.inputFlow{href:'#tauaer_lw', 'data-max' => 3, 'data-label' => 'Aerosol longwave optical depth (absorption only)'} Longwave optical depth
+    .container
+        /         .tab-pane#atmosphere
+        /             %ul.nav.nav-tabs
+        /                 = tab.call('Layers')
+        /                 = tab.call('Temperature')
+        /                 = tab.call('Constituents')
+        /                 -# tab.call('Wind')
+        /             .tab-content
+        /                 .tab-pane#layers
+        /                 .tab-pane#temperature
+        /                     %ul
+        /                         %li surface temperature: #{slider.call('Ts', {"data-slider-step"=>0.1, "data-slider-min"=>100, "data-slider-max"=>400, "data-slider-value"=>283.1})}
+        /                 .tab-pane#constituents
+        /                     %ul.nav.nav-tabs
+        /                         = tab.call('Gases')
+        /                         = tab.call('Aerosols')
+        /                         = tab.call('Clouds')
+        /                     .tab-content
+        /                         .tab-pane#gases
+        /                             %ul
+        /                                 %li CO2: #{slider.call('co2', "data-slider-max"=>1000, "data-slider-value"=>400)} ppm
+        /                                 %li CH4: #{slider.call('ch4', "data-slider-max"=>1000, "data-slider-value"=>0)} ppb
+        /                                 %li N2O: #{slider.call('n2o', "data-slider-max"=>1000, "data-slider-value"=>0)} ppb
+        /                         .tab-pane#aerosols
+        /                             put aerosols stuff here
+        /                         .tab-pane#clouds
+        /                             put clouds stuff here
+        /         .tab-pane#presets
+        /             %select{name: 'atmosphere', onchange: 'updatechart();'}
+        /                 %option{value: 'midlatitude_summer', selected: 'selected'} mid-latitude summer
+        /                 %option{value: 'midlatitude_winter'} mid-latitude winter
+        /                 %option{value: 'tropic'} tropics
+        /         .tab-pane#units
+        /             put units stuff here
+        / .col-lg-7
+                
+ 
+        .container
+            %svg#flow{width: '0px', height: '0px'}
+                %foreignObject.node{x: '0', y: '0'}
+                    %body{xmlns: 'http://www.w3.org/1999/xhtml'}
+                        / .jumbotron
+                        The Earth is
+                        %span#toa_sign gaining
+                        energy at a rate of
+                        %span#toa 30
+                        W/m
+                        %sup 2
+
+    %script{ src: "js/jquery.js" }
+    %script{ src: "js/bootstrap.min.js" }
+    %script{ src: "js/bootstrap-slider.js" }
+    %script{ src: 'js/respond.js' }
+    %script{ src: "js/d3.js", charset: "utf-8" }
+    %script{ src: "js/visualization.js" }
