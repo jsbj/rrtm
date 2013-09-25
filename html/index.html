@@ -1,35 +1,51 @@
 <!DOCTYPE html>
-<head>
-  <meta content='text/html; charset=utf-8' http-equiv='Content-type'>
-  <title>Earth's Energy</title>
-  <meta content='width=device-width, initial-scale=1.0' name='viewport'>
-  <link href='css/coursera.css' media='screen' rel='stylesheet'>
-  <!-- %link{ href: "css/bootstrap.min.css", rel: "stylesheet", media: "screen"} -->
-  <!-- %link{ href: "css/slider.css", rel: "stylesheet", media: "screen" } -->
-  <!-- %link{ href: "css/application.css", rel: "stylesheet", media: "screen" } -->
-</head>
-<body>
-  <svg id='rrtm' style='margin: auto;'>
-    <text y='20'>
-      If the atmosphere had these properties,
-    </text>
-    <text class='output' x='520' y='20'></text>
-    <switch>
-      <foreignObject class='input' requiredFeatures='http://www.w3.org/TR/SVG11/feature#Extensibility' x='0' y='100'>
-        <body xmlns='http://www.w3.org/1999/xhtml'>
-          <div class='input' style='overflow-x:scroll; overflow-y:hidden'>
-            <svg height='200px' id='inner' style='float: left;' width='2000px'></svg>
-          </div>
-        </body>
-      </foreignObject>
-      Your browser does not support this page.
-    </switch>
-  </svg>
-  <script src='js/jquery.js'></script>
-  <!-- %script{ src: "js/bootstrap.min.js" } -->
-  <!-- %script{ src: "js/bootstrap-slider.js" } -->
-  <!-- %script{ src: 'js/respond.js' } -->
-  <script charset='utf-8' src='js/d3.js'></script>
-  <!-- %script{ src: "js/visualization.js" } -->
-  <script src='js/rrtm.js'></script>
-</body>
+<html>
+  <head>
+    <meta content='text/html; charset=utf-8' http-equiv='Content-type'>
+    <title>Earth's Energy</title>
+    <meta content='width=device-width, initial-scale=1.0' name='viewport'>
+    <link href='css/coursera.css' media='screen' rel='stylesheet'>
+    <!-- %link{ href: "css/bootstrap.min.css", rel: "stylesheet", media: "screen"} -->
+    <!-- %link{ href: "css/slider.css", rel: "stylesheet", media: "screen" } -->
+    <!-- %link{ href: "css/application.css", rel: "stylesheet", media: "screen" } -->
+  </head>
+  <body>
+    <div id='banner'>
+      <h2>Earth's Energy Budget</h2>
+    </div>
+    <div id='doc'>
+      <a href='./modtran.doc.html' target='_blank'>
+        <b>About this model</b>
+      </a>
+    </div>
+    <div id='models'>
+      <a href='../models.html'>
+        <b>Other Models</b>
+      </a>
+    </div>
+    <svg id='rrtm' style='margin: auto;'>
+      <text class='inputDescription' fill='#434358' style='font-family: helvetica, sans-serif; font-size: 20px' text-anchor='middle' width='300px' y='20'>
+        <tspan>If the Sun and the Earth's surface</tspan>
+        <tspan y='45'>and atmosphere have these properties...</tspan>
+      </text>
+      <text class='output' fill='#434358' style='font-family: helvetica, sans-serif; font-size: 20px' text-anchor='middle' x='520' y='20'></text>
+      <switch>
+        <foreignObject class='input' requiredFeatures='http://www.w3.org/TR/SVG11/feature#Extensibility' x='0' y='100'>
+          <body xmlns='http://www.w3.org/1999/xhtml'>
+            <div class='input' style='overflow-x:scroll; overflow-y:hidden'>
+              <svg height='200px' id='inner' style='float: left;' width='2000px'></svg>
+            </div>
+          </body>
+        </foreignObject>
+        Your browser does not support this page.
+      </switch>
+    </svg>
+    <script src='js/jquery.js'></script>
+    <!-- %script{ src: "js/bootstrap.min.js" } -->
+    <!-- %script{ src: "js/bootstrap-slider.js" } -->
+    <!-- %script{ src: 'js/respond.js' } -->
+    <script charset='utf-8' src='js/d3.js'></script>
+    <!-- %script{ src: "js/visualization.js" } -->
+    <script src='js/rrtm.js'></script>
+  </body>
+</html>

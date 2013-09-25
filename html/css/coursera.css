@@ -1,16 +1,51 @@
-body{font:1em Helvetica,sans-serif;color:#434358;}
+
+body {
+    font:1em Helvetica,sans-serif;
+    color:#434358;
+    background-color:#ffffff
+}
+#banner {
+    position:absolute;
+    left:0px;
+    right:0px;
+    top:0px;
+    height:70px;
+    padding-left:15px;
+    background-color: #f5f5f5;
+    border-top: 6px solid #b94a48; 
+    box-shadow: 1px 1px 3px #A3A3A7;
+}
+#doc{position:absolute;right:180px;top:30px;}
+#models{position:absolute;right:50px;top:30px;}
+#inputs{position:absolute;left:10px;width:450px;top:80px}
+.modelClass{ padding:25px 5px 5px 5px; font-weight:bold; font-size:20px;text-align:center;}
+.imageClass{ text-align:center;}
+.link{ border:solid 2px;padding:8px;;text-align:left}
+#inputs{position:absolute;left:30px;width:350px;top:100px;}
+#spectrum{position:absolute;left:350px;width:550px;top:20px;height:600px; }
+#profile{position:absolute;left:900px;width:200px;top:60px;height:500px; }
+table.padded-table td{padding:2px;}
+#spectrumPlotData{position:absolute;left:550px;top:600px;z-index:1000;}
+#profilePlotData{position:absolute;left:950px;top:600px;z-index:1000;}
+.textButton{display:inline-block;padding:4px;font-size:12px;max-width:290px;}
+
+/*body{font:1em Computer Modern,sans-serif;color:#434358;}*/
+
+#rrtm{
+    padding-top: 100px;
+}
 
 .axis path,
 .axis line {
     fill: none;
-    stroke: black;
+    stroke: #434358;
     stroke-width: 1;
     shape-rendering: crispEdges;
 }
 
 .input line {
     fill: none;
-    stroke: black;
+    stroke: #434358;
     stroke-width: 1;
     shape-rendering: crispEdges;
 }
@@ -21,7 +56,7 @@ body{font:1em Helvetica,sans-serif;color:#434358;}
 }
 
 path.profile {
-    stroke: steelblue;
+    stroke: #b94a48; /*steelblue;*/
     stroke-width: 2;
     fill: none;
 }

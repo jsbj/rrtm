@@ -1,7 +1,7 @@
 // ===================
 // = Style Variables =
 // ===================
-var headerHeight = 150
+var headerHeight = 100
 var flowHeight = 320
 var bottomMargin = 60
 var totalHeight = headerHeight + flowHeight + bottomMargin
@@ -13,7 +13,9 @@ $('svg#rrtm').width(totalWidth)
 var rightMargin = 0
 var altitudeAxis = 40
 var inputWidth = totalWidth - (outputWidth + rightMargin + 2 * altitudeAxis)
-var subsectionMargin = 40
+$('text.inputDescription tspan').attr('x', inputWidth / 2)
+$('text.output').attr('x', inputWidth + outputWidth/2)
+var subsectionMargin = 20
 var subsectionWidth = (outputWidth - (subsectionMargin * 2)) / 3.0
 var profileWidth = 180
 var roomForProfileLabels = 40
@@ -58,15 +60,15 @@ updateOutput = function() {
     var vis = d3.select('svg#rrtm')
     
     if (modelData['net_toa'] < 0) {
-        var toa = 'then the Earth would be losing energy at a rate of ' + Math.abs(modelData['net_toa']) + ' W/m^2.'
+        var toa = '...then the Earth loses energy at a rate of ' + Math.abs(modelData['net_toa']) + ' W/m2.'
     } else {
         if (modelData['net_toa'] > 0) {
-            var toa = 'then the Earth would be gaining energy at a rate of ' + Math.abs(modelData['net_toa']) + ' W/m^2.'
+            var toa = '...then the Earth gains energy at a rate of ' + Math.abs(modelData['net_toa']) + ' W/m2.'
         } else {
-            var toa = "then the Earth loses as much energy as it gains."
+            var toa = "...then the Earth loses as much energy as it gains."
         }
     }
-    $('text.output').text(toa)
+    $('text.output').text('').append(toa)
     
     d3.select('g.output').remove()
     var g = vis.append('svg:g')
@@ -187,16 +189,18 @@ updateOutput = function() {
                           g.append('text')
                           .attr('class', 'x label')
                           .attr('text-anchor', 'middle')
+                          .attr('fill', '#434358')
                           .attr('x', leftExtent)
                           .attr('y', -47) //23)
-                          .text(lightType + ' energy (W/m^2)');
+                          .text(lightType + ' energy (W/m2)');
 
                           g.append('text')
                           .attr('class', 'x label')
                           .attr('text-anchor', 'middle')
+                          .attr('fill', '#434358')
                           .attr('x', leftExtent)
                           .attr('y', flowHeight + 50) // 30)
-                          .text(lightType + ' energy (W/m^2)');
+                          .text(lightType + ' energy (W/m2)');
     })
 }
 
@@ -298,11 +302,13 @@ initializeInput = function() {
         .call(yRightAxis)
     
     g.append('text')
+          .attr('fill', '#434358')
         .attr('class', 'y label').attr('text-anchor', 'middle').attr('y', 0)
         .attr('x', -flowHeight / 2).attr('dy', '.75em').attr('transform', 'rotate(-90)')
         .text('altitude (km)')
 
     g.append('text')
+          .attr('fill', '#434358')
         .attr('class', 'y label').attr('text-anchor', 'middle').attr('y', -(inputWidth+outputWidth+(2*altitudeAxis)))
         .attr('x', flowHeight / 2).attr('dy', '.75em').attr('transform', 'rotate(90)')
         .text('altitude (km)')
@@ -321,8 +327,8 @@ initializeInput = function() {
 
     list = [
         {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 150, max: 350, label: 'Temperature (K)'},
-        {nonSurfaceKey: 'h2o', max: 0.05, label: 'H2O'},
-        {nonSurfaceKey: 'co2', max: 1000, label: 'CO2 (ppm)'},
+        {nonSurfaceKey: 'rh', max: 100., label: 'relative humidity (%)'},
+        {nonSurfaceKey: 'co2', max: 3000, label: 'CO2 (ppm)'},
         {nonSurfaceKey: 'ch4', max: 10000, label: 'CH4 (ppb)'},
         {nonSurfaceKey: 'n2o', max: 1000, label: 'N2O (ppb)'},
         {nonSurfaceKey: 'o3', max: 50, label: 'O3 (ppm)'},
@@ -331,9 +337,9 @@ initializeInput = function() {
         {nonSurfaceKey: 'cfc22', max: 1000, label: 'CFC-22 (ppt)'},
         {nonSurfaceKey: 'ccl4', max: 50, label: 'CCl4 (ppt)'},
         {nonSurfaceKey: 'cldf', max: 1, label: 'Cloud fraction'},
-        {nonSurfaceKey: 'clwp', max: 30, label: 'In-cloud liquid water path (g/m^2)'},
+        {nonSurfaceKey: 'clwp', max: 30, label: 'In-cloud liquid water path (g/m2)'},
         {nonSurfaceKey: 'r_liq', max: 100, label: 'Cloud water drop radius (10^-6 m)'},
-        {nonSurfaceKey: 'ciwp', max: 30, label: 'In-cloud ice water path (g/m^2)'},
+        {nonSurfaceKey: 'ciwp', max: 30, label: 'In-cloud ice water path (g/m2)'},
         {nonSurfaceKey: 'r_ice', max: 130, min: 13, label: 'Cloud ice particle radius (10^-6 m)'},
         {nonSurfaceKey: 'tauaer_sw', max: 3, label: 'Aerosol SW optical depth'},
         {nonSurfaceKey: 'ssaaer_sw', max: 1, label: 'Aerosol SW s.s. albedo'},
@@ -378,6 +384,7 @@ initializeInput = function() {
         g.append('text')
             .attr('class', 'x label')
             .attr('text-anchor', 'middle')
+          .attr('fill', '#434358')
             .attr('x', (profileWidth + subsectionMargin) * i + profileWidth / 2)
             .attr('y', flowHeight + 30)
             .text(args.label)
@@ -390,7 +397,7 @@ initializeInput = function() {
         .attr('cx', args.x(args.values[0]))
         .attr('cy', flowHeight + 5)
         .attr('r', 5)
-        .attr('fill', 'blue')
+        .attr('fill', '#b94a48')
         .call(drag)
         // .attr('fill', 'blue').on('mousedown', function(d,j) {
         //     // profileMove = [args, g]

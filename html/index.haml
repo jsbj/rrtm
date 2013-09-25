@@ -1,27 +1,37 @@
 !!! 5
-%head
-    %meta{ 'http-equiv' => "Content-type", content: "text/html; charset=utf-8"}
-    %title Earth's Energy
-    %meta{ name: "viewport", content: "width=device-width, initial-scale=1.0"}
-    %link{ href: "css/coursera.css", rel: "stylesheet", media: "screen" }
-    / %link{ href: "css/bootstrap.min.css", rel: "stylesheet", media: "screen"}
-    / %link{ href: "css/slider.css", rel: "stylesheet", media: "screen" }
-    / %link{ href: "css/application.css", rel: "stylesheet", media: "screen" }
-%body
-    %svg#rrtm{style: 'margin: auto;'}
-        %text{y: '20'}
-            If the atmosphere had these properties,
-        %text.output{x: '520', y: '20'}
-        %switch
-            %foreignObject.input{x: '0', y: '100', requiredFeatures: "http://www.w3.org/TR/SVG11/feature#Extensibility"}
-                %body{xmlns: 'http://www.w3.org/1999/xhtml'}
-                    %div.input{style: 'overflow-x:scroll; overflow-y:hidden'}
-                        %svg#inner{width: '2000px', height: '200px', style: 'float: left;'}
-            Your browser does not support this page.
-    %script{ src: "js/jquery.js" }
-    / %script{ src: "js/bootstrap.min.js" }
-    / %script{ src: "js/bootstrap-slider.js" }
-    / %script{ src: 'js/respond.js' }
-    %script{ src: "js/d3.js", charset: "utf-8" }
-    / %script{ src: "js/visualization.js" }
-    %script{ src: 'js/rrtm.js' }
+%html
+    %head
+        %meta{ 'http-equiv' => "Content-type", content: "text/html; charset=utf-8"}
+        %title Earth's Energy
+        %meta{ name: "viewport", content: "width=device-width, initial-scale=1.0"}
+        %link{ href: "css/coursera.css", rel: "stylesheet", media: "screen" }
+        / %link{ href: "css/bootstrap.min.css", rel: "stylesheet", media: "screen"}
+        / %link{ href: "css/slider.css", rel: "stylesheet", media: "screen" }
+        / %link{ href: "css/application.css", rel: "stylesheet", media: "screen" }
+    %body
+        #banner
+            %h2 Earth's Energy Budget
+        #doc
+            %a{href: './modtran.doc.html', target: '_blank'}
+                %b About this model
+        #models
+            %a{href: '../models.html'}
+                %b Other Models
+        %svg#rrtm{style: 'margin: auto;'}
+            %text.inputDescription{y: '20', width: '300px', 'text-anchor' => 'middle', style: 'font-family: helvetica, sans-serif; font-size: 20px', fill: '#434358'}
+                %tspan If the Sun and the Earth's surface
+                %tspan{y: '45'} and atmosphere have these properties...
+            %text.output{x: '520', 'text-anchor' => 'middle', y: '20', style: 'font-family: helvetica, sans-serif; font-size: 20px', fill: '#434358'}
+            %switch
+                %foreignObject.input{x: '0', y: '100', requiredFeatures: "http://www.w3.org/TR/SVG11/feature#Extensibility"}
+                    %body{xmlns: 'http://www.w3.org/1999/xhtml'}
+                        %div.input{style: 'overflow-x:scroll; overflow-y:hidden'}
+                            %svg#inner{width: '2000px', height: '200px', style: 'float: left;'}
+                Your browser does not support this page.
+        %script{ src: "js/jquery.js" }
+        / %script{ src: "js/bootstrap.min.js" }
+        / %script{ src: "js/bootstrap-slider.js" }
+        / %script{ src: 'js/respond.js' }
+        %script{ src: "js/d3.js", charset: "utf-8" }
+        / %script{ src: "js/visualization.js" }
+        %script{ src: 'js/rrtm.js' }
