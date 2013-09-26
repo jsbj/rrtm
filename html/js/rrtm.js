@@ -12,7 +12,8 @@ var totalWidth = 1250
 $('svg#rrtm').width(totalWidth)
 var rightMargin = 0
 var altitudeAxis = 40
-var inputWidth = totalWidth - (outputWidth + rightMargin + 2 * altitudeAxis)
+var inputOutputSeparator = 40
+var inputWidth = totalWidth - (outputWidth + inputOutputSeparator + rightMargin + 2 * altitudeAxis)
 $('text.inputDescription tspan').attr('x', inputWidth / 2)
 $('text.output').attr('x', inputWidth + outputWidth/2)
 var subsectionMargin = 20
@@ -56,6 +57,10 @@ updateModel = function(initialize) {
 
 updateModel(true)
 
+// ==========
+// = Output =
+// ==========
+
 updateOutput = function() {
     var vis = d3.select('svg#rrtm')
     
@@ -68,12 +73,12 @@ updateOutput = function() {
             var toa = "...then the Earth loses as much energy as it gains."
         }
     }
-    $('text.output').text('').append(toa)
+    $('text.output').attr('x', inputWidth+inputOutputSeparator + outputWidth/2).text('').append(toa)
     
     d3.select('g.output').remove()
     var g = vis.append('svg:g')
         .attr('class', 'output')
-        .attr('transform', 'translate(' + (inputWidth + altitudeAxis) + ', ' + headerHeight + ')')
+        .attr('transform', 'translate(' + (inputWidth + inputOutputSeparator + altitudeAxis) + ', ' + headerHeight + ')')
     var list = ['shortwave', 'longwave', 'total']
     var json = {
         'shortwave': {
@@ -298,7 +303,7 @@ initializeInput = function() {
 
     g.append('g')
         .attr('class', 'axis')
-        .attr('transform', 'translate(' + (altitudeAxis + inputWidth + outputWidth) + ',0)')
+        .attr('transform', 'translate(' + (altitudeAxis + inputWidth + inputOutputSeparator + outputWidth) + ',0)')
         .call(yRightAxis)
     
     g.append('text')
@@ -309,21 +314,27 @@ initializeInput = function() {
 
     g.append('text')
           .attr('fill', '#434358')
-        .attr('class', 'y label').attr('text-anchor', 'middle').attr('y', -(inputWidth+outputWidth+(2*altitudeAxis)))
+        .attr('class', 'y label').attr('text-anchor', 'middle').attr('y', -(inputWidth+inputOutputSeparator+outputWidth+(2*altitudeAxis)))
         .attr('x', flowHeight / 2).attr('dy', '.75em').attr('transform', 'rotate(90)')
         .text('altitude (km)')
     
     g.append('line')
         .attr("x1", altitudeAxis)
         .attr("y1", 0)
-        .attr("x2", altitudeAxis + inputWidth + outputWidth)
+        .attr("x2", altitudeAxis + inputWidth)
         .attr("y2", 0)
-
+        
     g.append('line')
-        .attr("x1", altitudeAxis)
-        .attr("y1", flowHeight)
-        .attr("x2", altitudeAxis + inputWidth + outputWidth)
+        .attr("x1", altitudeAxis + inputWidth)
+        .attr("y1", 0)
+        .attr("x2", altitudeAxis + inputWidth)
         .attr("y2", flowHeight)
+    // 
+    // g.append('line')
+    //     .attr("x1", altitudeAxis)
+    //     .attr("y1", flowHeight)
+    //     .attr("x2", altitudeAxis + inputWidth + outputWidth)
+    //     .attr("y2", flowHeight)
 
     list = [
         {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 150, max: 350, label: 'Temperature (K)'},
@@ -356,14 +367,32 @@ initializeInput = function() {
     list.map(function(args, i) {
         var g = vis.append('svg:g')
                 .attr('class', args.nonSurfaceKey)
+
+        g.append('line')
+        .attr('x1', (profileWidth + subsectionMargin) * i)
+        .attr('y1', 0)
+        .attr('x2', (profileWidth + subsectionMargin) * i)
+        .attr('y2', flowHeight)
         
-        if (i) {
-            g.append('rect')
-                .attr('width', subsectionMargin)
-                .attr('height', flowHeight)
-                .attr('x', (profileWidth + subsectionMargin) * i - subsectionMargin)
-                .attr('fill', '#DDD')
-        }
+        g.append('line')
+        .attr('x1', (profileWidth + subsectionMargin) * i + profileWidth)
+        .attr('y1', 0)
+        .attr('x2', (profileWidth + subsectionMargin) * i + profileWidth)
+        .attr('y2', flowHeight)
+        
+        g.append('line')
+        .attr('x1', (profileWidth + subsectionMargin) * i)
+        .attr('y1', 0)
+        .attr('x2', (profileWidth + subsectionMargin) * i + profileWidth)
+        .attr('y2', 0)
+        
+        // if (i) {
+        //     g.append('rect')
+        //         .attr('width', subsectionMargin)
+        //         .attr('height', flowHeight)
+        //         .attr('x', (profileWidth + subsectionMargin) * i - subsectionMargin)
+        //         .attr('fill', '#DDD')
+        // }
                 
         args['x'] = d3.scale.linear().domain([args.min || 0, args.max]).range([(profileWidth + subsectionMargin) * i, (profileWidth + subsectionMargin) * i + profileWidth])
         args['line'] = d3.svg.line().x(function(d) { return args.x(d); }).y(function(d,i) { return y(i && modelData['altitude'][i - 1]); })
