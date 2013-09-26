@@ -7,6 +7,8 @@ var bottomMargin = 60
 var totalHeight = headerHeight + flowHeight + bottomMargin
 $('svg#rrtm').height(totalHeight)
 
+var rightInnerMargin = 20
+
 var outputWidth = 500
 var totalWidth = 1250
 $('svg#rrtm').width(totalWidth)
@@ -16,7 +18,7 @@ var inputOutputSeparator = 40
 var inputWidth = totalWidth - (outputWidth + inputOutputSeparator + rightMargin + 2 * altitudeAxis)
 $('text.inputDescription tspan').attr('x', inputWidth / 2)
 $('text.output').attr('x', inputWidth + outputWidth/2)
-var subsectionMargin = 20
+var subsectionMargin = 30
 var subsectionWidth = (outputWidth - (subsectionMargin * 2)) / 3.0
 var profileWidth = 180
 var roomForProfileLabels = 40
@@ -217,7 +219,7 @@ updateOutput = function() {
 
 
 var inputList = [
-    {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 150, max: 350, label: 'Temperature (K)', on: true},
+    {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 200, max: 350, label: 'Temperature (K)', on: true},
     {nonSurfaceKey: 'rh', max: 100., label: 'Relative humidity (%)'},
     {nonSurfaceKey: 'co2', max: 3000, label: 'CO2 (ppm)', double: 1, on: true},
     {nonSurfaceKey: 'ch4', max: 10000, label: 'CH4 (ppb)', double: 2},
@@ -348,7 +350,7 @@ initializeInput = function() {
     g.append('line')
         .attr("x1", altitudeAxis)
         .attr("y1", 0)
-        .attr("x2", altitudeAxis + inputWidth)
+        .attr("x2", altitudeAxis + inputWidth +1)
         .attr("y2", 0)
         
     g.append('line')
@@ -393,7 +395,7 @@ initializeProfiles = function() {
     
     var vis = d3.select('svg#inner')
     $('svg#inner')
-        .attr('width', ((checkedList.length + 1) * profileWidth + checkedList.length * subsectionMargin) + 'px')
+        .attr('width', ((checkedList.length + 1) * profileWidth + checkedList.length * subsectionMargin) + rightInnerMargin + 'px')
     $('.control').attr('width', profileWidth).attr('height', flowHeight)
     checkedList.map(function(args, index) {
         var i = index + 1
@@ -491,17 +493,22 @@ initializeProfiles = function() {
             args['profile'] = g.append('svg:path').attr('class', 'profile').attr('d', args.line(args.values))
             if ((args.surfaceKey) && (ci == 0)) {
                 modelData[args.surfaceKey] = newValue
-            } else {
-                // if ((key == '#cldf') && (modelData[args.nonSurfaceKey][ci - 1] == 0)) {
-                //     $.each([['clwp', 5.0], ['ciwp', 5.0], ['r_liq', 10.0], ['r_ice', 30.0]], function(i,d) {
-                //         var new_key = d[0]
-                //         var new_default = d[1]
-                // 
-                //         if (modelData[new_key][ci - 1] == 0) {
-                //             modelData[new_key][ci - 1] = new_default
-                //         }
-                //     })
-                // }
+            } else {                
+                if ((args.nonSurfaceKey == 'cldf') && (modelData[args.nonSurfaceKey][ci - 1] == 0)) {
+                    $.each([['clwp', 5.0], ['ciwp', 5.0], ['r_liq', 10.0], ['r_ice', 30.0]], function(i,d) {
+                        var new_key = d[0]
+                        var new_default = d[1]
+                        var tempArgs
+                        if (modelData[new_key][ci - 1] == 0) {
+                            modelData[new_key][ci - 1] = new_default
+                            tempArgs = $.grep(checkedList, function(el, ind) {return el.nonSurfaceKey == new_key })[0]
+                            tempArgs.profile.remove()
+                            tempArgs['values'] = modelData[new_key]
+                            tempArgs['profile'] = d3.select('g.' + new_key).append('svg:path').attr('class', 'profile').attr('d', tempArgs.line(tempArgs.values))
+                            d3.select('g.' + new_key).select('circle').attr('cx', tempArgs.x(tempArgs.values[0]))
+                        }
+                    })
+                }
                 modelData[args.nonSurfaceKey][ci - 1] = newValue
             }
             changed = true
