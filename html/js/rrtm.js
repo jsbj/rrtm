@@ -244,6 +244,7 @@ var checkedList = $.grep(inputList, function(el,ind) { return el.on})
 
 var mouseDown = false
 var changed = false
+var inDrag = false
 // var profileMove = false
 $('svg').on("mousedown", function(e) {
     mouseDown = true
@@ -272,7 +273,8 @@ closestLayerIndex = function(altitude) {
 }
 
 var drag = d3.behavior.drag()
-    .on("drag", function(d,i) {        
+    .on("drag", function(d,i) { 
+        inDrag = true
         var args = this.__data__[0]
         var g = this.__data__[1]
 
@@ -306,6 +308,7 @@ var drag = d3.behavior.drag()
         }        
     })
     .on("dragend", function(d,i){
+        inDrag = false
         updateModel()
     });
 
@@ -559,7 +562,7 @@ initializeProfiles = function() {
 
     })
     vis.on("mousemove", function(d,j) {
-        if ((mouseDown && (d3.mouse(this)[1] < flowHeight)) && (d3.mouse(this)[0] % (profileWidth + subsectionMargin) < profileWidth)) {
+        if ((!inDrag && mouseDown && (d3.mouse(this)[1] < flowHeight)) && (d3.mouse(this)[0] % (profileWidth + subsectionMargin) < profileWidth)) {
             var xindex = Math.floor(d3.mouse(this)[0] / (profileWidth + subsectionMargin)) - 1
             if (xindex >= 0) {
                 args = checkedList[xindex]
