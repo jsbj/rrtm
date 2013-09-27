@@ -304,8 +304,17 @@ var drag = d3.behavior.drag()
 
 initializeInput = function() {
     $('.input').attr('height', (flowHeight + bottomMargin) + 'px').attr('width', inputWidth + 'px')
-    $('foreignObject.input').attr('y', headerHeight).attr('x', altitudeAxis)
+    var foreignInput = $($.grep($('foreignObject'), function( e, i) { return $(e).attr('class') == 'input' })[0])
+    foreignInput.attr('y', headerHeight).attr('x', altitudeAxis)
     $('svg#inner').attr('height', (flowHeight + roomForProfileLabels) + 'px')
+    
+    if ($.browser.webkit) {
+        if ($.browser.safari) {
+            $('div.input').height(parseInt($('div.input').height()) + 85)
+        } else {
+            $('div.input').height(parseInt($('div.input').height()) + 10)            
+        }
+    }
     
     
     var y = d3.scale.linear().domain([0, d3.max(modelData['altitude'])]).range([flowHeight, 0])
