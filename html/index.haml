@@ -4,8 +4,8 @@
         %meta{ 'http-equiv' => "Content-type", content: "text/html; charset=utf-8"}
         %title Earth's Energy
         %meta{ name: "viewport", content: "width=device-width, initial-scale=1.0"}
+        %link{ href: "css/jquery.ui.css", rel: "stylesheet", media: "screen" }
         %link{ href: "css/coursera.css", rel: "stylesheet", media: "screen" }
-        / %link{ href: "css/bootstrap.min.css", rel: "stylesheet", media: "screen"}
         / %link{ href: "css/slider.css", rel: "stylesheet", media: "screen" }
         / %link{ href: "css/application.css", rel: "stylesheet", media: "screen" }
     %body
@@ -15,7 +15,7 @@
             %a{href: './modtran.doc.html', target: '_blank'}
                 %b About this model
         #models
-            %a{href: '../models.html'}
+            %a{href: 'http://climatemodels.uchicago.edu'}
                 %b Other Models
         %svg#rrtm{style: 'margin: auto;'}
             %text.inputDescription{y: '20', width: '300px', 'text-anchor' => 'middle', style: 'font-family: helvetica, sans-serif; font-size: 20px', fill: '#434358'}
@@ -28,9 +28,40 @@
                         %div.input{style: 'overflow-x:scroll; overflow-y:hidden'}
                             %svg#inner{width: '2000px', height: '200px', style: 'float: left;'}
                                 %switch
-                                    %foreignObject.control{x: '0', y: '0', requiredFeatures: "http://www.w3.org/TR/SVG11/feature#Extensibility"}
+                                    %foreignObject.control{x: '0', y: '-10', requiredFeatures: "http://www.w3.org/TR/SVG11/feature#Extensibility"}
                                         %body.control{xmlns: 'http://www.w3.org/1999/xhtml'}
-                                            %ul.control{style: 'font-size: 80%; list-style-type: none; padding: 5px; margin: 0;'}
+                                            %div#tab-container.tab-container
+                                                %ul.etabs
+                                                    %li.tab
+                                                        %a{href:"#tabs1-sun"} Sun
+                                                    %li.tab
+                                                        %a{href:"#tabs1-surface"} Surface
+                                                    %li.tab.default
+                                                        %a{href:"#tabs1-atmosphere"} Atmosphere
+                                                %div#tabs1-sun
+                                                    %div#sunlightText
+                                                        sunlight:
+                                                        %span.sunlight 1370
+                                                        W/m
+                                                        %sup 2
+                                                    %div#sunlight
+                                                    / %div#sunTempText
+                                                    /     Sun's surface temperature:
+                                                    /     %span.sunTemp 5780
+                                                    /     K
+                                                    / %div#sunTemp
+                                                    / %div#distanceToSunText
+                                                    /     distance to Sun:
+                                                    /     %span.distanceToSuntext
+                                                    / %div#distanceToSun
+                                                %div#tabs1-surface
+                                                    %ul.albedo{style: 'font-size: 80%; list-style-type: none; padding: 5px; margin: 0;'}
+                                                    %div#albedoText
+                                                        albedo: 
+                                                        %span.albedo 0.3
+                                                    %div#albedo
+                                                %div#tabs1-atmosphere
+                                                    %ul.control{style: 'font-size: 80%; list-style-type: none; padding: 5px; margin: 0;'}
                 Your browser does not support this page.
         %img#loader{ src: 'img/ajax-loader.gif', style: 'display: none;' }
         %script{ src: "js/jquery.js" }
@@ -39,4 +70,6 @@
         / %script{ src: 'js/respond.js' }
         %script{ src: "js/d3.js", charset: "utf-8" }
         / %script{ src: "js/visualization.js" }
+        %script{ src: 'js/jquery.ui.js' }
+        %script{ src: 'js/jquery.easytabs.min.js' }
         %script{ src: 'js/rrtm.js' }

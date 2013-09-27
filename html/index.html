@@ -4,8 +4,8 @@
     <meta content='text/html; charset=utf-8' http-equiv='Content-type'>
     <title>Earth's Energy</title>
     <meta content='width=device-width, initial-scale=1.0' name='viewport'>
+    <link href='css/jquery.ui.css' media='screen' rel='stylesheet'>
     <link href='css/coursera.css' media='screen' rel='stylesheet'>
-    <!-- %link{ href: "css/bootstrap.min.css", rel: "stylesheet", media: "screen"} -->
     <!-- %link{ href: "css/slider.css", rel: "stylesheet", media: "screen" } -->
     <!-- %link{ href: "css/application.css", rel: "stylesheet", media: "screen" } -->
   </head>
@@ -19,7 +19,7 @@
       </a>
     </div>
     <div id='models'>
-      <a href='../models.html'>
+      <a href='http://climatemodels.uchicago.edu'>
         <b>Other Models</b>
       </a>
     </div>
@@ -35,9 +35,50 @@
             <div class='input' style='overflow-x:scroll; overflow-y:hidden'>
               <svg height='200px' id='inner' style='float: left;' width='2000px'>
                 <switch>
-                  <foreignObject class='control' requiredFeatures='http://www.w3.org/TR/SVG11/feature#Extensibility' x='0' y='0'>
+                  <foreignObject class='control' requiredFeatures='http://www.w3.org/TR/SVG11/feature#Extensibility' x='0' y='-10'>
                     <body class='control' xmlns='http://www.w3.org/1999/xhtml'>
-                      <ul class='control' style='font-size: 80%; list-style-type: none; padding: 5px; margin: 0;'></ul>
+                      <div class='tab-container' id='tab-container'>
+                        <ul class='etabs'>
+                          <li class='tab'>
+                            <a href='#tabs1-sun'>Sun</a>
+                          </li>
+                          <li class='tab'>
+                            <a href='#tabs1-surface'>Surface</a>
+                          </li>
+                          <li class='tab default'>
+                            <a href='#tabs1-atmosphere'>Atmosphere</a>
+                          </li>
+                        </ul>
+                        <div id='tabs1-sun'>
+                          <div id='sunlightText'>
+                            sunlight:
+                            <span class='sunlight'>1370</span>
+                            W/m
+                            <sup>2</sup>
+                          </div>
+                          <div id='sunlight'></div>
+                          <!-- %div#sunTempText -->
+                          <!-- Sun's surface temperature: -->
+                          <!-- %span.sunTemp 5780 -->
+                          <!-- K -->
+                          <!-- %div#sunTemp -->
+                          <!-- %div#distanceToSunText -->
+                          <!-- distance to Sun: -->
+                          <!-- %span.distanceToSuntext -->
+                          <!-- %div#distanceToSun -->
+                        </div>
+                        <div id='tabs1-surface'>
+                          <ul class='albedo' style='font-size: 80%; list-style-type: none; padding: 5px; margin: 0;'></ul>
+                          <div id='albedoText'>
+                            albedo:
+                            <span class='albedo'>0.3</span>
+                          </div>
+                          <div id='albedo'></div>
+                        </div>
+                        <div id='tabs1-atmosphere'>
+                          <ul class='control' style='font-size: 80%; list-style-type: none; padding: 5px; margin: 0;'></ul>
+                        </div>
+                      </div>
                     </body>
                   </foreignObject>
                 </switch>
@@ -55,6 +96,8 @@
     <!-- %script{ src: 'js/respond.js' } -->
     <script charset='utf-8' src='js/d3.js'></script>
     <!-- %script{ src: "js/visualization.js" } -->
+    <script src='js/jquery.ui.js'></script>
+    <script src='js/jquery.easytabs.min.js'></script>
     <script src='js/rrtm.js'></script>
   </body>
 </html>

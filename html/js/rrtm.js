@@ -371,7 +371,7 @@ initializeInput = function() {
     text = ''
     inputList.map(function(args, index) {
         if (args.double != 2) { text += '<li>' }
-        text += '<input class="profileCheckbox" type="checkbox" ' + (args.on ? 'checked = "checked"' : '') + 'id="' + args.nonSurfaceKey + '" /><label for="' + args.nonSurfaceKey + '" >' + args.label.replace(/\s\(.+\)/, "") + '</label>'
+        text += '<input class="profileCheckbox" type="checkbox" ' + (args.on ? 'checked="checked" ' : '') + 'id="' + args.nonSurfaceKey + '" /><label for="' + args.nonSurfaceKey + '" >' + args.label.replace(/\s\(.+\)/, "") + '</label>'
         if (args.double != 1) { text += '</li>'}
     })
     $('ul.control').append(text)
@@ -387,6 +387,79 @@ initializeInput = function() {
         $('g.profileGroup').remove()
         initializeProfiles()
     })
+    
+    $('#tab-container').easytabs({defaultTab: 'li.default'})
+    
+    surfaces = [
+        {name: 'Asphalt', value: 0.08},
+        {name: 'Concrete (new)', value: 0.55},
+        {name: 'Desert', value: 0.4},
+        {name: "Earth's average", value: 0.3},
+        {name: 'Forest', value: 0.15},
+        {name: 'Grass', value: 0.25},
+        {name: 'Ice (ocean)', value: 0.6},
+        {name: 'Ocean', value: 0.1},
+        {name: 'Snow (fresh)', value: 0.85},
+        {name: 'Soil', value: 0.17},
+        {name: 'Custom'}
+    ]
+    
+    text = ''
+    $.map(surfaces, function(e,i) {
+        text += '<li><input class="albedo" ' + (e.name == "Earth's average" ? 'checked="checked"' : '') + ' data-value="' + e.value + '" name="albedo" id="' + e.name + '" type="radio" /><label for="' + e.name + '">' + e.name + '</li>'
+        // http://cove.larc.nasa.gov/papers/jingrl04.pdf
+    })
+    $('ul.albedo').append(text)
+    $('#albedo').slider({
+        min: 0.0,
+        max: 1.0,
+        step: 0.01,
+        change: function( event, ui ) {
+            if ($(this).slider('value')) {
+                modelData['asdir'] = $(this).slider('value')
+                $('span.albedo').text($(this).slider('value'))
+            }
+            updateModel()
+        },
+        slide: function( event, ui ) {
+            if ($(this).slider('value')) {
+                $('span.albedo').text($(this).slider('value'))
+            }
+        },
+        start: function( event, ui ) {
+            $('input#Custom').click()
+        },
+        value: 0.3
+    })
+    $('input.albedo').change(function(){
+        $('#albedo').slider('value', $(this).attr('data-value'))
+    })
+    
+    $('#sunlight').slider({
+        min: 0,
+        max: 2000,
+        value: 1370,
+        step: 10,
+        change: function( event, ui ) {
+            if ($(this).slider('value')) {
+                modelData['scon'] = $(this).slider('value')
+                $('span.sunlight').text($(this).slider('value'))
+            }
+            updateModel()
+        }
+    })
+    $('#sunTemp').slider({
+        min: 0,
+        max: 10000,
+        value: 5780,
+        step: 20,
+        change: function( event, ui ) {
+            temp = $(this).slider('value')
+            $('#sunlight').slider('value', 5.67 * Math.pow(10,-8) * Math.pow(temp, 4) * Math.pow(6.96 * Math.pow(10, 8), 2) / Math.pow(1.496 * Math.pow(10, 11), 2))
+        }
+    })
+    $('#distanceToSun').slider()
+    
     initializeProfiles()
 }
 
@@ -396,7 +469,7 @@ initializeProfiles = function() {
     var vis = d3.select('svg#inner')
     $('svg#inner')
         .attr('width', ((checkedList.length + 1) * profileWidth + checkedList.length * subsectionMargin) + rightInnerMargin + 'px')
-    $('.control').attr('width', profileWidth).attr('height', flowHeight)
+    $('.control').attr('width', profileWidth).attr('height', flowHeight + roomForProfileLabels)
     checkedList.map(function(args, index) {
         var i = index + 1
         var g = vis.append('svg:g')
@@ -471,47 +544,49 @@ initializeProfiles = function() {
     vis.on("mousemove", function(d,j) {
         if ((mouseDown && (d3.mouse(this)[1] < flowHeight)) && (d3.mouse(this)[0] % (profileWidth + subsectionMargin) < profileWidth)) {
             var xindex = Math.floor(d3.mouse(this)[0] / (profileWidth + subsectionMargin)) - 1
-            args = checkedList[xindex]
+            if (xindex >= 0) {
+                args = checkedList[xindex]
             
-            var g = d3.select('g.' + args.nonSurfaceKey)
+                var g = d3.select('g.' + args.nonSurfaceKey)
             
-            var ci = closestLayerIndex(y.invert(d3.mouse(this)[1]))
-            var xvalue = d3.mouse(this)[0]
-            if (args.hardMax) {
-                var newValue = args.x.invert(Math.min(Math.max(xvalue, 0), profileWidth))
-            } else {
-                var newValue = args.x.invert(Math.max(xvalue, 0))                
-            }
-            
-            // Up to here
-            args.values[ci] = newValue
-            if (!ci) {
-                g.select('circle').attr('cx', args.x(args.values[0]))
-            }
-            args.profile.remove()
-            
-            args['profile'] = g.append('svg:path').attr('class', 'profile').attr('d', args.line(args.values))
-            if ((args.surfaceKey) && (ci == 0)) {
-                modelData[args.surfaceKey] = newValue
-            } else {                
-                if ((args.nonSurfaceKey == 'cldf') && (modelData[args.nonSurfaceKey][ci - 1] == 0)) {
-                    $.each([['clwp', 5.0], ['ciwp', 5.0], ['r_liq', 10.0], ['r_ice', 30.0]], function(i,d) {
-                        var new_key = d[0]
-                        var new_default = d[1]
-                        var tempArgs
-                        if (modelData[new_key][ci - 1] == 0) {
-                            modelData[new_key][ci - 1] = new_default
-                            tempArgs = $.grep(checkedList, function(el, ind) {return el.nonSurfaceKey == new_key })[0]
-                            tempArgs.profile.remove()
-                            tempArgs['values'] = modelData[new_key]
-                            tempArgs['profile'] = d3.select('g.' + new_key).append('svg:path').attr('class', 'profile').attr('d', tempArgs.line(tempArgs.values))
-                            d3.select('g.' + new_key).select('circle').attr('cx', tempArgs.x(tempArgs.values[0]))
-                        }
-                    })
+                var ci = closestLayerIndex(y.invert(d3.mouse(this)[1]))
+                var xvalue = d3.mouse(this)[0]
+                if (args.hardMax) {
+                    var newValue = args.x.invert(Math.min(Math.max(xvalue, 0), profileWidth))
+                } else {
+                    var newValue = args.x.invert(Math.max(xvalue, 0))                
                 }
-                modelData[args.nonSurfaceKey][ci - 1] = newValue
+            
+                // Up to here
+                args.values[ci] = newValue
+                if (!ci) {
+                    g.select('circle').attr('cx', args.x(args.values[0]))
+                }
+                args.profile.remove()
+            
+                args['profile'] = g.append('svg:path').attr('class', 'profile').attr('d', args.line(args.values))
+                if ((args.surfaceKey) && (ci == 0)) {
+                    modelData[args.surfaceKey] = newValue
+                } else {                
+                    if ((args.nonSurfaceKey == 'cldf') && (modelData[args.nonSurfaceKey][ci - 1] == 0)) {
+                        $.each([['clwp', 5.0], ['ciwp', 5.0], ['r_liq', 10.0], ['r_ice', 30.0]], function(i,d) {
+                            var new_key = d[0]
+                            var new_default = d[1]
+                            var tempArgs
+                            if (modelData[new_key][ci - 1] == 0) {
+                                modelData[new_key][ci - 1] = new_default
+                                tempArgs = $.grep(checkedList, function(el, ind) {return el.nonSurfaceKey == new_key })[0]
+                                tempArgs.profile.remove()
+                                tempArgs['values'] = modelData[new_key]
+                                tempArgs['profile'] = d3.select('g.' + new_key).append('svg:path').attr('class', 'profile').attr('d', tempArgs.line(tempArgs.values))
+                                d3.select('g.' + new_key).select('circle').attr('cx', tempArgs.x(tempArgs.values[0]))
+                            }
+                        })
+                    }
+                    modelData[args.nonSurfaceKey][ci - 1] = newValue
+                }
+                changed = true
             }
-            changed = true
         }
         return false
     })
