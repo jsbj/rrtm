@@ -284,18 +284,26 @@ var drag = d3.behavior.drag()
         }
 
         var diff = newValue - args.values[0]
+        
+        var newValues = [] 
         args.values.map(function(oldValue, index) {
-            args.values[index] = oldValue + diff
-            if (args.surfaceKey && (index == 0)) {
-                modelData[args.surfaceKey] = oldValue + diff
-            } else {
-                modelData[args.nonSurfaceKey][index - 1] = oldValue + diff
-            }
+            newValues = newValues.concat(oldValue + diff)
         })
+        
+        if ((Math.max.apply(null, newValues) <= args.max) && (Math.min.apply(null, newValues) >= args.min)) {
+            args.values.map(function(oldValue, index) {
+                args.values[index] = oldValue + diff
+                if (args.surfaceKey && (index == 0)) {
+                    modelData[args.surfaceKey] = oldValue + diff
+                } else {
+                    modelData[args.nonSurfaceKey][index - 1] = oldValue + diff
+                }
+            })
 
-        args.profile.remove()
-        args['profile'] = g.append('svg:path').attr('class', 'profile').attr('d', args.line(args.values))
-        d3.select(this).attr('cx', args.x(args.values[0]))
+            args.profile.remove()
+            args['profile'] = g.append('svg:path').attr('class', 'profile').attr('d', args.line(args.values))
+            d3.select(this).attr('cx', args.x(args.values[0]))   
+        }        
     })
     .on("dragend", function(d,i){
         updateModel()
@@ -359,14 +367,14 @@ initializeInput = function() {
     g.append('line')
         .attr("x1", altitudeAxis)
         .attr("y1", 0)
-        .attr("x2", altitudeAxis + inputWidth +1)
+        .attr("x2", altitudeAxis + inputWidth + 100 +  1)
         .attr("y2", 0)
         
-    g.append('line')
-        .attr("x1", altitudeAxis + inputWidth)
-        .attr("y1", 0)
-        .attr("x2", altitudeAxis + inputWidth)
-        .attr("y2", flowHeight)
+    // g.append('line')
+    //     .attr("x1", altitudeAxis + inputWidth)
+    //     .attr("y1", 0)
+    //     .attr("x2", altitudeAxis + inputWidth)
+    //     .attr("y2", flowHeight)
     // 
     // g.append('line')
     //     .attr("x1", altitudeAxis)

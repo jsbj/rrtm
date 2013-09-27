@@ -36,6 +36,11 @@ table.padded-table td{padding:2px;}
     padding-top: 100px;
 }
 
+.instruction {
+    color: '#666';
+    font-style: italic;
+}
+
 .axis path,
 .axis line {
     fill: none;
