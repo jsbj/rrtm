@@ -8,7 +8,7 @@ var totalHeight = headerHeight + flowHeight + bottomMargin
 $('svg#rrtm').height(totalHeight)
 
 var rightInnerMargin = 20
-
+var USAunits = false
 var outputWidth = 500
 var totalWidth = 1250
 $('svg#rrtm').width(totalWidth)
@@ -18,9 +18,15 @@ var inputOutputSeparator = 40
 var inputWidth = totalWidth - (outputWidth + inputOutputSeparator + rightMargin + 2 * altitudeAxis)
 $('text.inputDescription tspan').attr('x', inputWidth / 2)
 $('text.output').attr('x', inputWidth + outputWidth/2)
+var foreignReset = $($.grep($('foreignObject'), function( e, i) { return $(e).attr('class') == 'reset' })[0])
+var foreignLoader = $($.grep($('foreignObject'), function( e, i) { return $(e).attr('class') == 'loader' })[0])
+foreignReset.attr('y', headerHeight - 20).attr('x', altitudeAxis).attr('width', 200).attr('height', 20)
+foreignLoader.attr('y', headerHeight + flowHeight/2 - 20).attr('x', altitudeAxis + inputWidth).attr('width',30).attr('height', 30)
+$('#loader').attr('width', 30).attr('height', 30)
 var subsectionMargin = 30
 var subsectionWidth = (outputWidth - (subsectionMargin * 2)) / 3.0
 var profileWidth = 180
+var profileControlWidth = 180
 var roomForProfileLabels = 40
 
 var arrowHeight = 40 // 60
@@ -37,6 +43,11 @@ var modelData = {}
 // AJAX call to update modelData object,
 // inputs, and visualization
 updateModel = function(initialize) {
+    if (initialize != true) {
+        $('#loader').show()        
+    }
+
+    
     $.ajax({
         url: '../cgi-bin/rrtm.py',
         type: 'post',
@@ -44,14 +55,20 @@ updateModel = function(initialize) {
         dataType: 'json',
         success: function(response) {
             modelData = response
+            
             // updateInput()
             updateOutput()
-            if (initialize) {
+            if (initialize == true) {
                 initializeInput()
+            } else {
+                if (initialize == 'just profiles') {
+                    $('g.profileGroup').remove()
+                    initializeProfiles()
+                }
+                $('#loader').hide()
             }
         },
         error: function(x,s,e) {
-            // alert('hi')
             console.log(x.error())
         }
     })
@@ -219,7 +236,7 @@ updateOutput = function() {
 
 
 var inputList = [
-    {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 200, max: 350, label: 'Temperature (K)', on: true},
+    {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 200, max: 350, label: 'Temperature (K)', on: true, USAscale: d3.scale.linear().domain([273.15, 373.15]).range([32.0, 212.0])},
     {nonSurfaceKey: 'rh', max: 100., label: 'Relative humidity (%)'},
     {nonSurfaceKey: 'co2', max: 3000, label: 'CO2 (ppm)', double: 1, on: true},
     {nonSurfaceKey: 'ch4', max: 10000, label: 'CH4 (ppb)', double: 2},
@@ -229,7 +246,7 @@ var inputList = [
     {nonSurfaceKey: 'cfc12', max: 1000, label: 'CFC-12 (ppt)', double: 2},
     {nonSurfaceKey: 'cfc22', max: 1000, label: 'CFC-22 (ppt)', double: 1},
     {nonSurfaceKey: 'ccl4', max: 50, label: 'CCl4 (ppt)', double: 2},
-    {nonSurfaceKey: 'cldf', max: 1, label: 'Cloud fraction'},
+    {nonSurfaceKey: 'cldf', max: 1, label: 'Cloud fraction', noCircle: true},
     {nonSurfaceKey: 'clwp', max: 30, label: 'In-cloud liquid water path (g/m2)'},
     {nonSurfaceKey: 'r_liq', max: 100, label: 'Cloud water drop radius (10^-6 m)'},
     {nonSurfaceKey: 'ciwp', max: 30, label: 'In-cloud ice water path (g/m2)'},
@@ -292,13 +309,24 @@ var drag = d3.behavior.drag()
             newValues = newValues.concat(oldValue + diff)
         })
         
-        if ((Math.max.apply(null, newValues) <= args.max) && (Math.min.apply(null, newValues) >= args.min)) {
+        console.log(Math.min.apply(null, newValues))
+        console.log(args.min)
+        
+        if ((Math.max.apply(null, newValues) <= args.max) && (Math.min.apply(null, newValues) >= (args.min || 0))) {
             args.values.map(function(oldValue, index) {
                 args.values[index] = oldValue + diff
                 if (args.surfaceKey && (index == 0)) {
-                    modelData[args.surfaceKey] = oldValue + diff
+                    if (USAunits && args.USAscale) {
+                        modelData[args.surfaceKey] = args.USAscale.invert(oldValue + diff)
+                    } else {
+                        modelData[args.surfaceKey] = oldValue + diff                        
+                    }
                 } else {
-                    modelData[args.nonSurfaceKey][index - 1] = oldValue + diff
+                    if (USAunits && args.USAscale) {
+                        modelData[args.nonSurfaceKey][index - 1] = args.USAscale.invert(oldValue + diff)
+                    } else {
+                        modelData[args.nonSurfaceKey][index - 1] = oldValue + diff
+                    }
                 }
             })
 
@@ -314,6 +342,9 @@ var drag = d3.behavior.drag()
 
 
 initializeInput = function() {
+    $('#loader').hide()
+    $('text.inputDescription').css('font-size', '20px').show()
+    foreignReset.show()
     $('.input').attr('height', (flowHeight + bottomMargin) + 'px').attr('width', inputWidth + 'px')
     var foreignInput = $($.grep($('foreignObject'), function( e, i) { return $(e).attr('class') == 'input' })[0])
     foreignInput.attr('y', headerHeight).attr('x', altitudeAxis)
@@ -521,7 +552,9 @@ initializeProfiles = function() {
         //         .attr('fill', '#DDD')
         // }
                 
-        args['x'] = d3.scale.linear().domain([args.min || 0, args.max]).range([(profileWidth + subsectionMargin) * i, (profileWidth + subsectionMargin) * i + profileWidth])
+        args['x'] = d3.scale.linear()
+            .domain([(USAunits && args.USAscale) ? args.USAscale(args.min || 0) : (args.min || 0),(USAunits && args.USAscale) ? args.USAscale(args.max) : args.max])
+            .range([(profileWidth + subsectionMargin) * i, (profileWidth + subsectionMargin) * i + profileWidth])
         args['line'] = d3.svg.line().x(function(d) { return args.x(d); }).y(function(d,i) { return y(i && modelData['altitude'][i - 1]); })
         args['values'] = ([typeof args.surfaceKey !== 'undefined' ? modelData[args.surfaceKey] : modelData[args.nonSurfaceKey][0]]).concat(modelData[args.nonSurfaceKey])
         args['profile'] = g.append('svg:path').attr('class', 'profile').attr('d', args.line(args.values))
@@ -545,16 +578,18 @@ initializeProfiles = function() {
             .attr('y', flowHeight + 30)
             .text(args.label)
         
-        g.selectAll('circle')
-        .data([[args, g]])
-        .enter()
-        .append('circle')
-        .attr('class', 'controller')
-        .attr('cx', args.x(args.values[0]))
-        .attr('cy', flowHeight + 5)
-        .attr('r', 5)
-        .attr('fill', '#b94a48')
-        .call(drag)
+        if (!args.noCircle) {
+            g.selectAll('circle')
+            .data([[args, g]])
+            .enter()
+            .append('circle')
+            .attr('class', 'controller')
+            .attr('cx', args.x(args.values[0]))
+            .attr('cy', flowHeight + 5)
+            .attr('r', 5)
+            .attr('fill', '#b94a48')
+            .call(drag)            
+        }
         // .attr('fill', 'blue').on('mousedown', function(d,j) {
         //     // profileMove = [args, g]
         //     return false
@@ -611,3 +646,8 @@ initializeProfiles = function() {
         return false
     })
 }
+
+$('a#reset').click(function(){
+    modelData = {}
+    updateModel('just profiles')
+})

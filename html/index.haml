@@ -11,6 +11,11 @@
     %body
         #banner
             %h2 Earth's Energy Budget
+        / #settings
+        /     Units: 
+        /     %select
+        /         %option SI
+        /         %option USA
         #doc
             %a{href: './modtran.doc.html', target: '_blank'}
                 %b About this model
@@ -19,10 +24,14 @@
                 %b Other Models
         %div.container
             %svg#rrtm{style: 'margin: auto;'}
-                %text.inputDescription{y: '20', width: '300px', 'text-anchor' => 'middle', style: 'font-family: helvetica, sans-serif; font-size: 20px', fill: '#434358'}
+                %text.inputDescription{y: '20', width: '300px', 'text-anchor' => 'middle', style: 'font-family: helvetica, sans-serif; font-size: 20px', fill: '#434358', style: 'display: none;'}
                     %tspan If the Sun and the Earth's surface
                     %tspan{y: '45'} and atmosphere have these properties...
                 %text.output{x: '520', 'text-anchor' => 'middle', y: '20', style: 'font-family: helvetica, sans-serif; font-size: 20px', fill: '#434358'}
+                %foreignObject.reset{y: '0', x: '0', style: 'display: none;'}
+                    %body.reset{xmlns: 'http://www.w3.org/1999/xhtml'}
+                        %div
+                            %a#reset{href:'#reset'} reset
                 %switch
                     %foreignObject.input{y: '100', x: '40', requiredFeatures: "http://www.w3.org/TR/SVG11/feature#Extensibility"}
                         %body.inner{xmlns: 'http://www.w3.org/1999/xhtml'}
@@ -68,7 +77,10 @@
                                                             %li
                                                                 %span.instruction select properties to edit:
                     Your browser does not support this page.
-        %img#loader{ src: 'img/ajax-loader.gif', style: 'display: none;' }
+                %foreignObject.loader
+                    %body.loader{xmlns: 'http://www.w3.org/1999/xhtml'}
+                        %div
+                            %img#loader{ src: 'img/ajax-loader.gif'}
         %script{ src: "js/jquery.js" }
         / %script{ src: "js/bootstrap.min.js" }
         / %script{ src: "js/bootstrap-slider.js" }

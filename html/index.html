@@ -13,6 +13,11 @@
     <div id='banner'>
       <h2>Earth's Energy Budget</h2>
     </div>
+    <!-- #settings -->
+    <!-- Units: -->
+    <!-- %select -->
+    <!-- %option SI -->
+    <!-- %option USA -->
     <div id='doc'>
       <a href='./modtran.doc.html' target='_blank'>
         <b>About this model</b>
@@ -25,11 +30,18 @@
     </div>
     <div class='container'>
       <svg id='rrtm' style='margin: auto;'>
-        <text class='inputDescription' fill='#434358' style='font-family: helvetica, sans-serif; font-size: 20px' text-anchor='middle' width='300px' y='20'>
+        <text class='inputDescription' fill='#434358' style='display: none;' text-anchor='middle' width='300px' y='20'>
           <tspan>If the Sun and the Earth's surface</tspan>
           <tspan y='45'>and atmosphere have these properties...</tspan>
         </text>
         <text class='output' fill='#434358' style='font-family: helvetica, sans-serif; font-size: 20px' text-anchor='middle' x='520' y='20'></text>
+        <foreignObject class='reset' style='display: none;' x='0' y='0'>
+          <body class='reset' xmlns='http://www.w3.org/1999/xhtml'>
+            <div>
+              <a href='#reset' id='reset'>reset</a>
+            </div>
+          </body>
+        </foreignObject>
         <switch>
           <foreignObject class='input' requiredFeatures='http://www.w3.org/TR/SVG11/feature#Extensibility' x='40' y='100'>
             <body class='inner' xmlns='http://www.w3.org/1999/xhtml'>
@@ -97,9 +109,15 @@
           </foreignObject>
           Your browser does not support this page.
         </switch>
+        <foreignObject class='loader'>
+          <body class='loader' xmlns='http://www.w3.org/1999/xhtml'>
+            <div>
+              <img id='loader' src='img/ajax-loader.gif'>
+            </div>
+          </body>
+        </foreignObject>
       </svg>
     </div>
-    <img id='loader' src='img/ajax-loader.gif' style='display: none;'>
     <script src='js/jquery.js'></script>
     <!-- %script{ src: "js/bootstrap.min.js" } -->
     <!-- %script{ src: "js/bootstrap-slider.js" } -->
