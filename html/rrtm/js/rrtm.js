@@ -20,12 +20,12 @@ $('text.inputDescription tspan').attr('x', inputWidth / 2)
 $('text.output').attr('x', inputWidth + outputWidth/2)
 var foreignReset = $($.grep($('foreignObject'), function( e, i) { return $(e).attr('class') == 'reset' })[0])
 var foreignLoader = $($.grep($('foreignObject'), function( e, i) { return $(e).attr('class') == 'loader' })[0])
-foreignReset.attr('y', headerHeight - 20).attr('x', altitudeAxis).attr('width', 200).attr('height', 20)
+foreignReset.attr('y', headerHeight - 20).attr('x', altitudeAxis).attr('width', 400).attr('height', 20)
 foreignLoader.attr('y', headerHeight + flowHeight/2 - 20).attr('x', altitudeAxis + inputWidth).attr('width',30).attr('height', 30)
 $('#loader').attr('width', 30).attr('height', 30)
 var subsectionMargin = 30
 var subsectionWidth = (outputWidth - (subsectionMargin * 2)) / 3.0
-var profileWidth = 180
+var profileWidth = 300
 var profileControlWidth = 180
 var roomForProfileLabels = 40
 
@@ -49,7 +49,7 @@ updateModel = function(initialize) {
 
     
     $.ajax({
-        url: '../cgi-bin/rrtm.py',
+        url: '../../cgi-bin/rrtm/rrtm.py',
         type: 'post',
         data: JSON.stringify(modelData),
         dataType: 'json',
@@ -238,23 +238,23 @@ updateOutput = function() {
 var inputList = [
     {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 200, max: 350, label: 'Temperature (K)', on: true, USAscale: d3.scale.linear().domain([273.15, 373.15]).range([32.0, 212.0])},
     {nonSurfaceKey: 'rh', max: 100., label: 'Relative humidity (%)'},
-    {nonSurfaceKey: 'co2', max: 3000, label: 'CO2 (ppm)', double: 1, on: true},
-    {nonSurfaceKey: 'ch4', max: 10000, label: 'CH4 (ppb)', double: 2},
-    {nonSurfaceKey: 'n2o', max: 1000, label: 'N2O (ppb)', double: 1},
-    {nonSurfaceKey: 'o3', max: 50, label: 'O3 (ppm)', double: 2},
-    {nonSurfaceKey: 'cfc11', max: 1000, label: 'CFC-11 (ppt)', double: 1},
-    {nonSurfaceKey: 'cfc12', max: 1000, label: 'CFC-12 (ppt)', double: 2},
-    {nonSurfaceKey: 'cfc22', max: 1000, label: 'CFC-22 (ppt)', double: 1},
-    {nonSurfaceKey: 'ccl4', max: 50, label: 'CCl4 (ppt)', double: 2},
+    {nonSurfaceKey: 'co2', max: 10000, label: 'CO2 (ppm)', on: true},
+    // {nonSurfaceKey: 'ch4', max: 10000, label: 'CH4 (ppb)', double: 2},
+    // {nonSurfaceKey: 'n2o', max: 1000, label: 'N2O (ppb)', double: 1},
+    // {nonSurfaceKey: 'o3', max: 50, label: 'O3 (ppm)', double: 2},
+    // {nonSurfaceKey: 'cfc11', max: 1000, label: 'CFC-11 (ppt)', double: 1},
+    // {nonSurfaceKey: 'cfc12', max: 1000, label: 'CFC-12 (ppt)', double: 2},
+    // {nonSurfaceKey: 'cfc22', max: 1000, label: 'CFC-22 (ppt)', double: 1},
+    // {nonSurfaceKey: 'ccl4', max: 50, label: 'CCl4 (ppt)', double: 2},
     {nonSurfaceKey: 'cldf', max: 1, label: 'Cloud fraction', noCircle: true},
-    {nonSurfaceKey: 'clwp', max: 30, label: 'In-cloud liquid water path (g/m2)'},
-    {nonSurfaceKey: 'r_liq', max: 100, label: 'Cloud water drop radius (10^-6 m)'},
-    {nonSurfaceKey: 'ciwp', max: 30, label: 'In-cloud ice water path (g/m2)'},
-    {nonSurfaceKey: 'r_ice', max: 130, min: 13, label: 'Cloud ice particle radius (10^-6 m)'},
-    {nonSurfaceKey: 'tauaer_sw', max: 3, label: 'Aerosol SW optical depth'},
-    {nonSurfaceKey: 'ssaaer_sw', max: 1, label: 'Aerosol SW s.s. albedo'},
-    {nonSurfaceKey: 'asmaer_sw', max: 1, min: -1, label: 'Aerosol SW asymm. scattering'},
-    {nonSurfaceKey: 'tauaer_lw', max: 3, label: 'Aerosol LW optical depth'}
+    // {nonSurfaceKey: 'clwp', max: 30, label: 'In-cloud liquid water path (g/m2)'},
+    // {nonSurfaceKey: 'r_liq', max: 100, label: 'Cloud water drop radius (10^-6 m)'},
+    // {nonSurfaceKey: 'ciwp', max: 30, label: 'In-cloud ice water path (g/m2)'},
+    // {nonSurfaceKey: 'r_ice', max: 130, min: 13, label: 'Cloud ice particle radius (10^-6 m)'} //,
+    // {nonSurfaceKey: 'tauaer_sw', max: 3, label: 'Aerosol SW optical depth'},
+    // {nonSurfaceKey: 'ssaaer_sw', max: 1, label: 'Aerosol SW s.s. albedo'},
+    // {nonSurfaceKey: 'asmaer_sw', max: 1, min: -1, label: 'Aerosol SW asymm. scattering'},
+    // {nonSurfaceKey: 'tauaer_lw', max: 3, label: 'Aerosol LW optical depth'}
 ]
 
 var checkedList = $.grep(inputList, function(el,ind) { return el.on})
@@ -309,9 +309,6 @@ var drag = d3.behavior.drag()
             newValues = newValues.concat(oldValue + diff)
         })
         
-        console.log(Math.min.apply(null, newValues))
-        console.log(args.min)
-        
         if ((Math.max.apply(null, newValues) <= args.max) && (Math.min.apply(null, newValues) >= (args.min || 0))) {
             args.values.map(function(oldValue, index) {
                 args.values[index] = oldValue + diff
@@ -333,7 +330,9 @@ var drag = d3.behavior.drag()
             args.profile.remove()
             args['profile'] = g.append('svg:path').attr('class', 'profile').attr('d', args.line(args.values))
             d3.select(this).attr('cx', args.x(args.values[0]))   
-        }        
+            
+            $('.ui-tooltip-content').html(parseInt(args.values[0]))
+        }
     })
     .on("dragend", function(d,i){
         inDrag = false
@@ -596,6 +595,11 @@ initializeProfiles = function() {
         // })
 
     })
+    $(document).tooltip({
+        items: 'circle.controller',
+        content: function() { return parseInt($(this).context.__data__[0].values[0])},
+        track: true
+    })
     vis.on("mousemove", function(d,j) {
         if ((!inDrag && mouseDown && (d3.mouse(this)[1] < flowHeight)) && (d3.mouse(this)[0] % (profileWidth + subsectionMargin) < profileWidth)) {
             var xindex = Math.floor(d3.mouse(this)[0] / (profileWidth + subsectionMargin)) - 1
@@ -645,9 +649,21 @@ initializeProfiles = function() {
         }
         return false
     })
+    
 }
 
 $('a#reset').click(function(){
     modelData = {}
+    updateModel('just profiles')
+})
+
+$('select#presets').change(function() {
+    modelData = {}
+    if ($(this).val()) {
+        modelData['preset'] = $(this).val()        
+    } else {
+        delete modelData.preset
+    }
+    
     updateModel('just profiles')
 })

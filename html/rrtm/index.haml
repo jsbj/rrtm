@@ -32,6 +32,11 @@
                     %body.reset{xmlns: 'http://www.w3.org/1999/xhtml'}
                         %div
                             %a#reset{href:'#reset'} reset
+                            | presets:
+                            %select#presets
+                                %option 
+                                %option{value: 'isothermal, no greenhouse gases'} isothermal, no greenhouse gases
+                                %option{value: 'standard mid-latitude'} standard mid-latitude
                 %switch
                     %foreignObject.input{y: '100', x: '40', requiredFeatures: "http://www.w3.org/TR/SVG11/feature#Extensibility"}
                         %body.inner{xmlns: 'http://www.w3.org/1999/xhtml'}
@@ -81,6 +86,12 @@
                     %body.loader{xmlns: 'http://www.w3.org/1999/xhtml'}
                         %div
                             %img#loader{ src: 'img/ajax-loader.gif'}
+        %div
+            %p All objects are made out of tons of little jiggling atoms, and the energy contained in their jiggling is roughly represented by the object's temperature: the hotter the object, the more jiggling. In part because of the jiggling, all objects also give off something called electromagnetic radiation – on oscillating electromagnetic force that propogates away from the object. This radiation carries away energy, and that energy has to come from somewhere, and it usually comes at the expense of the jiggling: it causes the energy to have a lower temperature. So, if the Earth was alone in space, it would gradually fritter away all its energy by giving off electromagnetic radiation, and its temperature would decay to pretty much nothing.
+            %p However, if objects can absorb electromagnetic radiation, they gain that radiation's energy, which usually translates into that object having more jiggles, higher temperature. Thus, sunbathing. You can now picture that the Earth is in a balance – it's radiating, and so losing energy, but it's also absorbing the Sun's radiation, and so it's gaining energy. If there's more energy coming in than out, it will warm; if there's more energy going out than in, it will cool.
+            %p There's only one more wrinkle you need to understand: electromagnetic radiation comes in a spectrum of flavors depending on how frequently it oscillates, and the hotter your object is, the higher the frequency of the radiation it gives off, on average. Objects with temperatures like you or me or the Earth give off light oscillates more frequently than radiowaves but less frequent than visible light. We call this "longwave radiation," and the amount of longwave radiation in our model is represented above my the two middle arrows; the downwards one shows how much downwards longwave radiation is moving, on average, through our hypothetical atmosphere, and the upwards one shows how much longwave radiation is moving up, on average. These two middle arrows, in other words, show us the movement of Earth's radiation through and out of the atmosphere.
+            %p Objects as hot as the Sun give off radiation whose frequencies are around those of visible light. Here we call this "shortwave radiation." The movement of this radiation is represented by the two arrows in the left column, and so repersent the movement of sunlight through the Earth.
+            %p The column on the right is the sum of the other two: it tells you, in total, how much energy is moving in and out of the Earth. Look at the top of this column, the top of the model's atmosphere, and compare the size of the down arrow with the size of the up arrow. That tells you how much is entering vs. leaving the Earth. Remember what we said - if there's more coming in than going out, then somewhere, the Earth has to be gaining energy, which probably means it's getting warmer. If there's more going out than coming in, then vice versa.
         %script{ src: "js/jquery.js" }
         / %script{ src: "js/bootstrap.min.js" }
         / %script{ src: "js/bootstrap-slider.js" }

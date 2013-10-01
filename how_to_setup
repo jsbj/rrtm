@@ -1,0 +1,19 @@
+cd ~
+mkdir repos
+cd repos
+
+# set up CliMT:
+
+git clone https://github.com/jsbj/climt.git
+cd climt
+git checkout centos
+python setup.py build
+cp -R lib/climt /usr/lib/python2.6/site-packages/climt
+
+# set up RRTM (though I'd like to be able to set this up with the git hooks to make automatic deployment)
+
+cd ~/repos
+git clone https://github.com/jsbj/rrtm.git
+rm -rf /var/www/{html,cgi-bin}/rrtm
+cp -R rrtm/html/rrtm /var/www/html/rrtm
+cp -R rrtm/cgi-bin/rrtm /var/www/cgi-bin/rrtm
