@@ -23,7 +23,7 @@ var foreignLoader = $($.grep($('foreignObject'), function( e, i) { return $(e).a
 foreignReset.attr('y', headerHeight - 20).attr('x', altitudeAxis).attr('width', 400).attr('height', 20)
 foreignLoader.attr('y', headerHeight + flowHeight/2 - 20).attr('x', altitudeAxis + inputWidth).attr('width',30).attr('height', 30)
 $('#loader').attr('width', 30).attr('height', 30)
-var subsectionMargin = 30
+var subsectionMargin = 50
 var subsectionWidth = (outputWidth - (subsectionMargin * 2)) / 3.0
 var profileWidth = 300
 var profileControlWidth = 180
@@ -102,17 +102,26 @@ updateOutput = function() {
     var json = {
         'shortwave': {
             'downward': modelData['swdflx'],
-            'upward': modelData['swuflx']
+            'upward': modelData['swuflx'],
+            'downwardColor': 'rgb(249,152,0)',
+            'upwardColor': 'rgb(228,105,0)',
+            'nickname': 'sunlight'
         },
         'longwave': {
             'downward': modelData['lwdflx'],
-            'upward': modelData['lwuflx']
+            'upward': modelData['lwuflx'],
+            'downwardColor': 'rgb(203,77,38)', // 'rgb(54,94,150)',
+            'upwardColor': 'rgb(165,55,54)', // 'rgb(12,15,91)'
+            'nickname': "Earth's radiation"
         },
         'total': {
             'downward': modelData['dflx'],
-            'upward': modelData['uflx']
+            'upward': modelData['uflx'],
+            'downwardColor': 'rgb(127,127,141)', // 'rgb(47,47,49)',
+            'upwardColor': 'rgb(51,50,72)', // 'rgb(24,24,24)'
+            'nickname': 'total radiation'
         }
-    }
+    } // brown
     
     list.map(function(lightType,i) {
         var downLayer = json[lightType].downward.map(function(d, i) {return {x: i, y: d}});
@@ -136,7 +145,7 @@ updateOutput = function() {
             .enter().append("path")
               .attr("d", area)
               .attr('class', lightType)
-              .style("fill", function(d, i) { return ['rgb(249,152,0)', 'rgb(228,105,0)'][i]; });
+              .style("fill", function(d, i) { return [json[lightType].downwardColor, json[lightType].upwardColor][i]; });
 
               // Arrows
               var leftExtent = x(layers[0][0].y0)
@@ -160,7 +169,7 @@ updateOutput = function() {
                           return [d.x,d.y].join(",");
                       }).join(" ");
                   })
-                  .style("fill", 'rgb(249,152,0)')
+                  .style("fill", json[lightType].downwardColor)
                   .attr('class', lightType + 'DownArrow');
         
                   var leftExtent = x(layers[1][layers[1].length-1].y0)
@@ -184,7 +193,7 @@ updateOutput = function() {
                               return [d.x,d.y].join(",");
                           }).join(" ");
                       })
-                      .style("fill", 'rgb(228,105,0)')
+                      .style("fill", json[lightType].upwardColor)
                       .attr('class', lightType + 'UpArrow');
                       
                       // add axes
@@ -210,21 +219,60 @@ updateOutput = function() {
                           .attr('transform', 'translate(0,0)')
                           .call(xTopAxis)
 
+
+                      g.append('text')
+                      .attr('class', 'x label')
+                      .attr('text-anchor', 'middle')
+                      .attr('fill', '#434358')
+                      .attr('x', leftExtent)
+                      .attr('y', -47) //23)
+                      .text(json[lightType].nickname + ' (W/m2)');
+
+                      g.append('text')
+                      .attr('class', 'x label')
+                      .attr('text-anchor', 'middle')
+                      .attr('fill', '#434358')
+                      .attr('x', leftExtent)
+                      .attr('y', flowHeight + 50) // 30)
+                      .text(json[lightType].nickname + ' (W/m2)');
+                      
+                      switch (lightType) {
+                      case 'shortwave':
                           g.append('text')
                           .attr('class', 'x label')
                           .attr('text-anchor', 'middle')
                           .attr('fill', '#434358')
-                          .attr('x', leftExtent)
+                          .attr('x', leftExtent + 75)
                           .attr('y', -47) //23)
-                          .text(lightType + ' energy (W/m2)');
+                          .text('+');
 
                           g.append('text')
                           .attr('class', 'x label')
                           .attr('text-anchor', 'middle')
                           .attr('fill', '#434358')
-                          .attr('x', leftExtent)
+                          .attr('x', leftExtent + 75)
                           .attr('y', flowHeight + 50) // 30)
-                          .text(lightType + ' energy (W/m2)');
+                          .text('+');
+                          
+                          break;
+                      case 'longwave':
+                          g.append('text')
+                          .attr('class', 'x label')
+                          .attr('text-anchor', 'middle')
+                          .attr('fill', '#434358')
+                          .attr('x', leftExtent + 90)
+                          .attr('y', -47) //23)
+                          .text('=');
+
+                          g.append('text')
+                          .attr('class', 'x label')
+                          .attr('text-anchor', 'middle')
+                          .attr('fill', '#434358')
+                          .attr('x', leftExtent + 90)
+                          .attr('y', flowHeight + 50) // 30)
+                          .text('=');
+                          break;
+                      }
     })
 }
 
@@ -236,9 +284,9 @@ updateOutput = function() {
 
 
 var inputList = [
-    {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 200, max: 350, label: 'Temperature (K)', on: true, USAscale: d3.scale.linear().domain([273.15, 373.15]).range([32.0, 212.0])},
+    {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 200, max: 350, label: 'Temperature (K)', USAscale: d3.scale.linear().domain([273.15, 373.15]).range([32.0, 212.0]), on: true},
     {nonSurfaceKey: 'rh', max: 100., label: 'Relative humidity (%)'},
-    {nonSurfaceKey: 'co2', max: 10000, label: 'CO2 (ppm)', on: true},
+    {nonSurfaceKey: 'co2', max: 10000, label: 'CO2 (ppm)'},
     // {nonSurfaceKey: 'ch4', max: 10000, label: 'CH4 (ppb)', double: 2},
     // {nonSurfaceKey: 'n2o', max: 1000, label: 'N2O (ppb)', double: 1},
     // {nonSurfaceKey: 'o3', max: 50, label: 'O3 (ppm)', double: 2},
@@ -361,10 +409,7 @@ initializeInput = function() {
     var y = d3.scale.linear().domain([0, d3.max(modelData['altitude'])]).range([flowHeight, 0])
     
     // Axes
-    var yAxis = d3.svg.axis()
-        .scale(y)
-        .orient('left')
-        .ticks(5)
+
         
     var yRightAxis = d3.svg.axis()
         .scale(y)
@@ -375,21 +420,29 @@ initializeInput = function() {
     var g = vis.append("svg:g")
         .attr('class', 'input').attr('transform', 'translate(' + 0 + ', ' + headerHeight + ')');
     
+    
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient('left')
+        .ticks(5)
+    
     g.append('g')
         .attr('class', 'axis')
-        .attr('transform', 'translate(' + altitudeAxis + ',0)')
+        .attr('transform', 'translate(' + (inputWidth+inputOutputSeparator+altitudeAxis) + ',0)')
         .call(yAxis)
+
+        g.append('text')
+              .attr('fill', '#434358')
+            .attr('class', 'y label').attr('text-anchor', 'middle').attr('y', inputWidth+inputOutputSeparator)
+            .attr('x', -flowHeight / 2).attr('dy', '.75em').attr('transform', 'rotate(-90)')
+            .text('altitude (km)')
 
     g.append('g')
         .attr('class', 'axis')
         .attr('transform', 'translate(' + (altitudeAxis + inputWidth + inputOutputSeparator + outputWidth) + ',0)')
         .call(yRightAxis)
     
-    g.append('text')
-          .attr('fill', '#434358')
-        .attr('class', 'y label').attr('text-anchor', 'middle').attr('y', 0)
-        .attr('x', -flowHeight / 2).attr('dy', '.75em').attr('transform', 'rotate(-90)')
-        .text('altitude (km)')
+
 
     g.append('text')
           .attr('fill', '#434358')
@@ -397,11 +450,17 @@ initializeInput = function() {
         .attr('x', flowHeight / 2).attr('dy', '.75em').attr('transform', 'rotate(90)')
         .text('altitude (km)')
     
+    // g.append('line')
+    //     .attr("x1", altitudeAxis)
+    //     .attr("y1", 0)
+    //     .attr("x2", altitudeAxis + inputWidth + 100 +  1)
+    //     .attr("y2", 0)
+
     g.append('line')
         .attr("x1", altitudeAxis)
         .attr("y1", 0)
-        .attr("x2", altitudeAxis + inputWidth + 100 +  1)
-        .attr("y2", 0)
+        .attr("x2", altitudeAxis)
+        .attr("y2", flowHeight)
         
     // g.append('line')
     //     .attr("x1", altitudeAxis + inputWidth)
@@ -490,6 +549,11 @@ initializeInput = function() {
         max: 2000,
         value: 1370,
         step: 10,
+        slide: function( event, ui ) {
+            if ($(this).slider('value')) {
+                $('span.sunlight').text($(this).slider('value'))
+            }            
+        },
         change: function( event, ui ) {
             if ($(this).slider('value')) {
                 modelData['scon'] = $(this).slider('value')
@@ -513,47 +577,94 @@ initializeInput = function() {
     initializeProfiles()
 }
 
+profileWidths = function(index) {
+    return profileControlWidth + subsectionMargin * index + profileWidth * (index - 1)
+}
+
 initializeProfiles = function() {
     var y = d3.scale.linear().domain([0, d3.max(modelData['altitude'])]).range([flowHeight, 0])
     
     var vis = d3.select('svg#inner')
     $('svg#inner')
-        .attr('width', ((checkedList.length + 1) * profileWidth + checkedList.length * subsectionMargin) + rightInnerMargin + 'px')
-    $('.control').attr('width', profileWidth).attr('height', flowHeight + roomForProfileLabels)
+        .attr('width', (profileControlWidth + checkedList.length * profileWidth + checkedList.length * subsectionMargin) + rightInnerMargin + 'px')
+    $('.control').attr('width', profileControlWidth).attr('height', flowHeight + roomForProfileLabels)
+    vis.append('line')
+    .attr('x1', profileControlWidth)
+    .attr('x2', profileControlWidth)
+    .attr('y1', 0)
+    .attr('y2', flowHeight)
+    
+    vis.append('line')
+    .attr('x1', 0)
+    .attr('x2', profileControlWidth)
+    .attr('y1', flowHeight)
+    .attr('y2', flowHeight)
+    
+    vis.append('line')
+    .attr('x1', 0)
+    .attr('x2', profileControlWidth)
+    .attr('y1', 1)
+    .attr('y2', 1)
+    
     checkedList.map(function(args, index) {
         var i = index + 1
         var g = vis.append('svg:g')
                 .attr('class', 'profileGroup ' + args.nonSurfaceKey)
 
+                var yAxis = d3.svg.axis()
+                    .scale(y)
+                    .orient('left')
+                    .ticks(5)
+    
+                g.append('g')
+                    .attr('class', 'axis')
+                    .attr('transform', 'translate(' + profileWidths(i) + ',0)')
+                    .call(yAxis)
+                    if (index == 0) {
+                        g.append('text')
+                              .attr('fill', '#434358')
+                            .attr('class', 'y label').attr('text-anchor', 'middle').attr('y', profileWidths(i) -40)
+                            .attr('x', -flowHeight / 2).attr('dy', '.75em').attr('transform', 'rotate(-90)')
+                            .text('altitude (km)')
+                        
+                    }
+
+
         g.append('line')
-        .attr('x1', (profileWidth + subsectionMargin) * i)
+        .attr('x1', profileWidths(i))
         .attr('y1', 0)
-        .attr('x2', (profileWidth + subsectionMargin) * i)
+        .attr('x2', profileWidths(i))
         .attr('y2', flowHeight)
         
         g.append('line')
-        .attr('x1', (profileWidth + subsectionMargin) * i + profileWidth)
+        .attr('x1', profileWidths(i) + profileWidth)
         .attr('y1', 0)
-        .attr('x2', (profileWidth + subsectionMargin) * i + profileWidth)
+        .attr('x2', profileWidths(i) + profileWidth)
         .attr('y2', flowHeight)
         
         g.append('line')
-        .attr('x1', (profileWidth + subsectionMargin) * i)
+        .attr('x1', profileWidths(i))
         .attr('y1', 0)
-        .attr('x2', (profileWidth + subsectionMargin) * i + profileWidth)
+        .attr('x2', profileWidths(i) + profileWidth)
         .attr('y2', 0)
+        
+        g.append('line')
+        .attr('x1', profileWidths(i))
+        .attr('y1', 1)
+        .attr('x2', profileWidths(i) + profileWidth)
+        .attr('y2', 1)
         
         // if (i) {
         //     g.append('rect')
         //         .attr('width', subsectionMargin)
         //         .attr('height', flowHeight)
-        //         .attr('x', (profileWidth + subsectionMargin) * i - subsectionMargin)
+        //         .attr('x', profileWidths(i) - subsectionMargin)
         //         .attr('fill', '#DDD')
         // }
                 
         args['x'] = d3.scale.linear()
             .domain([(USAunits && args.USAscale) ? args.USAscale(args.min || 0) : (args.min || 0),(USAunits && args.USAscale) ? args.USAscale(args.max) : args.max])
-            .range([(profileWidth + subsectionMargin) * i, (profileWidth + subsectionMargin) * i + profileWidth])
+            .range([profileWidths(i), profileWidths(i) + profileWidth])
         args['line'] = d3.svg.line().x(function(d) { return args.x(d); }).y(function(d,i) { return y(i && modelData['altitude'][i - 1]); })
         args['values'] = ([typeof args.surfaceKey !== 'undefined' ? modelData[args.surfaceKey] : modelData[args.nonSurfaceKey][0]]).concat(modelData[args.nonSurfaceKey])
         args['profile'] = g.append('svg:path').attr('class', 'profile').attr('d', args.line(args.values))
@@ -573,7 +684,7 @@ initializeProfiles = function() {
             .attr('class', 'x label')
             .attr('text-anchor', 'middle')
           .attr('fill', '#434358')
-            .attr('x', (profileWidth + subsectionMargin) * i + profileWidth / 2)
+            .attr('x', profileWidths(i) + profileWidth / 2)
             .attr('y', flowHeight + 30)
             .text(args.label)
         
@@ -601,8 +712,8 @@ initializeProfiles = function() {
         track: true
     })
     vis.on("mousemove", function(d,j) {
-        if ((!inDrag && mouseDown && (d3.mouse(this)[1] < flowHeight)) && (d3.mouse(this)[0] % (profileWidth + subsectionMargin) < profileWidth)) {
-            var xindex = Math.floor(d3.mouse(this)[0] / (profileWidth + subsectionMargin)) - 1
+        if ((!inDrag && mouseDown && (d3.mouse(this)[1] < flowHeight)) && ((d3.mouse(this)[0] - (profileControlWidth + subsectionMargin)) % (profileWidth + subsectionMargin) < profileWidth)) {
+            var xindex = Math.floor((d3.mouse(this)[0] - profileControlWidth) / (profileWidth + subsectionMargin))
             if (xindex >= 0) {
                 args = checkedList[xindex]
             

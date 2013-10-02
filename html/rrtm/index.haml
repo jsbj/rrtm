@@ -34,7 +34,6 @@
                             %a#reset{href:'#reset'} reset
                             | presets:
                             %select#presets
-                                %option 
                                 %option{value: 'isothermal, no greenhouse gases'} isothermal, no greenhouse gases
                                 %option{value: 'standard mid-latitude'} standard mid-latitude
                 %switch
@@ -55,7 +54,7 @@
                                                             %a{href:"#tabs1-atmosphere"} Atmosphere
                                                     %div#tabs1-sun
                                                         %div#sunlightText
-                                                            sunlight:
+                                                            direct sunlight:
                                                             %span.sunlight 1370
                                                             W/m
                                                             %sup 2
