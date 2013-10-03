@@ -25,7 +25,7 @@ foreignLoader.attr('y', headerHeight + flowHeight/2 - 20).attr('x', altitudeAxis
 $('#loader').attr('width', 30).attr('height', 30)
 var subsectionMargin = 50
 var subsectionWidth = (outputWidth - (subsectionMargin * 2)) / 3.0
-var profileWidth = 300
+var profileWidth = 380
 var profileControlWidth = 180
 var roomForProfileLabels = 40
 
@@ -284,7 +284,7 @@ updateOutput = function() {
 
 
 var inputList = [
-    {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 200, max: 350, label: 'Temperature (K)', USAscale: d3.scale.linear().domain([273.15, 373.15]).range([32.0, 212.0])},
+    {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 200, max: 320, label: 'Temperature (K)', USAscale: d3.scale.linear().domain([273.15, 373.15]).range([32.0, 212.0])},
     {nonSurfaceKey: 'rh', max: 100., label: 'Relative humidity (%)'},
     {nonSurfaceKey: 'co2', max: 10000, label: 'CO2 (ppm)'},
     // {nonSurfaceKey: 'ch4', max: 10000, label: 'CH4 (ppb)', double: 2},
@@ -379,7 +379,7 @@ var drag = d3.behavior.drag()
             args['profile'] = g.append('svg:path').attr('class', 'profile').attr('d', args.line(args.values))
             d3.select(this).attr('cx', args.x(args.values[0]))   
             
-            $('.ui-tooltip-content').html(parseInt(args.values[0]))
+            $('.ui-tooltip-content').html(parseInt(args.values[0] * 10) / 10)
         }
     })
     .on("dragend", function(d,i){
@@ -545,7 +545,7 @@ initializeInput = function() {
     })
     
     $('#sunlight').slider({
-        min: 0,
+        min: 1000,
         max: 2000,
         value: 1370,
         step: 10,
@@ -708,7 +708,7 @@ initializeProfiles = function() {
     })
     $(document).tooltip({
         items: 'circle.controller',
-        content: function() { return parseInt($(this).context.__data__[0].values[0])},
+        content: function() { return parseInt($(this).context.__data__[0].values[0]*10) / 10},
         track: true
     })
     vis.on("mousemove", function(d,j) {
