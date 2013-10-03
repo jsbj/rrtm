@@ -284,7 +284,7 @@ updateOutput = function() {
 
 
 var inputList = [
-    {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 200, max: 350, label: 'Temperature (K)', USAscale: d3.scale.linear().domain([273.15, 373.15]).range([32.0, 212.0]), on: true},
+    {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 200, max: 350, label: 'Temperature (K)', USAscale: d3.scale.linear().domain([273.15, 373.15]).range([32.0, 212.0])},
     {nonSurfaceKey: 'rh', max: 100., label: 'Relative humidity (%)'},
     {nonSurfaceKey: 'co2', max: 10000, label: 'CO2 (ppm)'},
     // {nonSurfaceKey: 'ch4', max: 10000, label: 'CH4 (ppb)', double: 2},
