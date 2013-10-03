@@ -298,7 +298,7 @@ updateOutput = function() {
 var inputList = [
     {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 220, max: 320, label: 'Temperature (K)', USAscale: d3.scale.linear().domain([273.15, 373.15]).range([32.0, 212.0])},
     {nonSurfaceKey: 'rh', max: 100., label: 'Relative humidity (%)'},
-    {nonSurfaceKey: 'co2', max: 10000, label: 'CO2 (ppm)'},
+    {nonSurfaceKey: 'co2', max: 2000, label: 'CO2 (ppm)'},
     // {nonSurfaceKey: 'ch4', max: 10000, label: 'CH4 (ppb)', double: 2},
     // {nonSurfaceKey: 'n2o', max: 1000, label: 'N2O (ppb)', double: 1},
     // {nonSurfaceKey: 'o3', max: 50, label: 'O3 (ppm)', double: 2},
@@ -527,7 +527,7 @@ initializeInput = function() {
     
     text = ''
     $.map(surfaces, function(e,i) {
-        text += '<li><input class="albedo" ' + (e.name == "Earth's average" ? 'checked="checked"' : '') + ' data-value="' + e.value + '" name="albedo" id="' + e.name + '" type="radio" /><label for="' + e.name + '">' + e.name + '</li>'
+        text += '<li><input class="albedo" ' + (e.name == "Earth's average" ? 'checked="checked"' : '') + ' data-value="' + e.value + '" name="albedo" id="' + e.name.replace(/['\s]/g, '') + '" type="radio" /><label for="' + e.name.replace(/['\s]/g, '') + '">' + e.name + '</li>'
         // http://cove.larc.nasa.gov/papers/jingrl04.pdf
     })
     $('ul.albedo').append(text)
@@ -778,6 +778,9 @@ initializeProfiles = function() {
 $('a#reset').click(function(){
     modelData = {}
     updateModel('just profiles')
+    $('#albedo').slider('value', 0.3)
+    $('#sunlight').slider('value', 1370.0)
+    $("#Earthsaverage").prop('checked', true)
 })
 
 $('select#presets').change(function() {
@@ -788,5 +791,9 @@ $('select#presets').change(function() {
         delete modelData.preset
     }
     
+    
     updateModel('just profiles')
+    $('#albedo').slider('value', 0.3)
+    $('#sunlight').slider('value', 1370.0)
+    $("#Earthsaverage").prop('checked', true)
 })
