@@ -122,7 +122,8 @@ updateOutput = function() {
             'nickname': 'total radiation'
         }
     } // brown
-    
+    var y = d3.scale.linear().domain([0, d3.max(modelData['altitude'])]).range([flowHeight, 0])
+
     list.map(function(lightType,i) {
         var downLayer = json[lightType].downward.map(function(d, i) {return {x: i, y: d}});
         var upLayer = json[lightType].upward.map(function(d, i) {return {x: i, y: d}});
@@ -133,7 +134,6 @@ updateOutput = function() {
             i * (subsectionWidth + subsectionMargin),
             i * (subsectionWidth + subsectionMargin) + subsectionWidth
         ]);
-        var y = d3.scale.linear().domain([0, d3.max(modelData['altitude'])]).range([flowHeight, 0])
 
           var area = d3.svg.area()
               .x0(function(d) { return x(d.y0); })
@@ -144,7 +144,7 @@ updateOutput = function() {
               .data(layers)
             .enter().append("path")
               .attr("d", area)
-              .attr('class', lightType)
+              .attr('class', lightType + ' arrowBody')
               .style("fill", function(d, i) { return [json[lightType].downwardColor, json[lightType].upwardColor][i]; });
 
               // Arrows
@@ -274,6 +274,18 @@ updateOutput = function() {
                           break;
                       }
     })
+    
+    $('.output').tooltip({
+        items: 'path.arrowBody',
+        content: function() { return '-'}, // $(this).offset().top}, // return parseInt($(this).context.__data__[0].values[0]*10) / 10},
+        track: true
+    })
+    
+    $('path.arrowBody').mousemove(function(e) {
+        var dataIndex = closestLayerIndex(y.invert(e.pageY - $(this).offset().top))
+        $('.ui-tooltip-content').html(parseInt($(this).context.__data__[dataIndex].y * 10) / 10)
+    })
+
 }
 
 

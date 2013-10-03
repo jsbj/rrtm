@@ -33,6 +33,11 @@ table.padded-table td{padding:2px;}
 
 /*body{font:1em Computer Modern,sans-serif;color:#434358;}*/
 
+.ui-tooltip-content {
+    font:1em Helvetica,sans-serif;
+    color:#434358;
+}
+
 .container{
     padding-top: 100px;
 }
