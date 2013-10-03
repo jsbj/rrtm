@@ -81,9 +81,9 @@ path.profile {
     list-style-type: none;
 }*/
 
-#albedo, #albedoText, #sunlight, #sunTemp, #distanceToSun, #sunlightText, #sunTempText, #distanceToSunText {
+.ui-slider, #albedoText, #sunlightText, #sunTempText, #distanceToSunText {
     font-size: 80%;
-    margin-left: 20px;
+    margin-left: 10px;
     margin-right: 10px;
 }
 

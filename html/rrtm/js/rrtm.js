@@ -21,7 +21,7 @@ $('text.output').attr('x', inputWidth + outputWidth/2)
 var foreignReset = $($.grep($('foreignObject'), function( e, i) { return $(e).attr('class') == 'reset' })[0])
 var foreignLoader = $($.grep($('foreignObject'), function( e, i) { return $(e).attr('class') == 'loader' })[0])
 foreignReset.attr('y', headerHeight - 20).attr('x', altitudeAxis).attr('width', 400).attr('height', 20)
-foreignLoader.attr('y', headerHeight + flowHeight/2 - 20).attr('x', altitudeAxis + inputWidth).attr('width',30).attr('height', 30)
+foreignLoader.attr('y', headerHeight + flowHeight/2 - 20).attr('x', totalWidth / 2).attr('width',30).attr('height', 30)
 $('#loader').attr('width', 30).attr('height', 30)
 var subsectionMargin = 50
 var subsectionWidth = (outputWidth - (subsectionMargin * 2)) / 3.0
@@ -170,7 +170,9 @@ updateOutput = function() {
                       }).join(" ");
                   })
                   .style("fill", json[lightType].downwardColor)
-                  .attr('class', lightType + 'DownArrow');
+                  .attr('class', lightType + 'DownArrow downArrow')
+                  .attr('data-size', layers[0][0].y);
+                  
         
                   var leftExtent = x(layers[1][layers[1].length-1].y0)
                   var rightExtent = x(layers[1][layers[1].length-1].y0 + layers[1][layers[1].length-1].y)
@@ -193,8 +195,9 @@ updateOutput = function() {
                               return [d.x,d.y].join(",");
                           }).join(" ");
                       })
+                      .attr('data-size', layers[1][layers[1].length-1].y)
                       .style("fill", json[lightType].upwardColor)
-                      .attr('class', lightType + 'UpArrow');
+                      .attr('class', lightType + 'UpArrow upArrow');
                       
                       // add axes
                           var xAxis = d3.svg.axis()
@@ -275,7 +278,13 @@ updateOutput = function() {
                       }
     })
     
-    $('.output').tooltip({
+    $('.downArrow, .upArrow').tooltip({
+        items: 'polygon.upArrow, polygon.downArrow',
+        content: function() { return $(this).attr('data-size')},
+        track: true
+    })
+    
+    $('path.arrowBody').tooltip({
         items: 'path.arrowBody',
         content: function() { return '-'}, // $(this).offset().top}, // return parseInt($(this).context.__data__[0].values[0]*10) / 10},
         track: true
@@ -494,8 +503,44 @@ initializeInput = function() {
         if (args.double != 2) { text += '<li>' }
         text += '<input class="profileCheckbox" type="checkbox" ' + (args.on ? 'checked="checked" ' : '') + 'id="' + args.nonSurfaceKey + '" /><label for="' + args.nonSurfaceKey + '" >' + args.label.replace(/\s\(.+\)/, "") + '</label>'
         if (args.double != 1) { text += '</li>'}
+        if (args.nonSurfaceKey == 'Tbound') {
+            text += '<li>lapse rate: <span id="lapseRateText">0</span> K/km</li><li><div id="lapseRate"></div></li><li>tropopause height: <span id="tropopauseText">15</span> km</li><li><div id="tropopause"></div></li>'
+        }
     })
     $('ul.control').append(text)
+    
+    $('#lapseRate').slider({
+        min: 0.0,
+        max: 10.0,
+        step: 0.1,
+        change: function( event, ui ) {
+            $('span#lapseRateText').text($(this).slider('value'))
+            updateTemperature($(this).slider('value'), $('#tropopause').slider('value'))
+            updateModel('just profiles')
+        },
+        slide: function( event, ui ) {
+            $('span#lapseRateText').text($(this).slider('value'))
+        },
+        value: 0.0
+    })
+    $('#tropopause').slider({        
+        min: 0.0,
+        max: 20.0,
+        step: 0.1,
+        change: function( event, ui ) {
+            if ($(this).slider('value')) {
+                $('span#tropopauseText').text($(this).slider('value'))
+                updateTemperature($('#lapseRate').slider('value'), $(this).slider('value'))
+                updateModel('just profiles')
+            }
+        },
+        slide: function( event, ui ) {
+            if ($(this).slider('value')) {
+                $('span#tropopauseText').text($(this).slider('value'))
+            }
+        },
+        value: 15.0
+    })
     
     $('input.profileCheckbox').change(function(){
         if ($(this).prop('checked')) {
@@ -725,49 +770,51 @@ initializeProfiles = function() {
     })
     vis.on("mousemove", function(d,j) {
         if ((!inDrag && mouseDown && (d3.mouse(this)[1] < flowHeight)) && ((d3.mouse(this)[0] - (profileControlWidth + subsectionMargin)) % (profileWidth + subsectionMargin) < profileWidth)) {
-            var xindex = Math.floor((d3.mouse(this)[0] - profileControlWidth) / (profileWidth + subsectionMargin))
+            var xindex = Math.floor((d3.mouse(this)[0] - (profileControlWidth + subsectionMargin)) / (profileWidth + subsectionMargin))
             if (xindex >= 0) {
-                args = checkedList[xindex]
+                if (checkedList[xindex].nonSurfaceKey == 'cldf') {
+                    args = checkedList[xindex]
             
-                var g = d3.select('g.' + args.nonSurfaceKey)
+                    var g = d3.select('g.' + args.nonSurfaceKey)
             
-                var ci = closestLayerIndex(y.invert(d3.mouse(this)[1]))
-                var xvalue = d3.mouse(this)[0]
-                if (args.hardMax) {
-                    var newValue = args.x.invert(Math.min(Math.max(xvalue, 0), profileWidth))
-                } else {
-                    var newValue = args.x.invert(Math.max(xvalue, 0))                
-                }
-            
-                // Up to here
-                args.values[ci] = newValue
-                if (!ci) {
-                    g.select('circle').attr('cx', args.x(args.values[0]))
-                }
-                args.profile.remove()
-            
-                args['profile'] = g.append('svg:path').attr('class', 'profile').attr('d', args.line(args.values))
-                if ((args.surfaceKey) && (ci == 0)) {
-                    modelData[args.surfaceKey] = newValue
-                } else {                
-                    if ((args.nonSurfaceKey == 'cldf') && (modelData[args.nonSurfaceKey][ci - 1] == 0)) {
-                        $.each([['clwp', 5.0], ['ciwp', 5.0], ['r_liq', 10.0], ['r_ice', 30.0]], function(i,d) {
-                            var new_key = d[0]
-                            var new_default = d[1]
-                            var tempArgs
-                            if (modelData[new_key][ci - 1] == 0) {
-                                modelData[new_key][ci - 1] = new_default
-                                tempArgs = $.grep(checkedList, function(el, ind) {return el.nonSurfaceKey == new_key })[0]
-                                tempArgs.profile.remove()
-                                tempArgs['values'] = modelData[new_key]
-                                tempArgs['profile'] = d3.select('g.' + new_key).append('svg:path').attr('class', 'profile').attr('d', tempArgs.line(tempArgs.values))
-                                d3.select('g.' + new_key).select('circle').attr('cx', tempArgs.x(tempArgs.values[0]))
-                            }
-                        })
+                    var ci = closestLayerIndex(y.invert(d3.mouse(this)[1]))
+                    var xvalue = d3.mouse(this)[0]
+                    if (args.hardMax) {
+                        var newValue = args.x.invert(Math.min(Math.max(xvalue, 0), profileWidth))
+                    } else {
+                        var newValue = args.x.invert(Math.max(xvalue, 0))                
                     }
-                    modelData[args.nonSurfaceKey][ci - 1] = newValue
+            
+                    // Up to here
+                    args.values[ci] = newValue
+                    if (!ci) {
+                        g.select('circle').attr('cx', args.x(args.values[0]))
+                    }
+                    args.profile.remove()
+            
+                    args['profile'] = g.append('svg:path').attr('class', 'profile').attr('d', args.line(args.values))
+                    if ((args.surfaceKey) && (ci == 0)) {
+                        modelData[args.surfaceKey] = newValue
+                    } else {                
+                        if ((args.nonSurfaceKey == 'cldf') && (modelData[args.nonSurfaceKey][ci - 1] == 0)) {
+                            $.each([['clwp', 5.0], ['ciwp', 5.0], ['r_liq', 10.0], ['r_ice', 30.0]], function(i,d) {
+                                var new_key = d[0]
+                                var new_default = d[1]
+                                var tempArgs
+                                if (modelData[new_key][ci - 1] == 0) {
+                                    modelData[new_key][ci - 1] = new_default
+                                    tempArgs = $.grep(checkedList, function(el, ind) {return el.nonSurfaceKey == new_key })[0]
+                                    tempArgs.profile.remove()
+                                    tempArgs['values'] = modelData[new_key]
+                                    tempArgs['profile'] = d3.select('g.' + new_key).append('svg:path').attr('class', 'profile').attr('d', tempArgs.line(tempArgs.values))
+                                    d3.select('g.' + new_key).select('circle').attr('cx', tempArgs.x(tempArgs.values[0]))
+                                }
+                            })
+                        }
+                        modelData[args.nonSurfaceKey][ci - 1] = newValue
+                    }
+                    changed = true
                 }
-                changed = true
             }
         }
         return false
@@ -775,25 +822,35 @@ initializeProfiles = function() {
     
 }
 
+updateTemperature = function(lapseRate, tropopauseHeight) {
+    $.map(modelData['altitude'], function(e,i){
+        modelData['Tbound'][i] = modelData['Ts'] + - Math.min(e, tropopauseHeight) * lapseRate
+    })
+    
+    inputList[0]['min'] = Math.min((Math.floor(modelData['Tbound'][modelData['Tbound'].length - 1] / 20) - 2) * 20, 220)
+}
+
 $('a#reset').click(function(){
     modelData = {}
     updateModel('just profiles')
     $('#albedo').slider('value', 0.3)
     $('#sunlight').slider('value', 1370.0)
+    $('#lapseRate').slider('value', 0)
+    $('#tropopause').slider('value', 15)
     $("#Earthsaverage").prop('checked', true)
 })
 
-$('select#presets').change(function() {
-    modelData = {}
-    if ($(this).val()) {
-        modelData['preset'] = $(this).val()        
-    } else {
-        delete modelData.preset
-    }
-    
-    
-    updateModel('just profiles')
-    $('#albedo').slider('value', 0.3)
-    $('#sunlight').slider('value', 1370.0)
-    $("#Earthsaverage").prop('checked', true)
-})
+// $('select#presets').change(function() {
+//     modelData = {}
+//     if ($(this).val()) {
+//         modelData['preset'] = $(this).val()        
+//     } else {
+//         delete modelData.preset
+//     }
+//     
+//     
+//     updateModel('just profiles')
+//     $('#albedo').slider('value', 0.3)
+//     $('#sunlight').slider('value', 1370.0)
+//     $("#Earthsaverage").prop('checked', true)
+// })
