@@ -26,7 +26,7 @@ $('#loader').attr('width', 30).attr('height', 30)
 var subsectionMargin = 50
 var subsectionWidth = (outputWidth - (subsectionMargin * 2)) / 3.0
 var profileWidth = 380
-var profileControlWidth = 180
+var profileControlWidth = 190
 var roomForProfileLabels = 40
 
 var arrowHeight = 40 // 60
@@ -292,7 +292,7 @@ updateOutput = function() {
     
     $('path.arrowBody').mousemove(function(e) {
         var dataIndex = closestLayerIndex(y.invert(e.pageY - $(this).offset().top))
-        $('.ui-tooltip-content').html(parseInt($(this).context.__data__[dataIndex].y * 10) / 10)
+        $('.ui-tooltip-content').html(Math.round($(this).context.__data__[dataIndex].y * 10) / 10)
     })
 
 }
@@ -305,8 +305,8 @@ updateOutput = function() {
 
 
 var inputList = [
-    {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 220, max: 320, label: 'Temperature (K)', USAscale: d3.scale.linear().domain([273.15, 373.15]).range([32.0, 212.0])},
-    {nonSurfaceKey: 'rh', max: 100., label: 'Relative humidity (%)'},
+    {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 220, max: 305, label: 'Temperature (K)', USAscale: d3.scale.linear().domain([273.15, 373.15]).range([32.0, 212.0])},
+    // {nonSurfaceKey: 'rh', max: 100., label: 'Relative humidity (%)'},
     {nonSurfaceKey: 'co2', max: 2000, label: 'CO2 (ppm)'},
     // {nonSurfaceKey: 'ch4', max: 10000, label: 'CH4 (ppb)', double: 2},
     // {nonSurfaceKey: 'n2o', max: 1000, label: 'N2O (ppb)', double: 1},
@@ -400,7 +400,7 @@ var drag = d3.behavior.drag()
             args['profile'] = g.append('svg:path').attr('class', 'profile').attr('d', args.line(args.values))
             d3.select(this).attr('cx', args.x(args.values[0]))   
             
-            $('.ui-tooltip-content').html(parseInt(args.values[0] * 10) / 10)
+            $('.ui-tooltip-content').html(args.nonSurfaceKey == 'co2' ? Math.round(args.values[0]) : Math.round(args.values[0] * 10) / 10)
         }
     })
     .on("dragend", function(d,i){
@@ -506,13 +506,16 @@ initializeInput = function() {
         if (args.nonSurfaceKey == 'Tbound') {
             text += '<li>lapse rate: <span id="lapseRateText">0</span> K/km</li><li><div id="lapseRate"></div></li><li>tropopause height: <span id="tropopauseText">15</span> km</li><li><div id="tropopause"></div></li>'
         }
+        if (args.nonSurfaceKey == 'cldf') {
+            text += '<li>stratus cloud: <span id="stratusText">0</span>%</li><li><div id="stratus"></div></li><li>cirrus cloud: <span id="cirrusText">0</span>%</li><li><div id="cirrus"></div></li>'
+        }
     })
     $('ul.control').append(text)
     
     $('#lapseRate').slider({
         min: 0.0,
         max: 10.0,
-        step: 0.1,
+        step: 0.5,
         change: function( event, ui ) {
             $('span#lapseRateText').text($(this).slider('value'))
             updateTemperature($(this).slider('value'), $('#tropopause').slider('value'))
@@ -528,18 +531,30 @@ initializeInput = function() {
         max: 20.0,
         step: 0.1,
         change: function( event, ui ) {
-            if ($(this).slider('value')) {
-                $('span#tropopauseText').text($(this).slider('value'))
-                updateTemperature($('#lapseRate').slider('value'), $(this).slider('value'))
-                updateModel('just profiles')
-            }
+            $('span#tropopauseText').text($(this).slider('value'))
+            updateTemperature($('#lapseRate').slider('value'), $(this).slider('value'))
+            updateModel('just profiles')
         },
         slide: function( event, ui ) {
-            if ($(this).slider('value')) {
-                $('span#tropopauseText').text($(this).slider('value'))
-            }
+            $('span#tropopauseText').text($(this).slider('value'))
         },
         value: 15.0
+    }),
+    $.map(['stratus', 'cirrus'], function( cloudType, i ) {
+        $('#' + cloudType).slider({
+            min: 0,
+            max: 100,
+            step: 5,
+            change: function( event, ui ) {
+                $('span#' + cloudType + 'Text').text($(this).slider('value'))
+                updateClouds(cloudType, $(this).slider('value'))
+                updateModel('just profiles')
+            },
+            slide: function( event, ui ) {
+                $('span#' + cloudType + 'Text').text($(this).slider('value'))
+            },
+            value: 0
+        })        
     })
     
     $('input.profileCheckbox').change(function(){
@@ -598,7 +613,9 @@ initializeInput = function() {
         value: 0.3
     })
     $('input.albedo').change(function(){
-        $('#albedo').slider('value', $(this).attr('data-value'))
+        if ($(this).attr('data-value') != 'undefined') {
+            $('#albedo').slider('value', $(this).attr('data-value'))
+        }
     })
     
     $('#sunlight').slider({
@@ -657,11 +674,12 @@ initializeProfiles = function() {
     .attr('y1', flowHeight)
     .attr('y2', flowHeight)
     
+    
     vis.append('line')
     .attr('x1', 0)
     .attr('x2', profileControlWidth)
-    .attr('y1', 1)
-    .attr('y2', 1)
+    .attr('y1', $.browser.chrome ? 0 : 1)
+    .attr('y2', $.browser.chrome ? 0 : 1)
     
     checkedList.map(function(args, index) {
         var i = index + 1
@@ -701,15 +719,10 @@ initializeProfiles = function() {
         
         g.append('line')
         .attr('x1', profileWidths(i))
-        .attr('y1', 0)
+        .attr('y1', $.browser.chrome ? 0 : 1)
         .attr('x2', profileWidths(i) + profileWidth)
-        .attr('y2', 0)
+        .attr('y2', $.browser.chrome ? 0 : 1)
         
-        g.append('line')
-        .attr('x1', profileWidths(i))
-        .attr('y1', 1)
-        .attr('x2', profileWidths(i) + profileWidth)
-        .attr('y2', 1)
         
         // if (i) {
         //     g.append('rect')
@@ -765,7 +778,7 @@ initializeProfiles = function() {
     })
     $(document).tooltip({
         items: 'circle.controller',
-        content: function() { return parseInt($(this).context.__data__[0].values[0]*10) / 10},
+        content: function() { return $(this).context.__data__[0].nonSurfaceKey == 'co2' ? Math.round($(this).context.__data__[0].values[0]) : Math.round($(this).context.__data__[0].values[0]*10) / 10},
         track: true
     })
     vis.on("mousemove", function(d,j) {
@@ -776,15 +789,22 @@ initializeProfiles = function() {
                     args = checkedList[xindex]
             
                     var g = d3.select('g.' + args.nonSurfaceKey)
-            
-                    var ci = closestLayerIndex(y.invert(d3.mouse(this)[1]))
+                    // if (mouseDown == true) {
+                        var ci = closestLayerIndex(y.invert(d3.mouse(this)[1]))
+                    //     mouseDown = ci
+                    // } else {
+                    //     var ci = mouseDown
+                    // }
+
                     var xvalue = d3.mouse(this)[0]
                     if (args.hardMax) {
                         var newValue = args.x.invert(Math.min(Math.max(xvalue, 0), profileWidth))
                     } else {
                         var newValue = args.x.invert(Math.max(xvalue, 0))                
                     }
-            
+                    
+                    
+                    
                     // Up to here
                     args.values[ci] = newValue
                     if (!ci) {
@@ -827,7 +847,19 @@ updateTemperature = function(lapseRate, tropopauseHeight) {
         modelData['Tbound'][i] = modelData['Ts'] + - Math.min(e, tropopauseHeight) * lapseRate
     })
     
-    inputList[0]['min'] = Math.min((Math.floor(modelData['Tbound'][modelData['Tbound'].length - 1] / 20) - 2) * 20, 220)
+    inputList[0]['min'] = Math.min(modelData['Tbound'][modelData['Tbound'].length - 1] - 5, 220)
+}
+
+updateClouds = function(cloudType, value) {
+    var index = closestLayerIndex(cloudType == 'stratus' ? 1.0 : $('#tropopause').slider('value')) 
+
+    $.each([['clwp', 5.0], ['ciwp', 5.0], ['r_liq', 10.0], ['r_ice', 30.0]], function(i,d) {
+        var new_key = d[0]
+        var new_default = d[1]
+        if (modelData[new_key][index] == 0) { modelData[new_key][index] = new_default }
+    })
+
+    modelData['cldf'][index] = value / 100.0
 }
 
 $('a#reset').click(function(){
