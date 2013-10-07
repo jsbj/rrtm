@@ -316,6 +316,17 @@ var inputList = [
     // {nonSurfaceKey: 'cfc22', max: 1000, label: 'CFC-22 (ppt)', double: 1},
     // {nonSurfaceKey: 'ccl4', max: 50, label: 'CCl4 (ppt)', double: 2},
     {nonSurfaceKey: 'cldf', max: 1, label: 'Cloud fraction', noCircle: true},
+    {nonSurfaceKey: 'insoluble', max: 2, label: 'Organic aerosols', noCircle: true},
+    {nonSurfaceKey: 'water soluble', max: 30000, label: 'Sulfate aerosols', noCircle: true},    
+    {nonSurfaceKey: 'soot', max: 200000, label: 'Black Carbon', noCircle: true},
+    {nonSurfaceKey: 'sea salt (acc.)', max: 30.0, label: 'Sea salt', nonCircle: true},
+    // {nonSurfaceKey: 'sea salt (coa.)'},
+    {nonSurfaceKey: 'mineral (nuc.)', max: 300.0, label: 'Sand', nonCircle: true}
+    // {nonSurfaceKey: 'mineral (acc.)'},
+    // {nonSurfaceKey: 'mineral (coa.)'},
+    // {nonSurfaceKey: 'mineral-transported'},
+    // {nonSurfaceKey: 'sulfate droplets'}
+    
     // {nonSurfaceKey: 'clwp', max: 30, label: 'In-cloud liquid water path (g/m2)'},
     // {nonSurfaceKey: 'r_liq', max: 100, label: 'Cloud water drop radius (10^-6 m)'},
     // {nonSurfaceKey: 'ciwp', max: 30, label: 'In-cloud ice water path (g/m2)'},
@@ -500,6 +511,24 @@ initializeInput = function() {
     // Make checkboxes
     text = ''
     inputList.map(function(args, index) {
+        if (args.nonSurfaceKey == 'insoluble') {
+            var aerosolExamples = [
+                {name: 'none'},
+                {name: 'ocean'},
+                {name: 'desert'},
+                {name: 'city'},
+                {name: 'land'},
+                {name: 'land, polluted'},
+                {name: 'Antarctic'}
+            ]
+            
+            text += '<li>aerosols:<select class="aerosol">'
+            $.map(aerosolExamples, function( e,i ) {
+                var id = e.name.split(' ').reverse()[0]
+                text += '<option value="' + id + '">' + e.name + '</option>'
+            })
+            text += '</select></li>'
+        }
         if (args.double != 2) { text += '<li>' }
         text += '<input class="profileCheckbox" type="checkbox" ' + (args.on ? 'checked="checked" ' : '') + 'id="' + args.nonSurfaceKey + '" /><label for="' + args.nonSurfaceKey + '" >' + args.label.replace(/\s\(.+\)/, "") + '</label>'
         if (args.double != 1) { text += '</li>'}
@@ -584,6 +613,11 @@ initializeInput = function() {
         {name: 'Soil', value: 0.17},
         {name: 'Custom'}
     ]
+    $('select.aerosol').change(function(){
+        modelData['aerosols'] = $(this).val()
+        updateModel('just profiles')
+    })
+    
     
     text = ''
     $.map(surfaces, function(e,i) {
@@ -646,8 +680,8 @@ initializeInput = function() {
             $('#sunlight').slider('value', 5.67 * Math.pow(10,-8) * Math.pow(temp, 4) * Math.pow(6.96 * Math.pow(10, 8), 2) / Math.pow(1.496 * Math.pow(10, 11), 2))
         }
     })
-    $('#distanceToSun').slider()
-    
+    // $('#distanceToSun').slider()
+
     initializeProfiles()
 }
 
