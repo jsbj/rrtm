@@ -135,8 +135,14 @@ model_data.update({
 })
 
 if 'aerosols' in model_data and model_data['aerosols'] != 'none':
-    import sys; sys.stderr.write(model_data['aerosols'])
     model_data.update(aerosols.optical_properties(name = model_data['aerosols'], altitude = model_data['altitude'], called_on = 'conditions'))
+else:
+    model_data.update({
+        'tauaer_sw': number_of_layers * [len(aerosols.SW_BANDS) * [0]],
+        'ssaaer_sw': number_of_layers * [len(aerosols.SW_BANDS) * [0]],
+        'asmaer_sw': number_of_layers * [len(aerosols.SW_BANDS) * [0]],
+        'tauaer_lw': number_of_layers * [len(aerosols.LW_BANDS) * [0]]
+    })
 # import pdb; pdb.set_trace()
 # make concentrations into volume mixing ratios
 unit_change = {
