@@ -1,0 +1,16 @@
+#inputs{position:absolute;left:10px;width:150px;top:100px;text-align:center;}
+#inputs td{ align=center; border:solid;padding:5px;}
+button{ border:none; margin:0px; padding:0px;width:140;background-color:#FFFFFF;font-size:12pt}
+#inputs a{ border:none; margin:0px; align:center; width:140;background-color:#FFFFFF;font-size:12pt}
+
+
+#overviewDiv{position:absolute;left:0px;right:0px;top:0px;height:30px;}
+#howToDiv{position:absolute;left:0px;right:0px;top:30px;height:30px}
+#videoDiv{position:absolute;left:0px;right:0px;top:60px;height:30px}
+#techDiv{position:absolute;left:0px;right:0px;top:90px;height:30px}
+#srcDiv{position:absolute;left:0px;right:0px;top:120px;height:30px}
+
+#display{position:absolute;left:180px;right:20px;top:100px;height:600px; }
+#howTo{display:none;}
+#video{display:none;}
+#tech{display:none;}
