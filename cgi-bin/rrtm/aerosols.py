@@ -54,7 +54,7 @@ CONDITIONS = {
         'absolute height': 6.0
     },
     'city': {
-        'water soluble': 28000.0,
+        'water soluble': 56000.0,
         'insoluble': 1.5,
         'soot': 130000.0,
         'scale height': 8.0,
@@ -70,6 +70,16 @@ CONDITIONS = {
         'water soluble': 7000.0,
         'insoluble': 0.6,
         'soot': 34300.0,
+        'scale height': 8.0,
+        'absolute height': 2.0
+    },
+    'sulfates': {
+        'water soluble': 56000.0,
+        'scale height': 8.0,
+        'absolute height': 2.0
+    },
+    'carbon': {
+        'soot': 130000.0,
         'scale height': 8.0,
         'absolute height': 2.0
     },
@@ -131,6 +141,10 @@ def optical_properties(name = '', altitude = 0, previous_altitude = 0, called_on
         }
         
         opt_params.update(aerosol_concentrations)
+        
+        for key in opt_params:
+            if hasattr(opt_params[key], '__iter__'):
+                opt_params[key].reverse()
         
         return opt_params
     if called_on == 'layer':

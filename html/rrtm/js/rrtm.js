@@ -307,8 +307,8 @@ updateOutput = function() {
 var inputList = [
     {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 220, max: 305, label: 'Temperature (K)', USAscale: d3.scale.linear().domain([273.15, 373.15]).range([32.0, 212.0])},
     // {nonSurfaceKey: 'rh', max: 100., label: 'Relative humidity (%)'},
-    {nonSurfaceKey: 'co2', max: 2000, label: 'CO2 (ppm)'},
-    // {nonSurfaceKey: 'ch4', max: 10000, label: 'CH4 (ppb)', double: 2},
+    {nonSurfaceKey: 'co2', max: 2000, label: 'CO2 (ppm)', double: 1},
+    {nonSurfaceKey: 'ch4', max: 30000, label: 'CH4 (ppb)', double: 2},
     // {nonSurfaceKey: 'n2o', max: 1000, label: 'N2O (ppb)', double: 1},
     // {nonSurfaceKey: 'o3', max: 50, label: 'O3 (ppm)', double: 2},
     // {nonSurfaceKey: 'cfc11', max: 1000, label: 'CFC-11 (ppt)', double: 1},
@@ -316,19 +316,20 @@ var inputList = [
     // {nonSurfaceKey: 'cfc22', max: 1000, label: 'CFC-22 (ppt)', double: 1},
     // {nonSurfaceKey: 'ccl4', max: 50, label: 'CCl4 (ppt)', double: 2},
     {nonSurfaceKey: 'cldf', max: 1, label: 'Cloud fraction', noCircle: true},
+    {nonSurfaceKey: 'r_liq', max: 100, label: 'Cloud water drop radius (10^-6 m)'},
     {nonSurfaceKey: 'insoluble', max: 2, label: 'Organic aerosols', noCircle: true},
-    {nonSurfaceKey: 'water soluble', max: 30000, label: 'Sulfate aerosols', noCircle: true},    
+    {nonSurfaceKey: 'water soluble', max: 100000, label: 'Sulfate aerosols', noCircle: true},    
     {nonSurfaceKey: 'soot', max: 200000, label: 'Black Carbon', noCircle: true},
-    {nonSurfaceKey: 'sea salt (acc.)', max: 30.0, label: 'Sea salt', nonCircle: true},
+    {nonSurfaceKey: 'sea salt (acc.)', max: 30.0, label: 'Sea salt', nonCircle: true}
     // {nonSurfaceKey: 'sea salt (coa.)'},
-    {nonSurfaceKey: 'mineral (nuc.)', max: 300.0, label: 'Sand', nonCircle: true}
+    // {nonSurfaceKey: 'mineral (nuc.)', max: 300.0, label: 'Sand', nonCircle: true}
     // {nonSurfaceKey: 'mineral (acc.)'},
     // {nonSurfaceKey: 'mineral (coa.)'},
     // {nonSurfaceKey: 'mineral-transported'},
     // {nonSurfaceKey: 'sulfate droplets'}
     
     // {nonSurfaceKey: 'clwp', max: 30, label: 'In-cloud liquid water path (g/m2)'},
-    // {nonSurfaceKey: 'r_liq', max: 100, label: 'Cloud water drop radius (10^-6 m)'},
+
     // {nonSurfaceKey: 'ciwp', max: 30, label: 'In-cloud ice water path (g/m2)'},
     // {nonSurfaceKey: 'r_ice', max: 130, min: 13, label: 'Cloud ice particle radius (10^-6 m)'} //,
     // {nonSurfaceKey: 'tauaer_sw', max: 3, label: 'Aerosol SW optical depth'},
@@ -513,16 +514,18 @@ initializeInput = function() {
     inputList.map(function(args, index) {
         if (args.nonSurfaceKey == 'insoluble') {
             var aerosolExamples = [
-                {name: 'none'},
+                {name: 'select aerosol profile'},
                 {name: 'ocean'},
                 {name: 'desert'},
                 {name: 'city'},
+                {name: 'city, sulfates'},
+                {name: 'city, black carbon'},
                 {name: 'land'},
                 {name: 'land, polluted'},
                 {name: 'Antarctic'}
             ]
             
-            text += '<li>aerosols:<select class="aerosol">'
+            text += '<li><select class="aerosol">'
             $.map(aerosolExamples, function( e,i ) {
                 var id = e.name.split(' ').reverse()[0]
                 text += '<option value="' + id + '">' + e.name + '</option>'
@@ -850,21 +853,6 @@ initializeProfiles = function() {
                     if ((args.surfaceKey) && (ci == 0)) {
                         modelData[args.surfaceKey] = newValue
                     } else {                
-                        if ((args.nonSurfaceKey == 'cldf') && (modelData[args.nonSurfaceKey][ci - 1] == 0)) {
-                            $.each([['clwp', 5.0], ['ciwp', 5.0], ['r_liq', 10.0], ['r_ice', 30.0]], function(i,d) {
-                                var new_key = d[0]
-                                var new_default = d[1]
-                                var tempArgs
-                                if (modelData[new_key][ci - 1] == 0) {
-                                    modelData[new_key][ci - 1] = new_default
-                                    tempArgs = $.grep(checkedList, function(el, ind) {return el.nonSurfaceKey == new_key })[0]
-                                    tempArgs.profile.remove()
-                                    tempArgs['values'] = modelData[new_key]
-                                    tempArgs['profile'] = d3.select('g.' + new_key).append('svg:path').attr('class', 'profile').attr('d', tempArgs.line(tempArgs.values))
-                                    d3.select('g.' + new_key).select('circle').attr('cx', tempArgs.x(tempArgs.values[0]))
-                                }
-                            })
-                        }
                         modelData[args.nonSurfaceKey][ci - 1] = newValue
                     }
                     changed = true
@@ -897,13 +885,8 @@ updateClouds = function(cloudType, value) {
 }
 
 $('a#reset').click(function(){
-    modelData = {}
-    updateModel('just profiles')
-    $('#albedo').slider('value', 0.3)
-    $('#sunlight').slider('value', 1370.0)
-    $('#lapseRate').slider('value', 0)
-    $('#tropopause').slider('value', 15)
-    $("#Earthsaverage").prop('checked', true)
+    window.location.reload()
+    return false;
 })
 
 // $('select#presets').change(function() {
@@ -917,6 +900,5 @@ $('a#reset').click(function(){
 //     
 //     updateModel('just profiles')
 //     $('#albedo').slider('value', 0.3)
-//     $('#sunlight').slider('value', 1370.0)
 //     $("#Earthsaverage").prop('checked', true)
 // })

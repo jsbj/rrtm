@@ -35,10 +35,10 @@ if preset == 'isothermal, no greenhouse gases':
         "ssaaer_sw": number_of_layers * [0],
         "asmaer_sw": number_of_layers * [0],
         "tauaer_lw": number_of_layers * [0],
-        "r_liq": number_of_layers * [0],
+        "r_liq": number_of_layers * [10.0],
         "r_ice": number_of_layers * [13.0],
-        "clwp": number_of_layers * [0],
-        "ciwp": number_of_layers * [0],
+        "clwp": number_of_layers * [5.0],
+        "ciwp": number_of_layers * [5.0],
         "cldf": number_of_layers * [0],
         "ccl4": number_of_layers * [0],
         "cfc11": number_of_layers * [0],
@@ -55,12 +55,14 @@ if preset == 'isothermal, no greenhouse gases':
         "co": number_of_layers * [0], 
         "o3": number_of_layers * [0], 
         "o2": number_of_layers * [0.209], #97518, 0.20897572, 0.2089678, 0.2089866, 0.20899189, 0.20899543, 0.20899996, 0.20900373, 0.20900458, 0.20900519, 0.20900649, 0.20900634, 0.20900698, 0.20900562, 0.20900711, 0.20900925, 0.20900522, 0.20899965, 0.20899954, 0.20899963, 0.20899959, 0.20899966, 0.20899986, 0.20899987, 0.20900002, 0.20899989, 0.20899986, 0.2090022, 0.20900251, 0.2090067, 0.2090057, 0.20900536, 0.20900574, 0.20900482, 0.20900646, 0.20900702, 0.20900613, 0.20900463, 0.2090015, 0.20900197, 0.20901358, 0.2090466, 0.20902328, 0.20906644, 0.20911193, 0.20908101, 0.20904104, 0.20916539, 0.20922786, 0.20919746, 0.20908001], 
-        "lev": list(1000. * numpy.exp(-9.8 * numpy.linspace(0,total_altitude,num=number_of_layers+1, endpoint=True)[1:] * 1000. / (Ts * 285.0))) # [891.46, 792.287, 718.704, 651.552, 589.841, 532.986, 480.526, 437.556, 398.085, 361.862, 328.507, 297.469, 269.015, 243, 218.668, 196.44, 162.913, 136.511, 114.564, 96.4903, 81.2, 68.4286, 57.6936, 48.6904, 40.5354, 33.733, 28.1201, 23.1557, 18.7914, 15.0693, 11.8006, 8.78628, 6.61328, 5.03469, 3.85333, 2.96408, 2.2918, 1.78227, 1.339, 0.589399, 0.430705, 0.333645, 0.261262, 0.216491, 0.179393, 0.148652, 0.1255, 0.106885, 0.091031, 0.077529, 0.067],
+        "lev": list(1000. * numpy.exp(-9.8 * numpy.linspace(0,total_altitude,num=number_of_layers+1, endpoint=True)[1:] * 1000. / (Ts * 285.0))), # [891.46, 792.287, 718.704, 651.552, 589.841, 532.986, 480.526, 437.556, 398.085, 361.862, 328.507, 297.469, 269.015, 243, 218.668, 196.44, 162.913, 136.511, 114.564, 96.4903, 81.2, 68.4286, 57.6936, 48.6904, 40.5354, 33.733, 28.1201, 23.1557, 18.7914, 15.0693, 11.8006, 8.78628, 6.61328, 5.03469, 3.85333, 2.96408, 2.2918, 1.78227, 1.339, 0.589399, 0.430705, 0.333645, 0.261262, 0.216491, 0.179393, 0.148652, 0.1255, 0.106885, 0.091031, 0.077529, 0.067],
+        'aerosols': 'profile',
+        'tropopause': 15,
+        'lapseRate': 0
     }
     
 else:
     if preset == 'standard mid-latitude':
-        sys.stderr.write(str(preset == 'standard mid-latitude'))
         adjust = 25.7
         # set defaults (different than CliMT's)
         T_old = [291.77, 287.03, 282.23, 277.43, 272.63, 267.83, 263.03, 258.3, 253.75, 249.2, 244.65, 240.13, 235.64, 231.1, 226.55, 222.01, 216.81, 215.71, 215.7, 215.7, 216.18, 217.39, 218.72, 220.08, 221.46, 222.88, 224.24, 225.81, 227.61, 230.17, 233.52, 237.51, 242.34, 247.27, 252.17, 257.13, 262.09, 267.05, 272, 274.41, 268.77, 263.53, 258.75, 253.76, 249, 244.24, 239.61, 234.65, 229.81, 224.97, 220.34]
@@ -119,30 +121,6 @@ model_data['asdif'] = model_data['asdir']
 model_data['aldir'] = model_data['asdir']
 model_data['aldif'] = model_data['asdir']
 
-# AEROSOLS:
-# model_data['aerosols'] = 'city'
-model_data.update({        
-    'insoluble': number_of_layers * [0],
-    'water soluble': number_of_layers * [0],
-    'soot': number_of_layers * [0],
-    'sea salt (acc.)': number_of_layers * [0],
-    'sea salt (coa.)': number_of_layers * [0],
-    'mineral (nuc.)': number_of_layers * [0],
-    'mineral (acc.)': number_of_layers * [0],
-    'mineral (coa.)': number_of_layers * [0],
-    'mineral-transported': number_of_layers * [0],
-    'sulfate droplets': number_of_layers * [0]
-})
-
-if 'aerosols' in model_data and model_data['aerosols'] != 'none':
-    model_data.update(aerosols.optical_properties(name = model_data['aerosols'], altitude = model_data['altitude'], called_on = 'conditions'))
-else:
-    model_data.update({
-        'tauaer_sw': number_of_layers * [len(aerosols.SW_BANDS) * [0]],
-        'ssaaer_sw': number_of_layers * [len(aerosols.SW_BANDS) * [0]],
-        'asmaer_sw': number_of_layers * [len(aerosols.SW_BANDS) * [0]],
-        'tauaer_lw': number_of_layers * [len(aerosols.LW_BANDS) * [0]]
-    })
 # import pdb; pdb.set_trace()
 # make concentrations into volume mixing ratios
 unit_change = {
@@ -164,6 +142,33 @@ for key in model_data:
 
 # import pdb; pdb.set_trace()
 
+# AEROSOLS:
+# model_data['aerosols'] = 'city'
+model_data.update({        
+    'insoluble': number_of_layers * [0],
+    'water soluble': number_of_layers * [0],
+    'soot': number_of_layers * [0],
+    'sea salt (acc.)': number_of_layers * [0],
+    'sea salt (coa.)': number_of_layers * [0],
+    'mineral (nuc.)': number_of_layers * [0],
+    'mineral (acc.)': number_of_layers * [0],
+    'mineral (coa.)': number_of_layers * [0],
+    'mineral-transported': number_of_layers * [0],
+    'sulfate droplets': number_of_layers * [0]
+})
+
+# model_data['aerosols'] = 'city'
+if 'aerosols' in model_data and model_data['aerosols'] != 'profile':
+    model_data.update(aerosols.optical_properties(name = model_data['aerosols'], altitude = model_data['altitude'][::-1], called_on = 'conditions'))
+else:
+    model_data.update({
+        'tauaer_sw': number_of_layers * [len(aerosols.SW_BANDS) * [0]],
+        'ssaaer_sw': number_of_layers * [len(aerosols.SW_BANDS) * [0]],
+        'asmaer_sw': number_of_layers * [len(aerosols.SW_BANDS) * [0]],
+        'tauaer_lw': number_of_layers * [len(aerosols.LW_BANDS) * [0]]
+    })
+
+# import pdb; pdb.set_trace()
 # set whether this is a global average or not
 global_average = True
 
