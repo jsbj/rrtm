@@ -32,7 +32,7 @@ var roomForProfileLabels = 40
 var arrowHeight = 40 // 60
 var arrowHeadHeight = 15
 var arrowHeadExtraWidthDefault = 20
-var maxFlux = 1000
+var maxFlux = 500
 
 // ==============
 // = Model Data =
@@ -305,7 +305,7 @@ updateOutput = function() {
 
 
 var inputList = [
-    {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 220, max: 305, label: 'Temperature (K)', USAscale: d3.scale.linear().domain([273.15, 373.15]).range([32.0, 212.0])},
+    {nonSurfaceKey: 'Tbound', surfaceKey: 'Ts', min: 220, max: 280, label: 'Temperature (K)', USAscale: d3.scale.linear().domain([273.15, 373.15]).range([32.0, 212.0])},
     // {nonSurfaceKey: 'rh', max: 100., label: 'Relative humidity (%)'},
     {nonSurfaceKey: 'co2', max: 2000, label: 'CO2 (ppm)', double: 1},
     {nonSurfaceKey: 'ch4', max: 30000, label: 'CH4 (ppb)', double: 2},
