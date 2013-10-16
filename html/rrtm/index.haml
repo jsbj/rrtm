@@ -36,51 +36,49 @@
                             / %select#presets
                             /     %option{value: 'isothermal, no greenhouse gases'} isothermal, no greenhouse gases
                             /     %option{value: 'standard mid-latitude'} standard mid-latitude
-                %switch
-                    %foreignObject.input{y: '100', x: '40', requiredFeatures: "http://www.w3.org/TR/SVG11/feature#Extensibility"}
-                        %body.inner{xmlns: 'http://www.w3.org/1999/xhtml'}
-                            %div.input{style: 'overflow-x:scroll; overflow-y:hidden', height: '380px'}
-                                %svg#inner{width: '2000px', height: '360px', style: 'float: left;'}
-                                    %switch
-                                        %foreignObject.control{x: '0', y: '-10', requiredFeatures: "http://www.w3.org/TR/SVG11/feature#Extensibility"}
-                                            %body.control{xmlns: 'http://www.w3.org/1999/xhtml'}
-                                                %div#tab-container.tab-container
-                                                    %ul.etabs
-                                                        %li.tab
-                                                            %a{href:"#tabs1-sun"} Sun
-                                                        %li.tab
-                                                            %a{href:"#tabs1-surface"} Surface
-                                                        %li.tab.default
-                                                            %a{href:"#tabs1-atmosphere"} Atmosphere
-                                                    %div#tabs1-sun
-                                                        %div#sunlightText
-                                                            direct sunlight:
-                                                            %span.sunlight 1370
-                                                            W/m
-                                                            %sup 2
-                                                        %div#sunlight
-                                                        / %div#sunTempText
-                                                        /     Sun's surface temperature:
-                                                        /     %span.sunTemp 5780
-                                                        /     K
-                                                        / %div#sunTemp
-                                                        / %div#distanceToSunText
-                                                        /     distance to Sun:
-                                                        /     %span.distanceToSuntext
-                                                        / %div#distanceToSun
-                                                    %div#tabs1-surface
-                                                        %ul.albedo{style: 'font-size: 80%; list-style-type: none; padding: 5px; margin: 0;'}
-                                                            %li
-                                                                %span.instruction select surface type:
-                                                        %div#albedoText
-                                                            albedo: 
-                                                            %span.albedo 0.3
-                                                        %div#albedo
-                                                    %div#tabs1-atmosphere
-                                                        %ul.control{style: 'font-size: 80%; list-style-type: none; padding: 5px; margin: 0;'}
-                                                            %li
-                                                                %span.instruction check boxes to show profiles:
-                    Your browser does not support this page.
+                %foreignObject.input{y: '100', x: '40', requiredFeatures: "http://www.w3.org/TR/SVG11/feature#Extensibility"}
+                    %body.inner{xmlns: 'http://www.w3.org/1999/xhtml'}
+                        %div.input{style: 'overflow-x:scroll; overflow-y:hidden', height: '380px'}
+                            %svg#inner{width: '2000px', height: '360px', style: 'float: left;'}
+                                %switch
+                                    %foreignObject.control{x: '0', y: '-10', requiredFeatures: "http://www.w3.org/TR/SVG11/feature#Extensibility"}
+                                        %body.control{xmlns: 'http://www.w3.org/1999/xhtml'}
+                                            %div#tab-container.tab-container
+                                                %ul.etabs
+                                                    %li.tab
+                                                        %a{href:"#tabs1-sun"} Sun
+                                                    %li.tab
+                                                        %a{href:"#tabs1-surface"} Surface
+                                                    %li.tab.default
+                                                        %a{href:"#tabs1-atmosphere"} Atmosphere
+                                                %div#tabs1-sun
+                                                    %div#sunlightText
+                                                        direct sunlight:
+                                                        %span.sunlight 1370
+                                                        W/m
+                                                        %sup 2
+                                                    %div#sunlight
+                                                    / %div#sunTempText
+                                                    /     Sun's surface temperature:
+                                                    /     %span.sunTemp 5780
+                                                    /     K
+                                                    / %div#sunTemp
+                                                    / %div#distanceToSunText
+                                                    /     distance to Sun:
+                                                    /     %span.distanceToSuntext
+                                                    / %div#distanceToSun
+                                                %div#tabs1-surface
+                                                    %ul.albedo{style: 'font-size: 80%; list-style-type: none; padding: 5px; margin: 0;'}
+                                                        %li
+                                                            %span.instruction select surface type:
+                                                    %div#albedoText
+                                                        albedo: 
+                                                        %span.albedo 0.3
+                                                    %div#albedo
+                                                %div#tabs1-atmosphere
+                                                    %ul.control{style: 'font-size: 80%; list-style-type: none; padding: 5px; margin: 0;'}
+                                                        %li
+                                                            %span.instruction check boxes to show profiles:
                 %foreignObject.loader
                     %body.loader{xmlns: 'http://www.w3.org/1999/xhtml'}
                         %div
