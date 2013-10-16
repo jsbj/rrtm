@@ -18,7 +18,7 @@ var inputOutputSeparator = 40
 var inputWidth = totalWidth - (outputWidth + inputOutputSeparator + rightMargin + 2 * altitudeAxis)
 $('text.inputDescription tspan').attr('x', inputWidth / 2)
 $('text.output').attr('x', inputWidth + outputWidth/2)
-var foreignReset = $($.grep($('foreignObject'), function( e, i) { return $(e).attr('class') == 'reset' })[0])
+var foreignReset = $($.grep($('svg#rrtm').children(), function( e, i) { return $(e).attr('class') == 'reset' })[0])
 var foreignLoader = $($.grep($('foreignObject'), function( e, i) { return $(e).attr('class') == 'loader' })[0])
 foreignReset.attr('y', headerHeight - 20).attr('x', altitudeAxis).attr('width', 400).attr('height', 20)
 foreignLoader.attr('y', headerHeight + flowHeight/2 - 20).attr('x', totalWidth / 2).attr('width',30).attr('height', 30)
