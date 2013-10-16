@@ -22,6 +22,8 @@ var foreignReset = $($.grep($('svg#rrtm').children(), function( e, i) { return $
 var foreignLoader = $($.grep($('foreignObject'), function( e, i) { return $(e).attr('class') == 'loader' })[0])
 foreignReset.attr('y', headerHeight - 20).attr('x', altitudeAxis).attr('width', 400).attr('height', 20)
 foreignLoader.attr('y', headerHeight + flowHeight/2 - 20).attr('x', totalWidth / 2).attr('width',30).attr('height', 30)
+$('foreignobject.input').insertBefore(foreignReset)
+foreignLoader.insertBefore(foreignReset)
 $('#loader').attr('width', 30).attr('height', 30)
 var subsectionMargin = 50
 var subsectionWidth = (outputWidth - (subsectionMargin * 2)) / 3.0
