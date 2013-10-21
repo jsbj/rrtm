@@ -17,3 +17,8 @@ git clone https://github.com/jsbj/rrtm.git
 rm -rf /var/www/{html,cgi-bin}/rrtm
 cp -R rrtm/html/rrtm /var/www/html/rrtm
 cp -R rrtm/cgi-bin/rrtm /var/www/cgi-bin/rrtm
+
+
+# To update to the latest version
+cd ~/repos/rrtm
+git pull
