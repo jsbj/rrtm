@@ -3,8 +3,17 @@
 # Gotta have this to let the browser know it's json
 print "Content-type: application/json\n\n";
 
-import json, sys, re, os, climt, numpy, aerosols
+
+# import getpass, sys; sys.stderr.write(str(getpass.getuser()))
+import os, sys
+
+if os.path.exists('/users/jonah/hack'):
+    sys.path = ['', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/distribute-0.6.45-py2.7.egg', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/pip-1.3.1-py2.7.egg', '/usr/local/lib/python2.7/site-packages/distribute-0.6.45-py2.7.egg', '/usr/local/lib/python2.7/site-packages/pip-1.3.1-py2.7.egg', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python27.zip', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-darwin', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac/lib-scriptpackages', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/lib-tk', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/lib-old', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/lib-dynload', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/setuptools-0.6c11-py2.7.egg-info', '/Library/Python/2.7/site-packages', '/usr/local/lib/python2.7/site-packages', '/usr/local/lib/python2.7/site-packages/setuptools-0.6c11-py2.7.egg-info']
+
+import json, re, climt, numpy, aerosols
 from math import copysign, floor, log10, cos, pi, exp, asin, acos, floor, copysign
+
+sys.stderr.write(climt.__file__)
 
 # parse JSON data request by client
 model_data = json.load(sys.stdin)
@@ -106,7 +115,7 @@ model_data.update({
 
 # model_data['aerosols'] = 'city'
 if 'aerosols' in model_data and model_data['aerosols'] != 'profile':
-    model_data.update(aerosols.optical_properties(name = model_data['aerosols'], altitude = model_data['altitude'][::-1], called_on = 'conditions'))
+    model_data.update(aerosols.optical_properties(name = model_data['aerosols'], altitude = model_data['altitude'][::-1], called_on = 'scenario'))
 else:
     model_data.update({
         'tauaer_sw': number_of_layers * [len(aerosols.SW_BANDS) * [0]],
@@ -188,6 +197,7 @@ for key in model_data:
     if hasattr(model_data[key], '__iter__'):
         model_data[key].reverse()
 
+# sys.stderr.write(json.dumps(model_data))
 # send the JSON to the client
 print json.dumps(model_data)
 

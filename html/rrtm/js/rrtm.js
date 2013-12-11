@@ -319,10 +319,10 @@ var inputList = [
     // {nonSurfaceKey: 'ccl4', max: 50, label: 'CCl4 (ppt)', double: 2},
     {nonSurfaceKey: 'cldf', max: 1, label: 'Cloud fraction', noCircle: true},
     {nonSurfaceKey: 'r_liq', max: 100, label: 'Cloud water drop radius (10^-6 m)'},
-    {nonSurfaceKey: 'insoluble', max: 2, label: 'Organic aerosols', noCircle: true},
-    {nonSurfaceKey: 'water soluble', max: 100000, label: 'Sulfate aerosols', noCircle: true},    
-    {nonSurfaceKey: 'soot', max: 200000, label: 'Black Carbon', noCircle: true},
-    {nonSurfaceKey: 'sea salt (acc.)', max: 30.0, label: 'Sea salt', nonCircle: true}
+    {nonSurfaceKey: 'insoluble', max: 2, label: 'Organic aerosols (particles per cm^3)', noCircle: true},
+    {nonSurfaceKey: 'water soluble', max: 100000, label: 'Sulfate aerosols (particles per cm^3)', noCircle: true},    
+    {nonSurfaceKey: 'soot', max: 200000, label: 'Black carbon (particles per cm^3)', noCircle: true},
+    {nonSurfaceKey: 'sea salt (acc.)', max: 30.0, label: 'Sea salt (particles per cm^3)', noCircle: true}
     // {nonSurfaceKey: 'sea salt (coa.)'},
     // {nonSurfaceKey: 'mineral (nuc.)', max: 300.0, label: 'Sand', nonCircle: true}
     // {nonSurfaceKey: 'mineral (acc.)'},
@@ -526,7 +526,8 @@ initializeInput = function() {
                 {name: 'city, black carbon'},
                 {name: 'land'},
                 {name: 'land, polluted'},
-                {name: 'Antarctic'}
+                {name: 'Antarctic'},
+                {name: 'Pinatubo'}
             ]
             
             text += '<li><select class="aerosol">'

@@ -37,7 +37,9 @@ LW_BANDS = [
     [2600, 3250]	
 ]
 
-CONDITIONS = {
+SCENARIOS = {
+    # NON SI UNITS
+    # number densities in number of particles / cm^3
     'ocean': {
         'water soluble': 1500.0,
         'sea salt (acc.)': 20.0,
@@ -89,6 +91,10 @@ CONDITIONS = {
         'mineral-transported': 0.53e-2,
         'scale height': 8.0,
         'absolute height': 10.0
+    },
+    'Pinatubo': {
+        'water soluble': 70000.,
+        'absolute height': 15.
     }
 }
 
@@ -105,10 +111,10 @@ AEROSOL_CODES = {
     'sulfate droplets': 'SUSO'
 }
 
-def optical_properties(name = '', altitude = 0, previous_altitude = 0, called_on = 'conditions', conditions = {}, band = [], aerosol_concentrations = {}):
-    if called_on == 'conditions':
-        conditions = CONDITIONS[name]
-    
+def optical_properties(name = '', altitude = 0, previous_altitude = 0, called_on = 'scenario', conditions = {}, band = [], aerosol_concentrations = {}):
+    if called_on == 'scenario':
+        conditions = SCENARIOS[name]
+
         tauaer_sw = []
         ssaaer_sw = []
         asmaer_sw = []
@@ -121,18 +127,19 @@ def optical_properties(name = '', altitude = 0, previous_altitude = 0, called_on
             ssaaer_sw.append([])
             asmaer_sw.append([])
             tauaer_lw.append([])
-        
+    
             for j in range(len(SW_BANDS)):
                 b = SW_BANDS[j]
+                # http://www.rascin.net/sites/default/files/downloads/OPAC.pdf
                 tau, ssa, asm = optical_properties(called_on = 'layer', conditions = conditions, altitude = a, previous_altitude = previous_altitude, band = b, aerosol_concentrations = (not j) and aerosol_concentrations)
                 tauaer_sw[-1].append(tau)
                 ssaaer_sw[-1].append(ssa)
                 asmaer_sw[-1].append(asm)
-            
+        
             for b in LW_BANDS:
                 tau, ssa, asm = optical_properties(called_on = 'layer', conditions = conditions, altitude = a, previous_altitude = previous_altitude, band = b, aerosol_concentrations = False)
                 tauaer_lw[-1].append(tau)
-        
+    
         opt_params = {
             'tauaer_sw': tauaer_sw,
             'ssaaer_sw': ssaaer_sw,
@@ -159,19 +166,35 @@ def optical_properties(name = '', altitude = 0, previous_altitude = 0, called_on
             if aerosol_concentrations:
                 if aerosol not in aerosol_concentrations:
                     aerosol_concentrations[aerosol] = []
-                aerosol_concentrations[aerosol].append(number_density(conditions[aerosol], altitude, conditions['scale height'], conditions['absolute height']))
-        
+                if 'scale height' in conditions:
+                    aerosol_concentrations[aerosol].append(number_density(conditions[aerosol], altitude, conditions['scale height'], conditions['absolute height']))
+                else:
+                    if previous_altitude <= conditions['absolute height'] < altitude:
+                        aerosol_concentrations[aerosol].append(conditions[aerosol])
+                    else:
+                        aerosol_concentrations[aerosol].append(0.)
             # just take the average wavenumber ... probably too hacky of a way to do this? integrate?
             wavenumber = band[1] - band[0] / 2.0
             wavelength = 1 / (wavenumber * 100.0) #wavelength ext.coef  sca.coef  abs.coef  si.sc.alb  asym.par  ext.nor    ref.real  ref.imag
 
             for line in open('optdat/' + AEROSOL_CODES[aerosol].lower(), 'r').read().split('\n'):
                 values = line.split()
-                if float(values[0]) * 1.e-6 > wavelength:                    
-                    opt = float(values[1]) * conditions[aerosol] * conditions['scale height'] * (exp(-layer_min/conditions['scale height']) - exp(-layer_max/conditions['scale height']))
-                    tau.append(opt)
-                    ssa.append(opt and float(values[4]))
-                    asm.append(opt and float(values[5]))
+                if float(values[0]) * 1.e-6 > wavelength:
+                    extinction_coefficient = float(values[1]) # (1 / km) / (particles / cm^3)
+                    # optical depth = int_{z_bottom}^{z_top} ext_coeff * number_dens(z) (1 / cm^3) * dz
+                    if 'scale height' in conditions:
+                        opt = extinction_coefficient * conditions[aerosol] * conditions['scale height'] * (exp(-layer_min/conditions['scale height']) - exp(-layer_max/conditions['scale height']))
+                    else:
+                        if previous_altitude <= conditions['absolute height'] < altitude:
+                            # opt = ((1 / km) / (particles / cm^3)) * (km - km) * (particles / cm^3)
+                            opt = extinction_coefficient * (layer_max - layer_min) * conditions[aerosol]
+                            tau.append(opt)
+                            ssa.append(opt and float(values[4]))
+                            asm.append(opt and float(values[5]))
+                        else:
+                            tau.append(0.)
+                            ssa.append(0.)
+                            asm.append(0.)
                     break
                     
         
