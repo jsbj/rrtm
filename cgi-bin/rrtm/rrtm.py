@@ -1,19 +1,12 @@
-#!/usr/bin/python
+#!/usr/local/bin/python
 
 # Gotta have this to let the browser know it's json
 print "Content-type: application/json\n\n";
 
 
 # import getpass, sys; sys.stderr.write(str(getpass.getuser()))
-import os, sys
-
-if os.path.exists('/users/jonah/hack'):
-    sys.path = ['', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/distribute-0.6.45-py2.7.egg', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/pip-1.3.1-py2.7.egg', '/usr/local/lib/python2.7/site-packages/distribute-0.6.45-py2.7.egg', '/usr/local/lib/python2.7/site-packages/pip-1.3.1-py2.7.egg', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python27.zip', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-darwin', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/plat-mac/lib-scriptpackages', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/lib-tk', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/lib-old', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/lib-dynload', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages', '/usr/local/Cellar/python/2.7.5/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/setuptools-0.6c11-py2.7.egg-info', '/Library/Python/2.7/site-packages', '/usr/local/lib/python2.7/site-packages', '/usr/local/lib/python2.7/site-packages/setuptools-0.6c11-py2.7.egg-info']
-
-import json, re, climt, numpy, aerosols
+import os, sys, json, re, climt, numpy, aerosols
 from math import copysign, floor, log10, cos, pi, exp, asin, acos, floor, copysign
-
-sys.stderr.write(climt.__file__)
 
 # parse JSON data request by client
 model_data = json.load(sys.stdin)
@@ -133,6 +126,7 @@ def sigdig(x, digits=1):
     if x: x = copysign(round(x, -int(floor(log10(abs(x)))) + (digits - 1)), x)
     return x
 
+sys.stderr.write(json.dumps(model_data))
 
 # if it's a global average, make the first run a night-time case
 if global_average:
@@ -196,6 +190,8 @@ for factor in unit_change:
 for key in model_data:
     if hasattr(model_data[key], '__iter__'):
         model_data[key].reverse()
+
+
 
 # sys.stderr.write(json.dumps(model_data))
 # send the JSON to the client
