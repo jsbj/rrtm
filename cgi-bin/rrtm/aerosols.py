@@ -184,6 +184,9 @@ def optical_properties(name = '', altitude = 0, previous_altitude = 0, called_on
                     # optical depth = int_{z_bottom}^{z_top} ext_coeff * number_dens(z) (1 / cm^3) * dz
                     if 'scale height' in conditions:
                         opt = extinction_coefficient * conditions[aerosol] * conditions['scale height'] * (exp(-layer_min/conditions['scale height']) - exp(-layer_max/conditions['scale height']))
+                        tau.append(opt)
+                        ssa.append(opt and float(values[4]))
+                        asm.append(opt and float(values[5]))
                     else:
                         if previous_altitude <= conditions['absolute height'] < altitude:
                             # opt = ((1 / km) / (particles / cm^3)) * (km - km) * (particles / cm^3)
