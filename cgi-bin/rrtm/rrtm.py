@@ -23,7 +23,7 @@ h2o = number_of_layers * [0.0]
 defaults = {
     "ps": 1013,
     "Ts": Ts,
-    "scon": 1366,
+    "scon": 1360,
     "asdir": 0.3,
     "zen": 62, 
     "tauaer_sw": number_of_layers * [0],
@@ -126,7 +126,7 @@ def sigdig(x, digits=1):
     if x: x = copysign(round(x, -int(floor(log10(abs(x)))) + (digits - 1)), x)
     return x
 
-sys.stderr.write(json.dumps(model_data))
+# sys.stderr.write(json.dumps(model_data))
 
 # if it's a global average, make the first run a night-time case
 if global_average:
@@ -195,6 +195,7 @@ for key in model_data:
 
 # sys.stderr.write(json.dumps(model_data))
 # send the JSON to the client
+# sys.stderr.write(json.dumps(model_data))
 print json.dumps(model_data)
 
 # def load_atmosphere(atmosphere):

@@ -4,7 +4,7 @@
     <meta content='text/html; charset=utf-8' http-equiv='Content-type'>
     <title>Earth's Energy</title>
     <meta content='width=device-width, initial-scale=1.0' name='viewport'>
-    <link href='css/jquery.ui.css' media='screen' rel='stylesheet'>
+    <!-- %link{ href: "css/jquery.ui.css", rel: "stylesheet", media: "screen" } -->
     <link href='css/coursera.css' media='screen' rel='stylesheet'>
     <!-- %link{ href: "css/slider.css", rel: "stylesheet", media: "screen" } -->
     <!-- %link{ href: "css/application.css", rel: "stylesheet", media: "screen" } -->
@@ -28,95 +28,203 @@
         <b>Other Models</b>
       </a>
     </div>
-    <div class='container'>
-      <svg id='rrtm' style='margin: auto;'>
-        <text class='inputDescription' fill='#434358' style='display: none;' text-anchor='middle' width='300px' y='20'>
-          <tspan>If the Sun and the Earth's surface</tspan>
-          <tspan y='45'>and atmosphere have these properties...</tspan>
-        </text>
-        <text class='output' fill='#434358' style='font-family: helvetica, sans-serif; font-size: 20px' text-anchor='middle' x='520' y='20'></text>
-        <foreignObject class='reset' style='display: none;' x='0' y='0'>
-          <body class='reset' xmlns='http://www.w3.org/1999/xhtml'>
-            <div>
-              <a href='#reset' id='reset'>reset</a>
-              <!-- | presets: -->
-              <!-- %select#presets -->
-              <!-- %option{value: 'isothermal, no greenhouse gases'} isothermal, no greenhouse gases -->
-              <!-- %option{value: 'standard mid-latitude'} standard mid-latitude -->
-            </div>
-          </body>
-        </foreignObject>
-        <foreignObject class='input' x='40' y='100'>
-          <body class='inner' xmlns='http://www.w3.org/1999/xhtml'>
-            <div class='input' height='380px' style='overflow-x:scroll; overflow-y:hidden'>
-              <svg height='360px' id='inner' style='float: left;' width='2000px'>
-                <foreignObject class='control' x='0' y='-10'>
-                  <body class='control' xmlns='http://www.w3.org/1999/xhtml'>
-                    <div class='tab-container' id='tab-container'>
-                      <ul class='etabs'>
-                        <li class='tab'>
-                          <a href='#tabs1-sun'>Sun</a>
-                        </li>
-                        <li class='tab'>
-                          <a href='#tabs1-surface'>Surface</a>
-                        </li>
-                        <li class='tab default'>
-                          <a href='#tabs1-atmosphere'>Atmosphere</a>
-                        </li>
-                      </ul>
-                      <div id='tabs1-sun'>
-                        <div id='sunlightText'>
-                          direct sunlight:
-                          <span class='sunlight'>1370</span>
-                          W/m
-                          <sup>2</sup>
-                        </div>
-                        <div id='sunlight'></div>
-                        <!-- %div#sunTempText -->
-                        <!-- Sun's surface temperature: -->
-                        <!-- %span.sunTemp 5780 -->
-                        <!-- K -->
-                        <!-- %div#sunTemp -->
-                        <!-- %div#distanceToSunText -->
-                        <!-- distance to Sun: -->
-                        <!-- %span.distanceToSuntext -->
-                        <!-- %div#distanceToSun -->
-                      </div>
-                      <div id='tabs1-surface'>
-                        <ul class='albedo' style='font-size: 80%; list-style-type: none; padding: 5px; margin: 0;'>
-                          <li>
-                            <span class='instruction'>select surface type:</span>
-                          </li>
-                        </ul>
-                        <div id='albedoText'>
-                          albedo:
-                          <span class='albedo'>0.3</span>
-                        </div>
-                        <div id='albedo'></div>
-                      </div>
-                      <div id='tabs1-atmosphere'>
-                        <ul class='control' style='font-size: 80%; list-style-type: none; padding: 5px; margin: 0;'>
-                          <li>
-                            <span class='instruction'>check boxes to show profiles:</span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </body>
-                </foreignObject>
-              </svg>
-            </div>
-          </body>
-        </foreignObject>
-        <foreignObject class='loader'>
-          <body class='loader' xmlns='http://www.w3.org/1999/xhtml'>
-            <div>
-              <img id='loader' src='img/ajax-loader.gif'>
-            </div>
-          </body>
-        </foreignObject>
-      </svg>
+    <div id='inputs'>
+      <table border class='padded-table'>
+        <tr>
+          <td>
+            <table class='padded-table'>
+              <tr>
+                <td>
+                  <h3>If the Sun and Earth have these properties...</h3>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table class='padded-table'>
+              <tr>
+                <td>Direct Sunlight (W/m <sup>2</sup>)</td>
+                <td>
+                  <input data-value='1360' name='scon'>
+                </td>
+              </tr>
+              <tr>
+                <td>Surface</td>
+                <td>
+                  <select class='textButton' name='surface'>
+                    <option value='0.08'>Asphalt</option>
+                    <option value='0.55'>Concrete</option>
+                    <option value='0.4'>Desert</option>
+                    <option data-selected='selected' value='0.3'>Earth's average</option>
+                    <option value='0.15'>Forest</option>
+                    <option value='0.25'>Grass</option>
+                    <option value='0.6'>Ice</option>
+                    <option value='0.1'>Ocean</option>
+                    <option value='0.85'>Snow</option>
+                    <option value='0.17'>Soil</option>
+                    <option value='custom'>Custom albedo</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Albedo (fraction)</td>
+                <td>
+                  <input data-value='0.3' name='asdir'>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table class='padded-table'>
+              <tr>
+                <td>Surface Temp (K)</td>
+                <td>
+                  <input data-value='287' name='Ts'>
+                </td>
+              </tr>
+              <tr>
+                <td>Lapse Rate (K/km)</td>
+                <td>
+                  <input data-value='10' name='lapseRate'>
+                </td>
+              </tr>
+              <tr>
+                <td>Stratospheric Height (km)</td>
+                <td>
+                  <input data-value='15' name='tropopause'>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table class='padded-table'>
+              <tr>
+                <td>CO<sub>2</sub> (ppm)</td>
+                <td>
+                  <input data-value='400' name='co2'>
+                </td>
+              </tr>
+              <tr>
+                <td>CH<sub>4</sub> (ppm)</td>
+                <td>
+                  <input data-value='1.7' name='ch4'>
+                </td>
+              </tr>
+              <tr>
+                <td>Water Vapor Scale</td>
+                <td>
+                  <input data-value='1' name='h2o'>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table class='padded-table'>
+              <tr>
+                <td>Low Cloud (fraction)</td>
+                <td>
+                  <input data-value='0' name='stratus'>
+                </td>
+              </tr>
+              <tr>
+                <td>High Cloud (fraction)</td>
+                <td>
+                  <input data-value='0' name='cirrus'>
+                </td>
+              </tr>
+              <tr>
+                <td>Drop radius (10<sup>-6</sup>m)</td>
+                <td>
+                  <input data-value='10' name='r_liq'>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table class='padded-table'>
+              <tr>
+                <td colspan='2'>
+                  <select class='textButton' name='aerosols'>
+                    <option data-selected='selected'>No aerosols</option>
+                    <option>Ocean</option>
+                    <option>Desert</option>
+                    <option>City</option>
+                    <option>City, just sulfates</option>
+                    <option>City, just black carbon</option>
+                    <option>Land</option>
+                    <option>Land, polluted</option>
+                    <option>Antarctic</option>
+                    <option>Volcano (Pinatubo)</option>
+                  </select>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
     </div>
+    <div id='flowsPlotData'></div>
+    <div id='profilePlotData'></div>
+    <div id='flows'>
+      <table class='padded-table'>
+        <tr>
+          <td>
+            <table class='padded-table'>
+              <tr>
+                <td>
+                  <h3>
+                    <span id='toa'></span>
+                  </h3>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table>
+              <tr>
+                <td>
+                  <svg id='rrtm'>
+                    <text class='output'></text>
+                  </svg>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div id='profile'></div>
+    <!-- %div.container -->
+    <!-- %svg#rrtm{style: 'margin: auto;'} -->
+    <!-- %text.inputDescription{y: '20', width: '300px', 'text-anchor' => 'middle', style: 'font-family: helvetica, sans-serif; font-size: 20px', fill: '#434358', style: 'display: none;'} -->
+    <!-- %tspan If the Sun and the Earth's surface -->
+    <!-- %tspan{y: '45'} and atmosphere have these properties... -->
+    <!-- %text.output{x: '520', 'text-anchor' => 'middle', y: '20', style: 'font-family: helvetica, sans-serif; font-size: 20px', fill: '#434358'} -->
+    <!-- %foreignObject.reset{y: '0', x: '0', style: 'display: none;'} -->
+    <!-- %body.reset{xmlns: 'http://www.w3.org/1999/xhtml'} -->
+    <!-- %div -->
+    <!-- %a#reset{href:'#reset'} reset -->
+    <!-- / | presets: -->
+    <!-- / %select#presets -->
+    <!-- /     %option{value: 'isothermal, no greenhouse gases'} isothermal, no greenhouse gases -->
+    <!-- /     %option{value: 'standard mid-latitude'} standard mid-latitude -->
+    <!--  -->
+    <!-- %foreignObject.loader -->
+    <!-- %body.loader{xmlns: 'http://www.w3.org/1999/xhtml'} -->
+    <!-- %div -->
+    <!-- %img#loader{ src: 'img/ajax-loader.gif'} -->
     <script src='js/jquery.js'></script>
     <!-- %script{ src: "js/bootstrap.min.js" } -->
     <!-- %script{ src: "js/bootstrap-slider.js" } -->

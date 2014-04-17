@@ -1,8 +1,11 @@
-
 body {
     font:1em Helvetica,sans-serif;
     color:#434358;
     background-color:#ffffff
+}
+text.output {
+    font:1em Helvetica,sans-serif;
+    color:#434358;    
 }
 #banner {
     position:absolute;
@@ -15,15 +18,26 @@ body {
     border-top: 6px solid #b94a48; 
     box-shadow: 1px 1px 3px #A3A3A7;
 }
+
 #settings{position:absolute;right:350px;top:30px;}
 #doc{position:absolute;right:180px;top:30px;}
 #models{position:absolute;right:50px;top:30px;}
-#inputs{position:absolute;left:10px;width:450px;top:80px}
 .modelClass{ padding:25px 5px 5px 5px; font-weight:bold; font-size:20px;text-align:center;}
 .imageClass{ text-align:center;}
 .link{ border:solid 2px;padding:8px;;text-align:left}
-#inputs{position:absolute;left:30px;width:350px;top:100px;}
-#spectrum{position:absolute;left:350px;width:550px;top:20px;height:600px; }
+#inputs{
+    position:absolute;
+    left:30px;
+    width:350px;
+    top:100px;
+}
+#flows{
+    position:absolute;
+    left:400px;
+    width:550px;
+    top:100px;
+    height:600px; 
+}
 #profile{position:absolute;left:900px;width:200px;top:60px;height:500px; }
 table.padded-table td{padding:2px;}
 #spectrumPlotData{position:absolute;left:550px;top:600px;z-index:1000;}
