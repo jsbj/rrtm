@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=utf-8' http-equiv='Content-type'>
+    <title>Earth's Energy</title>
+    <meta content='width=device-width, initial-scale=1.0' name='viewport'>
+    <link href='css/jquery.ui.css' media='screen' rel='stylesheet'>
+    <link href='css/coursera.css' media='screen' rel='stylesheet'>
+    <!-- %link{ href: "css/slider.css", rel: "stylesheet", media: "screen" } -->
+    <!-- %link{ href: "css/application.css", rel: "stylesheet", media: "screen" } -->
+  </head>
+  <body>
+    <div id='banner'>
+      <h2>RRTM Earth's Energy Budget</h2>
+    </div>
+    <!-- #settings -->
+    <!-- Units: -->
+    <!-- %select -->
+    <!-- %option SI -->
+    <!-- %option USA -->
+    <div id='doc'>
+      <a href='./rrtm.doc.html' target='_blank'>
+        <b>About this model</b>
+      </a>
+    </div>
+    <div id='models'>
+      <a href='http://climatemodels.uchicago.edu'>
+        <b>Other Models</b>
+      </a>
+    </div>
+    <div class='container'>
+      <svg id='rrtm' style='margin: auto;'>
+        <text class='inputDescription' fill='#434358' style='display: none;' text-anchor='middle' width='300px' y='20'>
+          <tspan>If the Sun and the Earth's surface</tspan>
+          <tspan y='45'>and atmosphere have these properties...</tspan>
+        </text>
+        <text class='output' fill='#434358' style='font-family: helvetica, sans-serif; font-size: 20px' text-anchor='middle' x='520' y='20'></text>
+        <foreignObject class='reset' style='display: none;' x='0' y='0'>
+          <body class='reset' xmlns='http://www.w3.org/1999/xhtml'>
+            <div>
+              <a href='#reset' id='reset'>reset</a>
+              <!-- | presets: -->
+              <!-- %select#presets -->
+              <!-- %option{value: 'isothermal, no greenhouse gases'} isothermal, no greenhouse gases -->
+              <!-- %option{value: 'standard mid-latitude'} standard mid-latitude -->
+            </div>
+          </body>
+        </foreignObject>
+        <foreignObject class='input' x='40' y='100'>
+          <body class='inner' xmlns='http://www.w3.org/1999/xhtml'>
+            <div class='input' height='380px' style='overflow-x:scroll; overflow-y:hidden'>
+              <svg height='360px' id='inner' style='float: left;' width='2000px'>
+                <foreignObject class='control' x='0' y='-10'>
+                  <body class='control' xmlns='http://www.w3.org/1999/xhtml'>
+                    <div class='tab-container' id='tab-container'>
+                      <ul class='etabs'>
+                        <li class='tab'>
+                          <a href='#tabs1-sun'>Sun</a>
+                        </li>
+                        <li class='tab'>
+                          <a href='#tabs1-surface'>Surface</a>
+                        </li>
+                        <li class='tab default'>
+                          <a href='#tabs1-atmosphere'>Atmosphere</a>
+                        </li>
+                      </ul>
+                      <div id='tabs1-sun'>
+                        <div id='sunlightText'>
+                          direct sunlight:
+                          <span class='sunlight'>1370</span>
+                          W/m
+                          <sup>2</sup>
+                        </div>
+                        <div id='sunlight'></div>
+                        <!-- %div#sunTempText -->
+                        <!-- Sun's surface temperature: -->
+                        <!-- %span.sunTemp 5780 -->
+                        <!-- K -->
+                        <!-- %div#sunTemp -->
+                        <!-- %div#distanceToSunText -->
+                        <!-- distance to Sun: -->
+                        <!-- %span.distanceToSuntext -->
+                        <!-- %div#distanceToSun -->
+                      </div>
+                      <div id='tabs1-surface'>
+                        <ul class='albedo' style='font-size: 80%; list-style-type: none; padding: 5px; margin: 0;'>
+                          <li>
+                            <span class='instruction'>select surface type:</span>
+                          </li>
+                        </ul>
+                        <div id='albedoText'>
+                          albedo:
+                          <span class='albedo'>0.3</span>
+                        </div>
+                        <div id='albedo'></div>
+                      </div>
+                      <div id='tabs1-atmosphere'>
+                        <ul class='control' style='font-size: 80%; list-style-type: none; padding: 5px; margin: 0;'>
+                          <li>
+                            <span class='instruction'>check boxes to show profiles:</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </body>
+                </foreignObject>
+              </svg>
+            </div>
+          </body>
+        </foreignObject>
+        <foreignObject class='loader'>
+          <body class='loader' xmlns='http://www.w3.org/1999/xhtml'>
+            <div>
+              <img id='loader' src='img/ajax-loader.gif'>
+            </div>
+          </body>
+        </foreignObject>
+      </svg>
+    </div>
+    <script src='js/jquery.js'></script>
+    <!-- %script{ src: "js/bootstrap.min.js" } -->
+    <!-- %script{ src: "js/bootstrap-slider.js" } -->
+    <!-- %script{ src: 'js/respond.js' } -->
+    <script charset='utf-8' src='js/d3.js'></script>
+    <!-- %script{ src: "js/visualization.js" } -->
+    <script src='js/jquery.migrate.js'></script>
+    <script src='js/jquery.ui.js'></script>
+    <script src='js/jquery.easytabs.min.js'></script>
+    <script src='js/rrtm.old.js'></script>
+  </body>
+</html>

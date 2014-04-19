@@ -4,7 +4,7 @@
     <meta content='text/html; charset=utf-8' http-equiv='Content-type'>
     <title>Earth's Energy</title>
     <meta content='width=device-width, initial-scale=1.0' name='viewport'>
-    <!-- %link{ href: "css/jquery.ui.css", rel: "stylesheet", media: "screen" } -->
+    <link href='css/jquery.ui.css' media='screen' rel='stylesheet'>
     <link href='css/coursera.css' media='screen' rel='stylesheet'>
     <!-- %link{ href: "css/slider.css", rel: "stylesheet", media: "screen" } -->
     <!-- %link{ href: "css/application.css", rel: "stylesheet", media: "screen" } -->
@@ -35,7 +35,7 @@
             <table class='padded-table'>
               <tr>
                 <td>
-                  <h3>If the Sun and Earth have these properties...</h3>
+                  <h3>If the Earth has these properties...</h3>
                 </td>
               </tr>
             </table>
@@ -45,7 +45,7 @@
           <td>
             <table class='padded-table'>
               <tr>
-                <td>Direct Sunlight (W/m <sup>2</sup>)</td>
+                <td>Direct Sunlight (W/m<sup>2</sup>)</td>
                 <td>
                   <input data-value='1360' name='scon'>
                 </td>
@@ -119,7 +119,7 @@
               <tr>
                 <td>Water Vapor Scale</td>
                 <td>
-                  <input data-value='1' name='h2o'>
+                  <input data-value='1' name='h2oScale'>
                 </td>
               </tr>
             </table>
@@ -131,13 +131,13 @@
               <tr>
                 <td>Low Cloud (fraction)</td>
                 <td>
-                  <input data-value='0' name='stratus'>
+                  <input class='cloud' data-value='0' name='stratus'>
                 </td>
               </tr>
               <tr>
                 <td>High Cloud (fraction)</td>
                 <td>
-                  <input data-value='0' name='cirrus'>
+                  <input class='cloud' data-value='0' name='cirrus'>
                 </td>
               </tr>
               <tr>
@@ -155,16 +155,16 @@
               <tr>
                 <td colspan='2'>
                   <select class='textButton' name='aerosols'>
-                    <option data-selected='selected'>No aerosols</option>
-                    <option>Ocean</option>
-                    <option>Desert</option>
-                    <option>City</option>
-                    <option>City, just sulfates</option>
-                    <option>City, just black carbon</option>
-                    <option>Land</option>
-                    <option>Land, polluted</option>
-                    <option>Antarctic</option>
-                    <option>Volcano (Pinatubo)</option>
+                    <option data-selected='selected' value='no aerosols'>No aerosols</option>
+                    <option value='ocean'>Ocean</option>
+                    <option value='desert'>Desert</option>
+                    <option value='city'>City</option>
+                    <option value='sulfates'>City, just sulfates</option>
+                    <option value='carbon'>City, just black carbon</option>
+                    <option value='land'>Land</option>
+                    <option value='polluted'>Land, polluted</option>
+                    <option value='Antarctic'>Antarctic</option>
+                    <option value='Pinatubo'>Volcano (Pinatubo)</option>
                   </select>
                 </td>
               </tr>
@@ -195,9 +195,7 @@
             <table>
               <tr>
                 <td>
-                  <svg id='rrtm'>
-                    <text class='output'></text>
-                  </svg>
+                  <svg id='rrtm'></svg>
                 </td>
               </tr>
             </table>

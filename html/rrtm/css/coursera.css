@@ -69,7 +69,7 @@ table.padded-table td{padding:2px;}
     shape-rendering: crispEdges;
 }
 
-.input line {
+line {
     fill: none;
     stroke: #434358;
     stroke-width: 1;
@@ -86,10 +86,10 @@ path.profile {
     stroke-width: 2;
     fill: none;
 }
-
+/*
 .x.label {
     font-size: .75em;
-}
+}*/
 
 /*.control ul {
     list-style-type: none;

@@ -4,7 +4,7 @@
         %meta{ 'http-equiv' => "Content-type", content: "text/html; charset=utf-8"}
         %title Earth's Energy
         %meta{ name: "viewport", content: "width=device-width, initial-scale=1.0"}
-        / %link{ href: "css/jquery.ui.css", rel: "stylesheet", media: "screen" }
+        %link{ href: "css/jquery.ui.css", rel: "stylesheet", media: "screen" }
         %link{ href: "css/coursera.css", rel: "stylesheet", media: "screen" }
         / %link{ href: "css/slider.css", rel: "stylesheet", media: "screen" }
         / %link{ href: "css/application.css", rel: "stylesheet", media: "screen" }
@@ -29,12 +29,12 @@
                         %table.padded-table
                             %tr
                                 %td
-                                    %h3 If the Sun and Earth have these properties...
+                                    %h3 If the Earth has these properties...
                 %tr
                     %td
                         %table.padded-table
                             %tr
-                                %td Direct Sunlight (W/m <sup>2</sup>)
+                                %td Direct Sunlight (W/m<sup>2</sup>)
                                 %td
                                     %input{name:"scon","data-value" => 1360}
                             %tr
@@ -85,18 +85,18 @@
                             %tr
                                 %td Water Vapor Scale
                                 %td
-                                    %input{name:"h2o","data-value" => 1}
+                                    %input{name:"h2oScale","data-value" => 1}
                 %tr
                     %td
                         %table.padded-table
                             %tr
                                 %td Low Cloud (fraction)
                                 %td
-                                    %input{name:"stratus","data-value" => 0}
+                                    %input.cloud{name:"stratus","data-value" => 0}
                             %tr
                                 %td High Cloud (fraction)
                                 %td
-                                    %input{name:"cirrus","data-value" => 0}
+                                    %input.cloud{name:"cirrus","data-value" => 0}
                             %tr
                                 %td Drop radius (10<sup>-6</sup>m)
                                 %td
@@ -107,16 +107,16 @@
                             %tr
                                 %td{colspan: 2}
                                     %select.textButton{name:"aerosols"}
-                                        %option{"data-selected" => "selected"} No aerosols
-                                        %option Ocean
-                                        %option Desert
-                                        %option City
-                                        %option City, just sulfates
-                                        %option City, just black carbon
-                                        %option Land
-                                        %option Land, polluted
-                                        %option Antarctic
-                                        %option Volcano (Pinatubo)
+                                        %option{value: "no aerosols", "data-selected" => "selected"} No aerosols
+                                        %option{value: "ocean"} Ocean
+                                        %option{value: "desert"} Desert
+                                        %option{value: "city"} City
+                                        %option{value: "sulfates"} City, just sulfates
+                                        %option{value: "carbon"} City, just black carbon
+                                        %option{value: "land"} Land
+                                        %option{value: "polluted"} Land, polluted
+                                        %option{value: "Antarctic"} Antarctic
+                                        %option{value: "Pinatubo"} Volcano (Pinatubo)
         #flowsPlotData
         #profilePlotData
         #flows
