@@ -434,15 +434,15 @@ $("select option").filter(function() {
 initializeInput = function() {
     $('#loader').hide()
     
-    if ($.browser.safari || $.browser.msie) {
-        $('svg#rrtm').remove()
-        $('div.container').html('This model is not supported by your browser. Please use <a href="http://www.mozilla.org/en-US/firefox/new/">Firefox</a> or <a href="https://www.google.com/intl/en/chrome/browser/">Chrome</a> instead.')
-        return false
-    } else {
-        if ($.browser.webkit) {
-             $('div.input').height(parseInt($('div.input').height()) + 10)               
-        }
-    }
+    // if ($.browser.safari || $.browser.msie) {
+    //     $('svg#rrtm').remove()
+    //     $('div.container').html('This model is not supported by your browser. Please use <a href="http://www.mozilla.org/en-US/firefox/new/">Firefox</a> or <a href="https://www.google.com/intl/en/chrome/browser/">Chrome</a> instead.')
+    //     return false
+    // } else {
+    //     if ($.browser.webkit) {
+    //          $('div.input').height(parseInt($('div.input').height()) + 10)               
+    //     }
+    // }
     
     var y = d3.scale.linear().domain([0, d3.max(modelData['altitude'])]).range([svgDims.flowHeight, 0])
     
