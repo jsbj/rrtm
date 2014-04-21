@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
 
 # Gotta have this to let the browser know it's json
 print "Content-type: application/json\n\n";
