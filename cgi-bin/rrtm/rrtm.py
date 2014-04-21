@@ -18,7 +18,7 @@ total_altitude = 35.0
 # set defaults (different than CliMT's)
 h2o = number_of_layers * [0.0]
 # list(1000. * numpy.exp(-9.8 * numpy.linspace(0,total_altitude,num=number_of_layers+1, endpoint=True)[1:] * 1000. / (Ts * 285.0)))
-Ts = 287.0
+Ts = 288.5
 ps = 1013.0
 R = 287.0
 g = 9.8
@@ -41,25 +41,16 @@ defaults = {
     "clwp": number_of_layers * [5.0],
     "ciwp": number_of_layers * [5.0],
     "cldf": number_of_layers * [0],
-    "ccl4": number_of_layers * [0],
-    "cfc11": number_of_layers * [0],
-    "cfc12": number_of_layers * [0],
-    "cfc22": number_of_layers * [0],
     "co2": 400, 
     "n2o": number_of_layers * [0], 
     "rh": number_of_layers * [0], 
     "p": number_of_layers * [0],
     "ch4": 1.7, 
-    "co": number_of_layers * [0], 
     "o3": number_of_layers * [0],
-    "h2o": [7.2 * h for h in [0.015946558, 0.011230157, 0.0076751928, 0.0052688639, 0.0036297729, 0.0023900282, 0.0017066754, 0.0012718296, 0.00095655693, 0.00069666741, 0.00050829613, 0.00036584702, 0.00024977655, 0.00013636267, 6.5472166e-05, 2.8419665e-05, 9.6973117e-06, 4.8207025e-06, 3.4318521e-06, 3.2663258e-06, 3.178493e-06, 3.1768304e-06, 3.2639416e-06, 3.4095149e-06, 3.5909502e-06, 3.8500998e-06, 4.0575464e-06, 4.251363e-06, 4.3863338e-06, 4.5309193e-06, 4.6839027e-06, 4.806785e-06, 4.9039072e-06, 4.9670398e-06, 5.016137e-06, 5.1013058e-06, 5.2471341e-06, 5.3810127e-06, 5.4697343e-06, 5.4735615e-06, 5.332653e-06, 5.1831207e-06, 5.0460312e-06, 4.8780507e-06, 4.7075605e-06, 4.5413699e-06, 4.3837813e-06, 4.2189254e-06, 4.0623413e-06, 3.9098322e-06, 3.7676771e-06]],
-    "h2oScale": 1,
-    "o2": number_of_layers * [0.209], #97518, 0.20897572, 0.2089678, 0.2089866, 0.20899189, 0.20899543, 0.20899996, 0.20900373, 0.20900458, 0.20900519, 0.20900649, 0.20900634, 0.20900698, 0.20900562, 0.20900711, 0.20900925, 0.20900522, 0.20899965, 0.20899954, 0.20899963, 0.20899959, 0.20899966, 0.20899986, 0.20899987, 0.20900002, 0.20899989, 0.20899986, 0.2090022, 0.20900251, 0.2090067, 0.2090057, 0.20900536, 0.20900574, 0.20900482, 0.20900646, 0.20900702, 0.20900613, 0.20900463, 0.2090015, 0.20900197, 0.20901358, 0.2090466, 0.20902328, 0.20906644, 0.20911193, 0.20908101, 0.20904104, 0.20916539, 0.20922786, 0.20919746, 0.20908001], 
-    # "lev": lev, # [891.46, 792.287, 718.704, 651.552, 589.841, 532.986, 480.526, 437.556, 398.085, 361.862, 328.507, 297.469, 269.015, 243, 218.668, 196.44, 162.913, 136.511, 114.564, 96.4903, 81.2, 68.4286, 57.6936, 48.6904, 40.5354, 33.733, 28.1201, 23.1557, 18.7914, 15.0693, 11.8006, 8.78628, 6.61328, 5.03469, 3.85333, 2.96408, 2.2918, 1.78227, 1.339, 0.589399, 0.430705, 0.333645, 0.261262, 0.216491, 0.179393, 0.148652, 0.1255, 0.106885, 0.091031, 0.077529, 0.067],
+    "relativeHumidity": 100,
+    "o2": number_of_layers * [0.209],
     'aerosols': 'no aerosols'
 }
-
-
 
 # import pdb; pdb.set_trace()
 # apply defaults
@@ -88,7 +79,10 @@ for i in range(number_of_layers):
 # model_data["lev"][number_of_layers-1] = min(model_data["lev"][number_of_layers-1], 13)
 
 sys.stderr.write(str(model_data["lev"]))
+def equilibrium_pressure(T):
+    return 6.1094 * exp(17.625 * (T - 273.15) / (T - 30.11))
 
+model_data["h2o"] = [(equilibrium_pressure(T) / model_data['lev'][i]) * (float(model_data['relativeHumidity']) / 100.0) for (i,T) in enumerate(model_data['Tbound'])]
 # same sw albedo all around
 model_data['asdif'] = model_data['asdir']
 model_data['aldir'] = model_data['asdir']
@@ -98,7 +92,7 @@ model_data['aldif'] = model_data['asdir']
 # make concentrations into volume mixing ratios
 ghgs = ['co2', 'ch4'] # ppm
 
-model_data['h2o'] = [float(h2o) * float(model_data['h2oScale']) for h2o in defaults['h2o']]
+# model_data['h2o'] = [float(h2o) * float(model_data['h2oScale']) for h2o in defaults['h2o']]
 
 for key in ghgs:
     model_data[key] = number_of_layers * [float(model_data[key])]

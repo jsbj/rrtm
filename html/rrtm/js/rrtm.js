@@ -461,7 +461,7 @@ initializeInput = function() {
     
     var vis = d3.select('svg#rrtm')
     var legend = vis.append("svg:g")
-        .attr('transform', 'translate('+(svgDims.flowWidth)+',0)')
+        .attr('transform', 'translate('+(svgDims.flowWidth+10)+',0)')
     legend.append('rect')
         .attr('x', 0)
         .attr('y', 0)

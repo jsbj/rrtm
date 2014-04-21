@@ -62,7 +62,7 @@
                             %tr
                                 %td Surface Temp (K)
                                 %td
-                                    %input{name:"Ts","data-value" => 287}
+                                    %input{name:"Ts","data-value" => 288.5}
                             %tr
                                 %td Lapse Rate (K/km)
                                 %td
@@ -83,9 +83,15 @@
                                 %td
                                     %input{name:"ch4","data-value" => 1.7}
                             %tr
-                                %td Water Vapor Scale
+                                %td Relative Humidity (%)
                                 %td
-                                    %input{name:"h2oScale","data-value" => 1}
+                                    %input{name:"relativeHumidity","data-value" => 100}
+                            / %tr
+                            /     %td Water Vapor Feedback
+                            /     %td
+                            /         %select.textButton{name:"waterVaporFeedback"}
+                            /             %option{value: "off", "data-selected" => "selected"} Off
+                            /             %option{value: "on"} On
                 %tr
                     %td
                         %table.padded-table
