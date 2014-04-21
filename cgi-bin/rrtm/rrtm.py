@@ -18,7 +18,7 @@ total_altitude = 35.0
 # set defaults (different than CliMT's)
 h2o = number_of_layers * [0.0]
 # list(1000. * numpy.exp(-9.8 * numpy.linspace(0,total_altitude,num=number_of_layers+1, endpoint=True)[1:] * 1000. / (Ts * 285.0)))
-Ts = 288.5
+Ts = 284.5
 ps = 1013.0
 R = 287.0
 g = 9.8
