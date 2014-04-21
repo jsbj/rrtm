@@ -26,7 +26,7 @@ g = 9.8
 defaults = {
     "ps": ps,
     "Ts": Ts,
-    "lapseRate": 10.0,
+    "lapseRate": 6.0,
     "tropopause": 15.0,
     "scon": 1360,
     "asdir": 0.3,
@@ -47,7 +47,7 @@ defaults = {
     "p": number_of_layers * [0],
     "ch4": 1.7, 
     "o3": number_of_layers * [0],
-    "relativeHumidity": 100,
+    "relativeHumidity": 80,
     "o2": number_of_layers * [0.209],
     'aerosols': 'no aerosols'
 }
