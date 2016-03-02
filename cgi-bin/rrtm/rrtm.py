@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python
 
 # Gotta have this to let the browser know it's json
 print "Content-type: application/json\n\n";
@@ -151,9 +151,9 @@ if global_average:
     fluxes = {
         'swuflx': numpy.array(lw_model['swuflx']),
         'swdflx': numpy.array(lw_model['swdflx']),
-        'lwuflx': numpy.array([sigdig(float(f), 3) for f in lw_model['lwuflx']]),
-        'lwdflx': numpy.array([sigdig(float(f), 3) for f in lw_model['lwdflx']]),
-        'LwToa': sigdig(float(lw_model['LwToa']), 3),
+        'lwuflx': numpy.array([round(float(f), 1) for f in lw_model['lwuflx']]),
+        'lwdflx': numpy.array([round(float(f), 1) for f in lw_model['lwdflx']]),
+        'LwToa': round(float(lw_model['LwToa']), 1),
         'SwToa': 0.
     }
     
@@ -167,28 +167,28 @@ if global_average:
         fluxes['swdflx'] += numpy.array(sw_model['swdflx']) / (2 * number_of_divisions)
         fluxes['SwToa'] += sw_model['SwToa'] / (2 * number_of_divisions)
 
-    fluxes['swuflx'] = numpy.array([sigdig(float(f), 3) for f in fluxes['swuflx']])
-    fluxes['swdflx'] = numpy.array([sigdig(float(f), 3) for f in fluxes['swdflx']])
+    fluxes['swuflx'] = numpy.array([round(float(f), 1) for f in fluxes['swuflx']])
+    fluxes['swdflx'] = numpy.array([round(float(f), 1) for f in fluxes['swdflx']])
     fluxes['uflx'] = fluxes['lwuflx'] + fluxes['swuflx']
     fluxes['dflx'] = fluxes['lwdflx'] + fluxes['swdflx']
-    fluxes['SwToa'] = sigdig(float(fluxes['SwToa']), 3)
+    fluxes['SwToa'] = round(float(fluxes['SwToa']), 1)
 else:
     model = climt.radiation(scheme='rrtm', **model_data)
 
     fluxes = {
-        'swuflx': numpy.array([sigdig(float(f), 3) for f in model['swuflx']]),
-        'swdflx': numpy.array([sigdig(float(f), 3) for f in model['swdflx']]),
-        'lwuflx': numpy.array([sigdig(float(f), 3) for f in model['lwuflx']]),
-        'lwdflx': numpy.array([sigdig(float(f), 3) for f in model['lwdflx']]),
-        'uflx': numpy.array([sigdig(float(model['swuflx'][i] + model['lwuflx'][i]), 3) for i in range(len(model['swuflx']))]),
-        'dflx': numpy.array([sigdig(float(model['swdflx'][i] + model['lwdflx'][i]), 3) for i in range(len(model['swdflx']))]),
-        'LwToa': sigdig(float(model['LwToa']), 3),
-        'SwToa': sigdig(float(model['SwToa']), 3)
+        'swuflx': numpy.array([round(float(f), 1) for f in model['swuflx']]),
+        'swdflx': numpy.array([round(float(f), 1) for f in model['swdflx']]),
+        'lwuflx': numpy.array([round(float(f), 1) for f in model['lwuflx']]),
+        'lwdflx': numpy.array([round(float(f), 1) for f in model['lwdflx']]),
+        'uflx': numpy.array([round(float(model['swuflx'][i] + model['lwuflx'][i]), 1) for i in range(len(model['swuflx']))]),
+        'dflx': numpy.array([round(float(model['swdflx'][i] + model['lwdflx'][i]), 1) for i in range(len(model['swdflx']))]),
+        'LwToa': round(float(model['LwToa']), 1),
+        'SwToa': round(float(model['SwToa']), 1)
     }
 
 # calculate fluxes
-fluxes['net_toa'] = fluxes['LwToa'] + fluxes['SwToa']
-fluxes['net_toa'] = copysign(floor(abs(fluxes['net_toa'])), fluxes['net_toa'])
+fluxes['net_toa'] = round(fluxes['LwToa'] + fluxes['SwToa'],1)
+# fluxes['net_toa'] = copysign(floor(abs(fluxes['net_toa'])), fluxes['net_toa'])
 # json doesn't get NUMPY arrays:
 for key in fluxes:
     if key not in ['LwToa', 'SwToa', 'net_toa']:
